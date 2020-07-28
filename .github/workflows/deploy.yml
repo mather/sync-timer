@@ -1,0 +1,34 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        use: actions/checkout@v2
+      - name: Setup npm
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: '14'
+      - name: Install create-elm-app
+        run: npm install -g create-elm-app
+      - name: Cache elm-stuff
+        uses: actions/cache@v2.1.0
+        with:
+          path: elm-stuff
+          key: elm.json
+      - name: Test
+        run: elm-app test
+      - name: Build static files
+        run: elm-app build
+      - name: Deploy to Github Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
