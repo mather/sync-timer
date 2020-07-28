@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, button, div, span, text)
+import Html exposing (Html, button, div, h1, nav, span, text)
 import Html.Events exposing (onClick)
 import Tailwind exposing (tailwind, withClasses)
 import Tailwind.Classes exposing (..)
@@ -12,8 +12,20 @@ type alias Model =
     { timeMillis : Int
     , paused : Bool
     , current : Maybe Time.Posix
-    , resetTimeMillis : Int
+    , setting : Setting
     }
+
+
+type alias Setting =
+    { resetTimeMillis : Int
+    , bgColor : BgColor
+    }
+
+
+type BgColor
+    = White
+    | Green
+    | Blue
 
 
 initialModel : flag -> ( Model, Cmd Msg )
@@ -21,7 +33,10 @@ initialModel _ =
     ( { timeMillis = 0
       , paused = True
       , current = Nothing
-      , resetTimeMillis = 0
+      , setting =
+            { resetTimeMillis = 0
+            , bgColor = White
+            }
       }
     , Cmd.none
     )
@@ -56,12 +71,22 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Timer"
     , body =
-        [ div [ tailwind [ min_h_screen, flex, flex_col, text_center ] ]
-            [ viewTimer model.timeMillis
+        [ div [ tailwind [ min_h_screen, flex, flex_col ] ]
+            [ viewHeader
+            , viewTimer model.timeMillis
             , viewButtons model
+            , viewSetting model.setting
             ]
         ]
     }
+
+
+viewHeader : Html Msg
+viewHeader =
+    nav [ tailwind [ flex, flex_wrap, p_6, bg_black, text_white ] ]
+        [ div []
+            [ h1 [] [ text "Simple Stopwatch" ] ]
+        ]
 
 
 viewTimer : Int -> Html Msg
@@ -86,26 +111,29 @@ viewTimer millis =
         milliSeconds =
             modBy 1000 millis |> String.fromInt |> String.padLeft 3 '0'
     in
-        div [ tailwind [ m_10, px_20, py_10, font_sans, font_extrabold, text_5xl, text_left, border ] ]
-        [ span [ tailwind [w_auto] ] [ text <| sign ++ hours ++ ":" ++ minutes ++ ":" ++ seconds ++ "." ++ milliSeconds ]
+    div [ tailwind [ m_3, sm m_10, px_3, py_10, sm px_10, font_sans, font_extrabold, text_3xl, md text_5xl, text_left, border ] ]
+        [ div [ tailwind [ w_auto ] ] [ text <| sign ++ hours ++ ":" ++ minutes ++ ":" ++ seconds ++ "." ++ milliSeconds ]
         ]
 
 
 viewButtons : Model -> Html Msg
 viewButtons model =
-    div [ tailwind [ flex, justify_center, my_4 ] ]
+    div [ tailwind <| withClasses ["grid", "grid-cols-1", "sm:grid-cols-3"] [] ]
         [ startPauseButton model.paused
-        , div [ tailwind [ flex_grow, text_right, mx_2, items_center ] ]
-            [ text "秒前からスタート"
-            ]
         , button
             [ tailwind <|
                 withClasses [ "bg-red-500", "hover:bg-red-700" ] <|
-                    [ text_white, font_bold, mx_2, py_2, px_4, rounded ]
+                    [ text_white, font_bold, m_3, py_2, sm py_5, px_4, rounded ]
             , onClick Reset
             ]
             [ text "Reset" ]
         ]
+
+
+fullWidthButton : List Tailwind.Classes.TailwindClass
+fullWidthButton =
+    withClasses ["sm:col-span-2"] [ text_white, font_bold, m_3, py_5, px_4, rounded, w_auto ]
+
 
 startPauseButton : Bool -> Html Msg
 startPauseButton paused =
@@ -113,18 +141,27 @@ startPauseButton paused =
         button
             [ tailwind <|
                 withClasses [ "bg-blue-500", "hover:bg-blue-700" ] <|
-                    [ text_white, font_bold, mx_2, py_2, px_4, rounded, w_1over4 ]
+                    fullWidthButton
             , onClick Start
             ]
             [ text "Start" ]
+
     else
         button
             [ tailwind <|
                 withClasses [ "bg-orange-500", "hover:bg-orange-700" ] <|
-                    [ text_white, font_bold, mx_2, py_2, px_4, rounded, w_1over4 ]
+                    fullWidthButton
             , onClick Pause
             ]
             [ text "Pause" ]
+
+
+viewSetting : Setting -> Html Msg
+viewSetting setting =
+    div [ tailwind <| withClasses [ "grid", "grid-cols-1", "sm:grid-cols-2" ] [ border, m_4 ] ]
+        [ div [] [ text "a" ]
+        , div [] [ text "b" ]
+        ]
 
 
 subscriptions : Model -> Sub Msg
