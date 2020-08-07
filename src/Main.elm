@@ -2,9 +2,16 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html, button, div, h1, nav, span, text)
+import Html.Attributes exposing (style)
 import Html.Events exposing (onClick)
-import Tailwind exposing (tailwind, withClasses)
-import Tailwind.Classes exposing (..)
+import Material.Button as Button
+import Material.FormField as FormField
+import Material.LayoutGrid as LayoutGrid
+import Material.Slider as Slider
+import Material.Theme as Theme
+import Material.TopAppBar as TopAppBar
+import Material.Typography as Typography
+import String exposing (toInt)
 import Time
 
 
@@ -17,7 +24,7 @@ type alias Model =
 
 
 type alias Setting =
-    { resetTimeMillis : Int
+    { initialTimeSeconds : Int
     , bgColor : BgColor
     }
 
@@ -34,7 +41,7 @@ initialModel _ =
       , paused = True
       , current = Nothing
       , setting =
-            { resetTimeMillis = 0
+            { initialTimeSeconds = 0
             , bgColor = White
             }
       }
@@ -47,6 +54,7 @@ type Msg
     | Pause
     | Reset
     | UpdateTime Int Time.Posix
+    | UpdateResetTime Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -61,21 +69,28 @@ update msg model =
             ( { model | paused = True, current = Nothing }, Cmd.none )
 
         Reset ->
-            ( { model | timeMillis = 0, paused = True, current = Nothing }, Cmd.none )
+            ( { model | timeMillis = model.setting.initialTimeSeconds * 1000, paused = True, current = Nothing }, Cmd.none )
 
         UpdateTime millis current ->
             ( { model | timeMillis = millis, current = Just current }, Cmd.none )
+
+        UpdateResetTime millis ->
+            ( { model | setting = setInitialTimeSeconds millis model.setting }, Cmd.none )
+
+
+setInitialTimeSeconds : Int -> Setting -> Setting
+setInitialTimeSeconds millis setting =
+    { setting | initialTimeSeconds = millis }
 
 
 view : Model -> Browser.Document Msg
 view model =
     { title = "Timer"
     , body =
-        [ div [ tailwind [ min_h_screen, flex, flex_col ] ]
+        [ div []
             [ viewHeader
             , viewTimer model.timeMillis
             , viewButtons model
-            , viewSetting model.setting
             ]
         ]
     }
@@ -83,9 +98,12 @@ view model =
 
 viewHeader : Html Msg
 viewHeader =
-    nav [ tailwind [ flex, flex_wrap, p_6, bg_black, text_white ] ]
-        [ div []
-            [ h1 [] [ text "Simple Stopwatch" ] ]
+    TopAppBar.regular (TopAppBar.config |> TopAppBar.setFixed True)
+        [ TopAppBar.row []
+            [ TopAppBar.section
+                [ TopAppBar.alignStart ]
+                [ span [ TopAppBar.title ] [ text "Simple Stopwatch" ] ]
+            ]
         ]
 
 
@@ -99,69 +117,102 @@ viewTimer millis =
             else
                 " "
 
+        unsignedMillis =
+            abs millis
+
         hours =
-            millis // 3600000 |> String.fromInt |> String.padLeft 2 '0'
+            unsignedMillis // 3600000 |> String.fromInt |> String.padLeft 2 '0'
 
         minutes =
-            millis // 60000 |> modBy 60 |> String.fromInt |> String.padLeft 2 '0'
+            unsignedMillis // 60000 |> modBy 60 |> String.fromInt |> String.padLeft 2 '0'
 
         seconds =
-            millis // 1000 |> modBy 60 |> String.fromInt |> String.padLeft 2 '0'
+            unsignedMillis // 1000 |> modBy 60 |> String.fromInt |> String.padLeft 2 '0'
 
         milliSeconds =
-            modBy 1000 millis |> String.fromInt |> String.padLeft 3 '0'
+            modBy 1000 unsignedMillis |> String.fromInt |> String.padLeft 3 '0'
     in
-    div [ tailwind [ m_3, sm m_10, px_3, py_10, sm px_10, font_sans, font_extrabold, text_3xl, md text_5xl, text_left, border ] ]
-        [ div [ tailwind [ w_auto ] ] [ text <| sign ++ hours ++ ":" ++ minutes ++ ":" ++ seconds ++ "." ++ milliSeconds ]
+    div [ TopAppBar.fixedAdjust ]
+        [ LayoutGrid.layoutGrid []
+            [ LayoutGrid.inner []
+                [ LayoutGrid.cell [ LayoutGrid.span1Phone, LayoutGrid.span2Tablet, LayoutGrid.span3Desktop ] []
+                , LayoutGrid.cell [ LayoutGrid.span4Tablet, LayoutGrid.span6Desktop, Typography.headline3, LayoutGrid.alignMiddle ]
+                    [ div [style "padding" "50px 0" ] [ text <| sign ++ hours ++ ":" ++ minutes ++ ":" ++ seconds ++ "." ++ milliSeconds ] ]
+                , LayoutGrid.cell [ LayoutGrid.span1Phone, LayoutGrid.span2Tablet, LayoutGrid.span3Desktop ] []
+                ]
+            ]
         ]
 
 
 viewButtons : Model -> Html Msg
 viewButtons model =
-    div [ tailwind <| withClasses ["grid", "grid-cols-1", "sm:grid-cols-3"] [] ]
-        [ startPauseButton model.paused
-        , button
-            [ tailwind <|
-                withClasses [ "bg-red-500", "hover:bg-red-700" ] <|
-                    [ text_white, font_bold, m_3, py_2, sm py_5, px_4, rounded ]
-            , onClick Reset
+    LayoutGrid.layoutGrid []
+        [ LayoutGrid.inner []
+            [ LayoutGrid.cell [ LayoutGrid.span4Phone, LayoutGrid.span8Tablet, LayoutGrid.span6Desktop ] [ startPauseButton model.paused ]
+            , LayoutGrid.cell [ LayoutGrid.span2Phone, LayoutGrid.span4Tablet, LayoutGrid.span3Desktop ] [ resetButton model.setting.initialTimeSeconds ]
+            , LayoutGrid.cell [ LayoutGrid.span2Phone, LayoutGrid.span4Tablet, LayoutGrid.span3Desktop ] [ initialTimeSlider model.setting.initialTimeSeconds ]
             ]
-            [ text "Reset" ]
         ]
-
-
-fullWidthButton : List Tailwind.Classes.TailwindClass
-fullWidthButton =
-    withClasses ["sm:col-span-2"] [ text_white, font_bold, m_3, py_5, px_4, rounded, w_auto ]
-
 
 startPauseButton : Bool -> Html Msg
 startPauseButton paused =
     if paused then
-        button
-            [ tailwind <|
-                withClasses [ "bg-blue-500", "hover:bg-blue-700" ] <|
-                    fullWidthButton
-            , onClick Start
-            ]
-            [ text "Start" ]
+        Button.raised
+            (Button.config
+                |> Button.setOnClick Start
+                |> Button.setIcon (Just "play_arrow")
+                |> Button.setAttributes [ colorSuccess, style "width" "100%" ]
+            )
+            "開始"
 
     else
-        button
-            [ tailwind <|
-                withClasses [ "bg-orange-500", "hover:bg-orange-700" ] <|
-                    fullWidthButton
-            , onClick Pause
-            ]
-            [ text "Pause" ]
+        Button.raised
+            (Button.config
+                |> Button.setOnClick Pause
+                |> Button.setIcon (Just "pause")
+                |> Button.setAttributes [ colorWarning, style "width" "100%" ]
+            )
+            "一時停止"
 
 
-viewSetting : Setting -> Html Msg
-viewSetting setting =
-    div [ tailwind <| withClasses [ "grid", "grid-cols-1", "sm:grid-cols-2" ] [ border, m_4 ] ]
-        [ div [] [ text "a" ]
-        , div [] [ text "b" ]
-        ]
+resetButton : Int -> Html Msg
+resetButton initialTimeSeconds = 
+    Button.raised
+        (Button.config
+            |> Button.setOnClick Reset
+            |> Button.setIcon (Just "clear")
+            |> Button.setAttributes [ colorError, style "width" "100%" ]
+        )
+        <| String.fromInt initialTimeSeconds ++ "秒にリセット"
+
+
+colorSuccess : Html.Attribute Msg
+colorSuccess =
+    style "background-color" "#28a745"
+
+
+colorWarning : Html.Attribute Msg
+colorWarning =
+    style "background-color" "#eb9e05"
+
+
+colorError : Html.Attribute Msg
+colorError =
+    style "background-color" "#dc3545"
+
+
+
+initialTimeSlider : Int -> Html Msg
+initialTimeSlider initialTimeSeconds =
+    Slider.slider
+        (Slider.config
+            |> Slider.setMin (Just -30)
+            |> Slider.setMax (Just 30)
+            |> Slider.setStep (Just 1)
+            |> Slider.setDiscrete True
+            |> Slider.setValue (Just <| toFloat initialTimeSeconds)
+            |> Slider.setOnInput (round >> UpdateResetTime)
+        )
 
 
 subscriptions : Model -> Sub Msg
@@ -174,7 +225,7 @@ subscriptions model =
         Sub.none
 
     else
-        Time.every 67 tick
+        Time.every 33 tick
 
 
 main : Program () Model Msg
