@@ -85,7 +85,7 @@ setInitialTimeSeconds millis setting =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "Timer"
+    { title = "Simple Stopwatch"
     , body =
         [ div []
             [ viewHeader
