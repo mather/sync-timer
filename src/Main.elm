@@ -110,12 +110,11 @@ viewHeader =
 viewTimer : Int -> Html Msg
 viewTimer millis =
     let
-        sign =
+        signVisibility = 
             if millis < 0 then
-                "-"
-
+                "visible"
             else
-                " "
+                "hidden"
 
         unsignedMillis =
             abs millis
@@ -137,7 +136,11 @@ viewTimer millis =
             [ LayoutGrid.inner []
                 [ LayoutGrid.cell [ LayoutGrid.span1Phone, LayoutGrid.span2Tablet, LayoutGrid.span3Desktop ] []
                 , LayoutGrid.cell [ LayoutGrid.span4Tablet, LayoutGrid.span6Desktop, Typography.headline3, LayoutGrid.alignMiddle ]
-                    [ div [style "padding" "50px 0" ] [ text <| sign ++ hours ++ ":" ++ minutes ++ ":" ++ seconds ++ "." ++ milliSeconds ] ]
+                    [ div [style "padding" "50px 0" ] 
+                        [ span [style "visibility" signVisibility ] [text "-"]
+                        , span [] [text <|  hours ++ ":" ++ minutes ++ ":" ++ seconds ++ "." ++ milliSeconds ]
+                        ]
+                    ]
                 , LayoutGrid.cell [ LayoutGrid.span1Phone, LayoutGrid.span2Tablet, LayoutGrid.span3Desktop ] []
                 ]
             ]
@@ -180,7 +183,7 @@ resetButton initialTimeSeconds =
     Button.raised
         (Button.config
             |> Button.setOnClick Reset
-            |> Button.setIcon (Just "clear")
+            --|> Button.setIcon (Just "clear")
             |> Button.setAttributes [ colorError, style "width" "100%" ]
         )
         <| String.fromInt initialTimeSeconds ++ "秒にリセット"
