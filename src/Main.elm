@@ -1,11 +1,12 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, button, div, h1, nav, span, text)
-import Html.Attributes exposing (style)
+import Html exposing (Html, a, button, div, footer, h1, img, nav, span, text)
+import Html.Attributes exposing (class, href, src, style)
 import Html.Events exposing (onClick)
 import Material.Button as Button
 import Material.FormField as FormField
+import Material.Icon as Icon
 import Material.LayoutGrid as LayoutGrid
 import Material.Slider as Slider
 import Material.Theme as Theme
@@ -13,6 +14,8 @@ import Material.TopAppBar as TopAppBar
 import Material.Typography as Typography
 import String exposing (toInt)
 import Time
+import Html.Attributes exposing (width)
+import Html.Attributes exposing (height)
 
 
 type alias Model =
@@ -91,6 +94,7 @@ view model =
             [ viewHeader
             , viewTimer model.timeMillis
             , viewButtons model
+            , viewFooter
             ]
         ]
     }
@@ -110,9 +114,10 @@ viewHeader =
 viewTimer : Int -> Html Msg
 viewTimer millis =
     let
-        signVisibility = 
+        signVisibility =
             if millis < 0 then
                 "visible"
+
             else
                 "hidden"
 
@@ -136,9 +141,9 @@ viewTimer millis =
             [ LayoutGrid.inner []
                 [ LayoutGrid.cell [ LayoutGrid.span1Phone, LayoutGrid.span2Tablet, LayoutGrid.span3Desktop ] []
                 , LayoutGrid.cell [ LayoutGrid.span4Tablet, LayoutGrid.span6Desktop, Typography.headline3, LayoutGrid.alignMiddle ]
-                    [ div [style "padding" "50px 0" ] 
-                        [ span [style "visibility" signVisibility ] [text "-"]
-                        , span [] [text <|  hours ++ ":" ++ minutes ++ ":" ++ seconds ++ "." ++ milliSeconds ]
+                    [ div [ style "padding" "50px 0" ]
+                        [ span [ style "visibility" signVisibility ] [ text "-" ]
+                        , span [] [ text <| hours ++ ":" ++ minutes ++ ":" ++ seconds ++ "." ++ milliSeconds ]
                         ]
                     ]
                 , LayoutGrid.cell [ LayoutGrid.span1Phone, LayoutGrid.span2Tablet, LayoutGrid.span3Desktop ] []
@@ -156,6 +161,7 @@ viewButtons model =
             , LayoutGrid.cell [ LayoutGrid.span2Phone, LayoutGrid.span4Tablet, LayoutGrid.span3Desktop ] [ initialTimeSlider model.setting.initialTimeSeconds ]
             ]
         ]
+
 
 startPauseButton : Bool -> Html Msg
 startPauseButton paused =
@@ -179,14 +185,16 @@ startPauseButton paused =
 
 
 resetButton : Int -> Html Msg
-resetButton initialTimeSeconds = 
+resetButton initialTimeSeconds =
     Button.raised
         (Button.config
             |> Button.setOnClick Reset
             --|> Button.setIcon (Just "clear")
             |> Button.setAttributes [ colorError, style "width" "100%" ]
         )
-        <| String.fromInt initialTimeSeconds ++ "秒にリセット"
+    <|
+        String.fromInt initialTimeSeconds
+            ++ "秒にリセット"
 
 
 colorSuccess : Html.Attribute Msg
@@ -204,7 +212,6 @@ colorError =
     style "background-color" "#dc3545"
 
 
-
 initialTimeSlider : Int -> Html Msg
 initialTimeSlider initialTimeSeconds =
     Slider.slider
@@ -216,6 +223,15 @@ initialTimeSlider initialTimeSeconds =
             |> Slider.setValue (Just <| toFloat initialTimeSeconds)
             |> Slider.setOnInput (round >> UpdateResetTime)
         )
+
+
+viewFooter : Html Msg
+viewFooter =
+    footer []
+        [ span [ style "margin" "0 5px" ] [ a [ href "https://twitter.com/mather314" ] [ img [ src "twitter.svg", width 30, height 30 ] [] ] ]
+        , span [ style "margin" "0 5px" ] [ a [ href "https://github.com/mather/simple-stopwatch" ] [ img [ src "github.svg", width 30, height 30 ] [] ] ]
+        , span [ style "margin" "0 5px" ] [ text "© mather" ]
+        ]
 
 
 subscriptions : Model -> Sub Msg
