@@ -168,16 +168,16 @@ viewButtons model =
 startPauseButton : Bool -> Html Msg
 startPauseButton paused =
     if paused then
-        button 
+        button
             (classes [ "btn", "bg-green-500", "hover:bg-green-400", "rounded-lg", "w-full", "p-2", "text-white", "shadow-lg" ] ++ [ onClick Start ])
-            [ i (classes ["fas", "fa-play", "mr-2"]) []
+            [ i (classes [ "fas", "fa-play", "mr-2" ]) []
             , text "開始"
             ]
 
     else
-        button 
+        button
             (classes [ "btn", "bg-yellow-600", "hover:bg-yellow-500", "rounded-lg", "w-full", "p-2", "text-white", "shadow-lg" ] ++ [ onClick Pause ])
-            [ i (classes ["fas", "fa-pause", "mr-2"]) []
+            [ i (classes [ "fas", "fa-pause", "mr-2" ]) []
             , text "一時停止"
             ]
 
