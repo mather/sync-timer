@@ -16,19 +16,14 @@ jobs:
         uses: actions/setup-node@v2-beta
         with:
           node-version: '14'
-      - name: Install create-elm-app
-        run: npm install -g create-elm-app
-      - name: Cache elm-stuff
-        uses: actions/cache@v2.1.0
-        with:
-          path: elm-stuff
-          key: elm.json
+      - name: Install npm packages
+        run: npm install
       - name: Test
-        run: elm-app test
+        run: npm test
       - name: Build static files
-        run: elm-app build
+        run: npm run build
       - name: Deploy to Github Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
-          publish_dir: ./build
+          publish_dir: ./dist
