@@ -1,12 +1,9 @@
-name: Deploy
+name: Check
 
-on:
-  push:
-    branches:
-      - master
+on: pull_request
 
 jobs:
-  deploy:
+  check:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,8 +21,3 @@ jobs:
         run: npm test
       - name: Build static files
         run: npm run build
-      - name: Deploy to Github Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          personal_token: ${{ secrets.PERSONAL_TOKEN }}
-          publish_dir: ./dist

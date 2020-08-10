@@ -1,8 +1,9 @@
-import './main.css';
-import { Elm } from './Main.elm';
+import "../css/main.css";
+import { Elm } from '../src/Main.elm';
 import * as serviceWorker from './serviceWorker';
+import '@fortawesome/fontawesome-free/css/all.css'
 
-Elm.Main.init({
+const app = Elm.Main.init({
   node: document.getElementById('root')
 });
 
