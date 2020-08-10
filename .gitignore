@@ -1,8 +1,9 @@
 # Distribution
 build/
+dist/
 
 # elm-package generated files
-elm-stuff
+elm-stuff/
 
 # elm-repl generated files
 repl-temp-*
@@ -12,3 +13,7 @@ node_modules
 
 # Desktop Services Store on macOS
 .DS_Store
+
+# Parcel build cache
+.cache/
+

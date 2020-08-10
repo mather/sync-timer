@@ -1,21 +1,11 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, a, button, div, footer, h1, img, nav, span, text)
-import Html.Attributes exposing (class, href, src, style)
-import Html.Events exposing (onClick)
-import Material.Button as Button
-import Material.FormField as FormField
-import Material.Icon as Icon
-import Material.LayoutGrid as LayoutGrid
-import Material.Slider as Slider
-import Material.Theme as Theme
-import Material.TopAppBar as TopAppBar
-import Material.Typography as Typography
+import Html exposing (Attribute, Html, a, button, div, footer, h1, i, input, nav, span, text)
+import Html.Attributes as A exposing (class, href, max, min, step, style, type_, value)
+import Html.Events exposing (onClick, onInput)
 import String exposing (toInt)
 import Time
-import Html.Attributes exposing (width)
-import Html.Attributes exposing (height)
 
 
 type alias Model =
@@ -29,6 +19,29 @@ type alias Model =
 type alias Setting =
     { initialTimeSeconds : Int
     , bgColor : BgColor
+    }
+
+
+type alias DisplayTime =
+    { isMinus : Bool
+    , hours : Int
+    , minutes : Int
+    , seconds : Int
+    , milliSeconds : Int
+    }
+
+
+millisToDisplayTime : Int -> DisplayTime
+millisToDisplayTime t =
+    let
+        absTime =
+            abs t
+    in
+    { isMinus = t < 0
+    , hours = absTime // 3600000
+    , minutes = absTime // 60000 |> modBy 60
+    , seconds = absTime // 1000 |> modBy 60
+    , milliSeconds = modBy 1000 absTime
     }
 
 
@@ -86,11 +99,16 @@ setInitialTimeSeconds millis setting =
     { setting | initialTimeSeconds = millis }
 
 
+classes : List String -> List (Attribute Msg)
+classes xs =
+    List.map class xs
+
+
 view : Model -> Browser.Document Msg
 view model =
     { title = "Simple Stopwatch"
     , body =
-        [ div []
+        [ div (classes [ "min-h-screen", "flex", "flex-col" ])
             [ viewHeader
             , viewTimer model.timeMillis
             , viewButtons model
@@ -102,135 +120,112 @@ view model =
 
 viewHeader : Html Msg
 viewHeader =
-    TopAppBar.regular (TopAppBar.config |> TopAppBar.setFixed True)
-        [ TopAppBar.row []
-            [ TopAppBar.section
-                [ TopAppBar.alignStart ]
-                [ span [ TopAppBar.title ] [ text "Simple Stopwatch" ] ]
-            ]
+    nav (classes [ "flex", "items-center", "bg-black", "p-4", "w-full" ])
+        [ div (classes [ "flex", "items-center", "text-white" ])
+            [ h1 (classes [ "text-2xl", "lg:text-3xl" ]) [ text "Simple Stopwatch" ] ]
         ]
 
 
 viewTimer : Int -> Html Msg
 viewTimer millis =
     let
+        displayTime =
+            millisToDisplayTime millis
+
         signVisibility =
-            if millis < 0 then
+            if displayTime.isMinus then
                 "visible"
 
             else
                 "hidden"
 
-        unsignedMillis =
-            abs millis
-
-        hours =
-            unsignedMillis // 3600000 |> String.fromInt |> String.padLeft 2 '0'
-
-        minutes =
-            unsignedMillis // 60000 |> modBy 60 |> String.fromInt |> String.padLeft 2 '0'
-
-        seconds =
-            unsignedMillis // 1000 |> modBy 60 |> String.fromInt |> String.padLeft 2 '0'
-
-        milliSeconds =
-            modBy 1000 unsignedMillis |> String.fromInt |> String.padLeft 3 '0'
+        padZero =
+            \w -> String.fromInt >> String.padLeft w '0'
     in
-    div [ TopAppBar.fixedAdjust ]
-        [ LayoutGrid.layoutGrid []
-            [ LayoutGrid.inner []
-                [ LayoutGrid.cell [ LayoutGrid.span1Phone, LayoutGrid.span2Tablet, LayoutGrid.span3Desktop ] []
-                , LayoutGrid.cell [ LayoutGrid.span4Tablet, LayoutGrid.span6Desktop, Typography.headline3, LayoutGrid.alignMiddle ]
-                    [ div [ style "padding" "50px 0" ]
-                        [ span [ style "visibility" signVisibility ] [ text "-" ]
-                        , span [] [ text <| hours ++ ":" ++ minutes ++ ":" ++ seconds ++ "." ++ milliSeconds ]
-                        ]
-                    ]
-                , LayoutGrid.cell [ LayoutGrid.span1Phone, LayoutGrid.span2Tablet, LayoutGrid.span3Desktop ] []
-                ]
+    div (classes [ "flex", "content-center", "flex-wrap", "justify-center", "h-56", "m-3" ])
+        [ div (classes [ "text-center", "text-5xl", "sm:text-6xl", "font-mono" ])
+            [ span [ style "visibility" signVisibility ] [ text "-" ]
+            , span [] [ text <| padZero 2 displayTime.hours ]
+            , span [] [ text ":" ]
+            , span [] [ text <| padZero 2 displayTime.minutes ]
+            , span [] [ text ":" ]
+            , span [] [ text <| padZero 2 displayTime.seconds ]
+            , span (classes [ "text-3xl", "sm:text-4xl" ]) [ text "." ]
+            , span (classes [ "text-3xl", "sm:text-4xl" ]) [ text <| padZero 3 displayTime.milliSeconds ]
             ]
         ]
 
 
 viewButtons : Model -> Html Msg
 viewButtons model =
-    LayoutGrid.layoutGrid []
-        [ LayoutGrid.inner []
-            [ LayoutGrid.cell [ LayoutGrid.span4Phone, LayoutGrid.span8Tablet, LayoutGrid.span6Desktop ] [ startPauseButton model.paused ]
-            , LayoutGrid.cell [ LayoutGrid.span2Phone, LayoutGrid.span4Tablet, LayoutGrid.span3Desktop ] [ resetButton model.setting.initialTimeSeconds ]
-            , LayoutGrid.cell [ LayoutGrid.span2Phone, LayoutGrid.span4Tablet, LayoutGrid.span3Desktop ] [ initialTimeSlider model.setting.initialTimeSeconds ]
-            ]
+    div (classes [ "flex-grow", "grid", "grid-cols-1", "sm:grid-cols-2", "lg:grid-cols-4", "gap-3", "m-3" ])
+        [ div (classes [ "col-span-1", "sm:col-span-2" ]) [ startPauseButton model.paused ]
+        , div (classes [ "col-span-1" ]) [ resetButton model.setting.initialTimeSeconds ]
+        , div (classes [ "col-span-1" ]) [ initialTimeSlider model.setting.initialTimeSeconds ]
         ]
 
 
 startPauseButton : Bool -> Html Msg
 startPauseButton paused =
     if paused then
-        Button.raised
-            (Button.config
-                |> Button.setOnClick Start
-                |> Button.setIcon (Just "play_arrow")
-                |> Button.setAttributes [ colorSuccess, style "width" "100%" ]
-            )
-            "開始"
+        button 
+            (classes [ "btn", "bg-green-500", "hover:bg-green-400", "rounded-lg", "w-full", "p-2", "text-white", "shadow-lg" ] ++ [ onClick Start ])
+            [ i (classes ["fas", "fa-play", "mr-2"]) []
+            , text "開始"
+            ]
 
     else
-        Button.raised
-            (Button.config
-                |> Button.setOnClick Pause
-                |> Button.setIcon (Just "pause")
-                |> Button.setAttributes [ colorWarning, style "width" "100%" ]
-            )
-            "一時停止"
+        button 
+            (classes [ "btn", "bg-yellow-600", "hover:bg-yellow-500", "rounded-lg", "w-full", "p-2", "text-white", "shadow-lg" ] ++ [ onClick Pause ])
+            [ i (classes ["fas", "fa-pause", "mr-2"]) []
+            , text "一時停止"
+            ]
 
 
 resetButton : Int -> Html Msg
 resetButton initialTimeSeconds =
-    Button.raised
-        (Button.config
-            |> Button.setOnClick Reset
-            --|> Button.setIcon (Just "clear")
-            |> Button.setAttributes [ colorError, style "width" "100%" ]
-        )
-    <|
-        String.fromInt initialTimeSeconds
-            ++ "秒にリセット"
-
-
-colorSuccess : Html.Attribute Msg
-colorSuccess =
-    style "background-color" "#28a745"
-
-
-colorWarning : Html.Attribute Msg
-colorWarning =
-    style "background-color" "#eb9e05"
-
-
-colorError : Html.Attribute Msg
-colorError =
-    style "background-color" "#dc3545"
+    button (classes [ "btn", "bg-red-700", "hover:bg-red-500", "text-white", "rounded-lg", "w-full", "p-2", "shadow-lg" ] ++ [ onClick Reset ]) [ text <| String.fromInt initialTimeSeconds ++ "秒にリセット" ]
 
 
 initialTimeSlider : Int -> Html Msg
 initialTimeSlider initialTimeSeconds =
-    Slider.slider
-        (Slider.config
-            |> Slider.setMin (Just -30)
-            |> Slider.setMax (Just 30)
-            |> Slider.setStep (Just 1)
-            |> Slider.setDiscrete True
-            |> Slider.setValue (Just <| toFloat initialTimeSeconds)
-            |> Slider.setOnInput (round >> UpdateResetTime)
-        )
+    div (classes [ "flex", "items-center", "justify-left", "h-full" ])
+        [ div (classes [ "text-right" ]) [ text "-30秒" ]
+        , div (classes [ "mx-2" ])
+            [ input
+                [ type_ "range"
+                , A.min "-30"
+                , A.max "30"
+                , step "1"
+                , onInput (String.toInt >> Maybe.withDefault 0 >> UpdateResetTime)
+                , value <| String.fromInt initialTimeSeconds
+                ]
+                []
+            ]
+        , div (classes [ "text-left" ]) [ text "30秒" ]
+        ]
 
 
 viewFooter : Html Msg
 viewFooter =
-    footer []
-        [ span [ style "margin" "0 5px" ] [ a [ href "https://twitter.com/mather314" ] [ img [ src "twitter.svg", width 30, height 30 ] [] ] ]
-        , span [ style "margin" "0 5px" ] [ a [ href "https://github.com/mather/simple-stopwatch" ] [ img [ src "github.svg", width 30, height 30 ] [] ] ]
-        , span [ style "margin" "0 5px" ] [ text "© mather" ]
+    footer (classes [ "flex", "flex-wrap", "justify-center", "my-3", "items-center" ])
+        [ div (classes [ "m-2" ]) [ text "© mather" ]
+        , div (classes [ "m-2" ])
+            [ a [ href "https://twitter.com/mather314" ]
+                [ button (classes [ "btn", "bg-blue-500", "rounded", "px-3", "py-2", "text-white" ])
+                    [ i (classes [ "fab", "fa-twitter", "mr-1" ]) []
+                    , text "mather314"
+                    ]
+                ]
+            ]
+        , div (classes [ "m-2" ])
+            [ a [ href "https://github.com/mather/simple-stopwatch" ]
+                [ button (classes [ "btn", "bg-black", "rounded", "px-3", "py-2", "text-white" ])
+                    [ i (classes [ "fab", "fa-github", "mr-1" ]) []
+                    , text "mather"
+                    ]
+                ]
+            ]
         ]
 
 

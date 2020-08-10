@@ -1,0 +1,32 @@
+{
+  "name": "simple-stopwatch",
+  "version": "1.0.0",
+  "description": "シンプルなストップウォッチです。",
+  "main": "index.html",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.14.0",
+    "autoprefixer": "^9.8.6",
+    "elm-hot": "^1.1.5",
+    "node-elm-compiler": "^5.0.4",
+    "parcel-bundler": "^1.12.4",
+    "postcss-modules": "^3.2.0",
+    "tailwindcss": "^1.6.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mather/simple-stopwatch.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mather/simple-stopwatch/issues"
+  },
+  "homepage": "https://github.com/mather/simple-stopwatch#readme"
+}
