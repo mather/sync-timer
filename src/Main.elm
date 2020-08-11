@@ -143,7 +143,7 @@ viewTimer millis =
             \w -> String.fromInt >> String.padLeft w '0'
     in
     div (classes [ "flex", "content-center", "flex-wrap", "justify-center", "py-20", "m-3" ])
-        [ div (classes [ "text-center", "text-5xl", "sm:text-6xl", "font-sans" ])
+        [ div (classes [ "text-center", "text-5xl", "sm:text-6xl", "font-mono" ])
             [ span [ style "visibility" signVisibility ] [ text "-" ]
             , span [] [ text <| padZero 2 displayTime.hours ]
             , span [] [ text ":" ]
