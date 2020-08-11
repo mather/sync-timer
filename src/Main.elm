@@ -142,7 +142,7 @@ viewTimer millis =
         padZero =
             \w -> String.fromInt >> String.padLeft w '0'
     in
-    div (classes [ "flex", "content-center", "flex-wrap", "justify-center", "h-56", "m-3" ])
+    div (classes [ "flex", "content-center", "flex-wrap", "justify-center", "py-20", "m-3" ])
         [ div (classes [ "text-center", "text-5xl", "sm:text-6xl", "font-mono" ])
             [ span [ style "visibility" signVisibility ] [ text "-" ]
             , span [] [ text <| padZero 2 displayTime.hours ]
@@ -158,10 +158,12 @@ viewTimer millis =
 
 viewButtons : Model -> Html Msg
 viewButtons model =
-    div (classes [ "flex-grow", "grid", "grid-cols-1", "sm:grid-cols-2", "lg:grid-cols-4", "gap-3", "m-3" ])
-        [ div (classes [ "col-span-1", "sm:col-span-2" ]) [ startPauseButton model.paused ]
-        , div (classes [ "col-span-1" ]) [ resetButton model.setting.initialTimeSeconds ]
-        , div (classes [ "col-span-1" ]) [ initialTimeSlider model.setting.initialTimeSeconds ]
+    div (classes [ "flex-grow" ])
+        [ div (classes [ "grid", "grid-cols-1", "sm:grid-cols-2", "lg:grid-cols-4", "gap-3", "m-3" ])
+            [ div (classes [ "col-span-1", "sm:col-span-2" ]) [ startPauseButton model.paused ]
+            , div (classes [ "col-span-1" ]) [ resetButton model.setting.initialTimeSeconds ]
+            , div (classes [ "col-span-1" ]) [ initialTimeSlider model.setting.initialTimeSeconds ]
+            ]
         ]
 
 
@@ -189,7 +191,7 @@ resetButton initialTimeSeconds =
 
 initialTimeSlider : Int -> Html Msg
 initialTimeSlider initialTimeSeconds =
-    div (classes [ "flex", "items-center", "justify-left", "h-full" ])
+    div (classes [ "flex", "items-center", "justify-left", "m-2" ])
         [ div (classes [ "text-right" ]) [ text "-30秒" ]
         , div (classes [ "mx-2" ])
             [ input
