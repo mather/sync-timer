@@ -12,3 +12,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: "D-DIN-bold";
+  src: url("D-DIN-Bold.woff2") format("woff2");
+}

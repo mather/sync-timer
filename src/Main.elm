@@ -1,8 +1,8 @@
 module Main exposing (DisplayTime, main, millisToDisplayTime)
 
 import Browser
-import Html exposing (Attribute, Html, a, button, div, footer, h1, i, input, nav, span, text)
-import Html.Attributes as A exposing (class, href, max, min, step, style, type_, value)
+import Html exposing (Attribute, Html, a, button, datalist, div, footer, h1, i, input, nav, option, span, text)
+import Html.Attributes as A exposing (attribute, class, href, id, list, max, min, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import String exposing (toInt)
 import Time
@@ -138,22 +138,50 @@ viewTimer millis =
 
             else
                 "hidden"
-
-        padZero =
-            \w -> String.fromInt >> String.padLeft w '0'
     in
     div (classes [ "flex", "content-center", "flex-wrap", "justify-center", "py-20", "m-3" ])
-        [ div (classes [ "text-center", "text-5xl", "sm:text-6xl", "font-mono" ])
-            [ span [ style "visibility" signVisibility ] [ text "-" ]
-            , span [] [ text <| padZero 2 displayTime.hours ]
-            , span [] [ text ":" ]
-            , span [] [ text <| padZero 2 displayTime.minutes ]
-            , span [] [ text ":" ]
-            , span [] [ text <| padZero 2 displayTime.seconds ]
-            , span (classes [ "text-3xl", "sm:text-4xl" ]) [ text "." ]
-            , span (classes [ "text-3xl", "sm:text-4xl" ]) [ text <| padZero 3 displayTime.milliSeconds ]
-            ]
+        [ div (classes [ "text-center", "text-6xl", "sm:text-8xl", "font-din" ])
+            (List.concat
+                [ [ span (style "visibility" signVisibility :: styleBigDidits) [ text "-" ] ]
+                , renderBig2Digits displayTime.hours
+                , [ span styleBigDidits [ text ":" ] ]
+                , renderBig2Digits displayTime.minutes
+                , [ span styleBigDidits [ text ":" ] ]
+                , renderBig2Digits displayTime.seconds
+                , [ span styleSmallDigits [ text "." ] ]
+                , renderSmall3Digits displayTime.milliSeconds
+                ]
+            )
         ]
+
+
+padZero : Int -> Int -> String
+padZero wt digits =
+    String.fromInt digits |> String.padLeft wt '0'
+
+
+styleBigDidits : List (Html.Attribute Msg)
+styleBigDidits =
+    classes [ "inline-block", "w-1ex" ]
+
+
+styleSmallDigits : List (Html.Attribute Msg)
+styleSmallDigits =
+    classes [ "inline-block", "w-1ex", "text-2xl", "sm:text-5xl" ]
+
+
+renderBig2Digits : Int -> List (Html Msg)
+renderBig2Digits digits =
+    padZero 2 digits
+        |> String.split ""
+        |> List.map (\d -> span styleBigDidits [ text d ])
+
+
+renderSmall3Digits : Int -> List (Html Msg)
+renderSmall3Digits digits =
+    padZero 3 digits
+        |> String.split ""
+        |> List.map (\d -> span styleSmallDigits [ text d ])
 
 
 viewButtons : Model -> Html Msg
