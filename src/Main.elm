@@ -1,4 +1,4 @@
-module Main exposing (main)
+module Main exposing (DisplayTime, main, millisToDisplayTime)
 
 import Browser
 import Html exposing (Attribute, Html, a, button, div, footer, h1, i, input, nav, span, text)
