@@ -13,6 +13,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * "D-DIN" is licensed under the SIL Open Font License 1.1
+ * https://www.1001fonts.com/d-din-font.html
+ * http://scripts.sil.org/OFL
+ */
 @font-face {
   font-family: "D-DIN-bold";
   src: url("D-DIN-Bold.woff2") format("woff2");
