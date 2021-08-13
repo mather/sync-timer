@@ -1,4 +1,3 @@
-import "../css/main.css";
 import { Elm } from "../src/Main.elm";
 import * as serviceWorker from "./serviceWorker";
 import "@fortawesome/fontawesome-free/css/all.css";
