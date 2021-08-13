@@ -1,7 +1,7 @@
 module Main exposing (DisplayTime, main, millisToDisplayTime)
 
 import Browser
-import Html exposing (Attribute, Html, a, button, datalist, div, footer, h1, i, input, nav, option, span, text)
+import Html exposing (Attribute, Html, a, button, datalist, div, footer, h1, i, input, li, main_, nav, option, span, strong, text, ul)
 import Html.Attributes as A exposing (attribute, class, href, id, list, max, min, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import String exposing (toInt)
@@ -99,16 +99,11 @@ setInitialTimeSeconds millis setting =
     { setting | initialTimeSeconds = millis }
 
 
-classes : List String -> List (Attribute Msg)
-classes xs =
-    List.map class xs
-
-
 view : Model -> Browser.Document Msg
 view model =
     { title = "Simple Stopwatch"
     , body =
-        [ div (classes [ "min-h-screen", "flex", "flex-col" ])
+        [ main_ [ class "container" ]
             [ viewHeader
             , viewTimer model.timeMillis
             , viewButtons model
@@ -120,9 +115,9 @@ view model =
 
 viewHeader : Html Msg
 viewHeader =
-    nav (classes [ "flex", "items-center", "bg-black", "p-4", "w-full" ])
-        [ div (classes [ "flex", "items-center", "text-white" ])
-            [ h1 (classes [ "text-2xl", "lg:text-3xl" ]) [ text "Simple Stopwatch" ] ]
+    nav []
+        [ ul []
+            [ li [] [ h1 [] [ text "Simple Stopwatch" ] ] ]
         ]
 
 
@@ -139,20 +134,18 @@ viewTimer millis =
             else
                 "hidden"
     in
-    div (classes [ "flex", "content-center", "flex-wrap", "justify-center", "py-20", "m-3" ])
-        [ div (classes [ "text-center", "text-6xl", "sm:text-8xl", "font-din" ])
-            (List.concat
-                [ [ span (style "visibility" signVisibility :: styleBigDidits) [ text "-" ] ]
-                , renderBig2Digits displayTime.hours
-                , [ span styleBigDidits [ text ":" ] ]
-                , renderBig2Digits displayTime.minutes
-                , [ span styleBigDidits [ text ":" ] ]
-                , renderBig2Digits displayTime.seconds
-                , [ span styleSmallDigits [ text "." ] ]
-                , renderSmall3Digits displayTime.milliSeconds
-                ]
-            )
-        ]
+    div [ class "timer" ]
+        (List.concat
+            [ [ span (style "visibility" signVisibility :: styleBigDidits) [ text "-" ] ]
+            , renderBig2Digits displayTime.hours
+            , [ span styleBigDidits [ text ":" ] ]
+            , renderBig2Digits displayTime.minutes
+            , [ span styleBigDidits [ text ":" ] ]
+            , renderBig2Digits displayTime.seconds
+            , [ span styleSmallDigits [ text "." ] ]
+            , renderSmall3Digits displayTime.milliSeconds
+            ]
+        )
 
 
 padZero : Int -> Int -> String
@@ -162,12 +155,12 @@ padZero wt digits =
 
 styleBigDidits : List (Html.Attribute Msg)
 styleBigDidits =
-    classes [ "inline-block", "w-1ex" ]
+    [ class "digit" ]
 
 
 styleSmallDigits : List (Html.Attribute Msg)
 styleSmallDigits =
-    classes [ "inline-block", "w-1ex", "text-2xl", "sm:text-5xl" ]
+    [ class "digit", class "small" ]
 
 
 renderBig2Digits : Int -> List (Html Msg)
@@ -186,11 +179,11 @@ renderSmall3Digits digits =
 
 viewButtons : Model -> Html Msg
 viewButtons model =
-    div (classes [ "flex-grow" ])
-        [ div (classes [ "grid", "grid-cols-1", "sm:grid-cols-2", "lg:grid-cols-4", "gap-3", "m-3" ])
-            [ div (classes [ "col-span-1", "sm:col-span-2" ]) [ startPauseButton model.paused ]
-            , div (classes [ "col-span-1" ]) [ resetButton model.setting.initialTimeSeconds ]
-            , div (classes [ "col-span-1" ]) [ initialTimeSlider model.setting.initialTimeSeconds ]
+    div []
+        [ div [] [ startPauseButton model.paused ]
+        , div [ class "grid" ]
+            [ div [] [ resetButton model.setting.initialTimeSeconds ]
+            , div [] [ initialTimeSlider model.setting.initialTimeSeconds ]
             ]
         ]
 
@@ -199,62 +192,53 @@ startPauseButton : Bool -> Html Msg
 startPauseButton paused =
     if paused then
         button
-            (classes [ "btn", "bg-green-500", "hover:bg-green-400", "rounded-lg", "w-full", "p-2", "text-white", "shadow-lg" ] ++ [ onClick Start ])
-            [ i (classes [ "fas", "fa-play", "mr-2" ]) []
+            [ onClick Start ]
+            [ i [ class "fas", class "fa-play", class "button-icon" ] []
             , text "開始"
             ]
 
     else
         button
-            (classes [ "btn", "bg-yellow-600", "hover:bg-yellow-500", "rounded-lg", "w-full", "p-2", "text-white", "shadow-lg" ] ++ [ onClick Pause ])
-            [ i (classes [ "fas", "fa-pause", "mr-2" ]) []
+            [ onClick Pause ]
+            [ i [ class "fas", class "fa-pause", class "button-icon" ] []
             , text "一時停止"
             ]
 
 
 resetButton : Int -> Html Msg
 resetButton initialTimeSeconds =
-    button (classes [ "btn", "bg-red-700", "hover:bg-red-500", "text-white", "rounded-lg", "w-full", "p-2", "shadow-lg" ] ++ [ onClick Reset ]) [ text <| String.fromInt initialTimeSeconds ++ "秒にリセット" ]
+    button [ class "secondary", onClick Reset ]
+        [ text <| String.fromInt initialTimeSeconds ++ " 秒にリセット" ]
 
 
 initialTimeSlider : Int -> Html Msg
 initialTimeSlider initialTimeSeconds =
-    div (classes [ "flex", "items-center", "justify-left", "m-2" ])
-        [ div (classes [ "text-right" ]) [ text "-30秒" ]
-        , div (classes [ "mx-2" ])
-            [ input
-                [ type_ "range"
-                , A.min "-30"
-                , A.max "30"
-                , step "1"
-                , onInput (String.toInt >> Maybe.withDefault 0 >> UpdateResetTime)
-                , value <| String.fromInt initialTimeSeconds
-                ]
-                []
+    div []
+        [ input
+            [ type_ "range"
+            , A.min "-30"
+            , A.max "30"
+            , step "1"
+            , class "delay-slider"
+            , onInput (String.toInt >> Maybe.withDefault 0 >> UpdateResetTime)
+            , value <| String.fromInt initialTimeSeconds
+            , attribute "data-tooltip" "タイマーの開始時間"
             ]
-        , div (classes [ "text-left" ]) [ text "30秒" ]
+            []
         ]
 
 
 viewFooter : Html Msg
 viewFooter =
-    footer (classes [ "flex", "flex-wrap", "justify-center", "my-3", "items-center" ])
-        [ div (classes [ "m-2" ]) [ text "© mather" ]
-        , div (classes [ "m-2" ])
-            [ a [ href "https://twitter.com/mather314" ]
-                [ button (classes [ "btn", "bg-blue-500", "rounded", "px-3", "py-2", "text-white" ])
-                    [ i (classes [ "fab", "fa-twitter", "mr-1" ]) []
-                    , text "mather314"
-                    ]
-                ]
+    footer []
+        [ span [] [ text "© mather" ]
+        , a [ href "https://twitter.com/mather314", attribute "role" "button", class "outline" ]
+            [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
+            , text "mather314"
             ]
-        , div (classes [ "m-2" ])
-            [ a [ href "https://github.com/mather/simple-stopwatch" ]
-                [ button (classes [ "btn", "bg-black", "rounded", "px-3", "py-2", "text-white" ])
-                    [ i (classes [ "fab", "fa-github", "mr-1" ]) []
-                    , text "mather"
-                    ]
-                ]
+        , a [ href "https://github.com/mather/simple-stopwatch", attribute "role" "button", class "outline", class "secondary" ]
+            [ i [ class "fab", class "fa-github", class "button-icon" ] []
+            , text "mather"
             ]
         ]
 
