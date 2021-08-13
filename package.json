@@ -20,6 +20,7 @@
     "tailwindcss": "^1.6.2"
   },
   "scripts": {
+    "dev": "parcel index.html",
     "check-format": "elm-format --validate src/*.elm",
     "test": "elm-test",
     "build": "parcel build --public-url '/simple-stopwatch/' index.html"
