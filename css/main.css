@@ -36,9 +36,6 @@
   background-color: #0000ff;
 }
 
-.timer .small {
-  font-size: 3rem;
-}
 .timer .digit {
   display: inline-block;
   width: 0.9ex;
