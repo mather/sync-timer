@@ -2,22 +2,24 @@
   "name": "simple-stopwatch",
   "version": "1.0.0",
   "description": "シンプルなストップウォッチです。",
-  "main": "index.html",
   "directories": {
     "test": "tests"
   },
   "dependencies": {},
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",
+    "@parcel/packager-raw-url": "^2.0.0-rc.0",
+    "@parcel/transformer-elm": "^2.0.0-rc.0",
+    "@parcel/transformer-webmanifest": "^2.0.0-rc.0",
     "elm": "^0.19.1-5",
     "elm-format": "^0.8.5",
     "elm-hot": "^1.1.6",
     "elm-test": "^0.19.1-revision7",
     "node-elm-compiler": "^5.0.6",
-    "parcel-bundler": "^1.12.5"
+    "parcel": "^2.0.0-rc.0"
   },
   "scripts": {
-    "dev": "parcel index.html",
+    "dev": "parcel serve js/index.js index.html",
     "check-format": "elm-format --validate src/*.elm",
     "test": "elm-test",
     "build": "parcel build --public-url '/simple-stopwatch/' index.html"
