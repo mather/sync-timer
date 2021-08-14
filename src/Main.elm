@@ -1,8 +1,8 @@
 module Main exposing (DisplayTime, main, millisToDisplayTime)
 
 import Browser
-import Html exposing (Html, a, button, div, footer, h1, i, input, li, main_, nav, span, text, ul)
-import Html.Attributes as A exposing (attribute, class, href, step, style, type_, value)
+import Html exposing (Attribute, Html, a, button, details, div, footer, h1, i, input, li, main_, nav, span, summary, text, ul, strong, label)
+import Html.Attributes as A exposing (attribute, class, href, name, step, style, type_, value, for, id, checked)
 import Html.Events exposing (onClick, onInput)
 import Time
 
@@ -11,13 +11,13 @@ type alias Model =
     { timeMillis : Int
     , paused : Bool
     , current : Maybe Time.Posix
+    , initialTimeSeconds : Int
     , setting : Setting
     }
 
 
 type alias Setting =
-    { initialTimeSeconds : Int
-    , bgColor : BgColor
+    { bgColor : BgColor
     }
 
 
@@ -45,9 +45,9 @@ millisToDisplayTime t =
 
 
 type BgColor
-    = White
-    | Green
-    | Blue
+    = Transparent
+    | GreenBack
+    | BlueBack
 
 
 initialModel : flag -> ( Model, Cmd Msg )
@@ -55,9 +55,9 @@ initialModel _ =
     ( { timeMillis = 0
       , paused = True
       , current = Nothing
+      , initialTimeSeconds = 0
       , setting =
-            { initialTimeSeconds = 0
-            , bgColor = White
+            { bgColor = Transparent
             }
       }
     , Cmd.none
@@ -70,6 +70,7 @@ type Msg
     | Reset
     | UpdateTime Int Time.Posix
     | UpdateResetTime Int
+    | SetBgColor BgColor
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -84,18 +85,20 @@ update msg model =
             ( { model | paused = True, current = Nothing }, Cmd.none )
 
         Reset ->
-            ( { model | timeMillis = model.setting.initialTimeSeconds * 1000, paused = True, current = Nothing }, Cmd.none )
+            ( { model | timeMillis = model.initialTimeSeconds * 1000, paused = True, current = Nothing }, Cmd.none )
 
         UpdateTime millis current ->
             ( { model | timeMillis = millis, current = Just current }, Cmd.none )
 
         UpdateResetTime millis ->
-            ( { model | setting = setInitialTimeSeconds millis model.setting }, Cmd.none )
+            ( { model | initialTimeSeconds = millis }, Cmd.none )
 
+        SetBgColor bgColor ->
+            ( {model | setting = updateBgColor bgColor model.setting}, Cmd.none)
 
-setInitialTimeSeconds : Int -> Setting -> Setting
-setInitialTimeSeconds millis setting =
-    { setting | initialTimeSeconds = millis }
+updateBgColor : BgColor -> Setting -> Setting
+updateBgColor bgColor setting = 
+    { setting | bgColor = bgColor }
 
 
 view : Model -> Browser.Document Msg
@@ -104,8 +107,9 @@ view model =
     , body =
         [ main_ [ class "container" ]
             [ viewHeader
-            , viewTimer model.timeMillis
-            , viewButtons model
+            , viewTimerDigits model.timeMillis model.setting.bgColor
+            , viewTimerControls model
+            , viewTimerSettings model.setting
             , viewFooter
             ]
         ]
@@ -120,8 +124,8 @@ viewHeader =
         ]
 
 
-viewTimer : Int -> Html Msg
-viewTimer millis =
+viewTimerDigits : Int -> BgColor -> Html Msg
+viewTimerDigits millis bgColor =
     let
         displayTime =
             millisToDisplayTime millis
@@ -133,7 +137,7 @@ viewTimer millis =
             else
                 "hidden"
     in
-    div [ class "timer" ]
+    div [ class "timer", timerBgColorClass bgColor ]
         (List.concat
             [ [ span (style "visibility" signVisibility :: styleBigDidits) [ text "-" ] ]
             , renderBig2Digits displayTime.hours
@@ -146,6 +150,12 @@ viewTimer millis =
             ]
         )
 
+timerBgColorClass : BgColor -> Attribute Msg
+timerBgColorClass bgColor = 
+    case bgColor of
+        Transparent -> class "transparent"
+        GreenBack -> class "greenback"
+        BlueBack -> class "blueback"
 
 padZero : Int -> Int -> String
 padZero wt digits =
@@ -176,13 +186,13 @@ renderSmall3Digits digits =
         |> List.map (\d -> span styleSmallDigits [ text d ])
 
 
-viewButtons : Model -> Html Msg
-viewButtons model =
+viewTimerControls : Model -> Html Msg
+viewTimerControls model =
     div []
         [ div [] [ startPauseButton model.paused ]
         , div [ class "grid" ]
-            [ div [] [ resetButton model.setting.initialTimeSeconds ]
-            , div [] [ initialTimeSlider model.setting.initialTimeSeconds ]
+            [ div [] [ resetButton model.initialTimeSeconds ]
+            , div [] [ initialTimeSlider model.initialTimeSeconds ]
             ]
         ]
 
@@ -208,6 +218,22 @@ resetButton : Int -> Html Msg
 resetButton initialTimeSeconds =
     button [ class "secondary", onClick Reset ]
         [ text <| String.fromInt initialTimeSeconds ++ " 秒にリセット" ]
+
+
+viewTimerSettings : Setting -> Html Msg
+viewTimerSettings setting =
+    details [ class "settings" ]
+        [ summary [] [ text "タイマーの表示設定" ]
+        , div [ ]
+            [ strong [] [ text "背景色" ]
+            , input [ type_ "radio", id "transparent",  name "bgcolor", checked <| setting.bgColor == Transparent, onClick <| SetBgColor Transparent ] []
+            , label [for "transparent"] [ text "なし" ]
+            , input [ type_ "radio", id "greenback",  name "bgcolor", checked <| setting.bgColor == GreenBack, onClick <| SetBgColor GreenBack ] []
+            , label [for "greenback"] [ text "グリーンバック" ]
+            , input [ type_ "radio", id "blueback",  name "bgcolor", checked <| setting.bgColor == BlueBack, onClick <| SetBgColor BlueBack ] []
+            , label [for "blueback"] [ text "ブルーバック" ]
+            ]
+        ]
 
 
 initialTimeSlider : Int -> Html Msg

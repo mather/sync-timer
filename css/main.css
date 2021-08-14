@@ -28,12 +28,20 @@
   margin: 3rem 0;
 }
 
+.timer.greenback {
+  background-color: #00ff00;
+}
+
+.timer.blueback {
+  background-color: #0000ff;
+}
+
 .timer .small {
   font-size: 3rem;
 }
 .timer .digit {
   display: inline-block;
-  width: 1ex;
+  width: 0.9ex;
 }
 
 .button-icon {
@@ -52,4 +60,17 @@ a[role="button"] {
 
 .delay-slider {
   vertical-align: middle;
+}
+
+details.settings {
+  margin: 1em;
+  padding: 1ex;
+}
+
+.settings div {
+  margin: 1em 1em;
+}
+
+.settings input {
+  margin-left: 2em;
 }
