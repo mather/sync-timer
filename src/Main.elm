@@ -1,9 +1,9 @@
 module Main exposing (DisplayTime, main, millisToDisplayTime)
 
 import Browser
-import Html exposing (Attribute, Html, a, button, details, div, footer, h1, i, input, li, main_, nav, span, summary, text, ul, strong, label)
-import Html.Attributes as A exposing (attribute, class, href, name, step, style, type_, value, for, id, checked)
-import Html.Events exposing (onClick, onInput)
+import Html exposing (Attribute, Html, a, button, details, div, footer, h1, i, input, label, li, main_, nav, span, strong, summary, text, ul)
+import Html.Attributes as A exposing (attribute, checked, class, for, href, id, name, step, style, type_, value)
+import Html.Events exposing (onCheck, onClick, onInput)
 import Time
 
 
@@ -18,6 +18,7 @@ type alias Model =
 
 type alias Setting =
     { bgColor : BgColor
+    , showMillis : Bool
     }
 
 
@@ -58,6 +59,7 @@ initialModel _ =
       , initialTimeSeconds = 0
       , setting =
             { bgColor = Transparent
+            , showMillis = False
             }
       }
     , Cmd.none
@@ -71,6 +73,7 @@ type Msg
     | UpdateTime Int Time.Posix
     | UpdateResetTime Int
     | SetBgColor BgColor
+    | SetShowMillis Bool
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -94,11 +97,20 @@ update msg model =
             ( { model | initialTimeSeconds = millis }, Cmd.none )
 
         SetBgColor bgColor ->
-            ( {model | setting = updateBgColor bgColor model.setting}, Cmd.none)
+            ( { model | setting = updateBgColor bgColor model.setting }, Cmd.none )
+
+        SetShowMillis showMillis ->
+            ( { model | setting = updateShowMillis showMillis model.setting }, Cmd.none )
+
 
 updateBgColor : BgColor -> Setting -> Setting
-updateBgColor bgColor setting = 
+updateBgColor bgColor setting =
     { setting | bgColor = bgColor }
+
+
+updateShowMillis : Bool -> Setting -> Setting
+updateShowMillis showMillis setting =
+    { setting | showMillis = showMillis }
 
 
 view : Model -> Browser.Document Msg
@@ -107,7 +119,7 @@ view model =
     , body =
         [ main_ [ class "container" ]
             [ viewHeader
-            , viewTimerDigits model.timeMillis model.setting.bgColor
+            , viewTimerDigits model.timeMillis model.setting
             , viewTimerControls model
             , viewTimerSettings model.setting
             , viewFooter
@@ -124,8 +136,8 @@ viewHeader =
         ]
 
 
-viewTimerDigits : Int -> BgColor -> Html Msg
-viewTimerDigits millis bgColor =
+viewTimerDigits : Int -> Setting -> Html Msg
+viewTimerDigits millis setting =
     let
         displayTime =
             millisToDisplayTime millis
@@ -137,25 +149,42 @@ viewTimerDigits millis bgColor =
             else
                 "hidden"
     in
-    div [ class "timer", timerBgColorClass bgColor ]
-        (List.concat
+    div [ class "timer", timerBgColorClass setting.bgColor ]
+        (List.concat <|
             [ [ span (style "visibility" signVisibility :: styleBigDidits) [ text "-" ] ]
             , renderBig2Digits displayTime.hours
             , [ span styleBigDidits [ text ":" ] ]
             , renderBig2Digits displayTime.minutes
             , [ span styleBigDidits [ text ":" ] ]
             , renderBig2Digits displayTime.seconds
-            , [ span styleSmallDigits [ text "." ] ]
-            , renderSmall3Digits displayTime.milliSeconds
             ]
+                ++ viewTimerDigitsMillis displayTime.milliSeconds setting.showMillis
         )
 
+
+viewTimerDigitsMillis : Int -> Bool -> List (List (Html Msg))
+viewTimerDigitsMillis milliSeconds showDigit =
+    if showDigit then
+        [ [ span styleSmallDigits [ text "." ] ]
+        , renderSmall3Digits milliSeconds
+        ]
+
+    else
+        []
+
+
 timerBgColorClass : BgColor -> Attribute Msg
-timerBgColorClass bgColor = 
+timerBgColorClass bgColor =
     case bgColor of
-        Transparent -> class "transparent"
-        GreenBack -> class "greenback"
-        BlueBack -> class "blueback"
+        Transparent ->
+            class "transparent"
+
+        GreenBack ->
+            class "greenback"
+
+        BlueBack ->
+            class "blueback"
+
 
 padZero : Int -> Int -> String
 padZero wt digits =
@@ -224,14 +253,19 @@ viewTimerSettings : Setting -> Html Msg
 viewTimerSettings setting =
     details [ class "settings" ]
         [ summary [] [ text "タイマーの表示設定" ]
-        , div [ ]
+        , div []
             [ strong [] [ text "背景色" ]
-            , input [ type_ "radio", id "transparent",  name "bgcolor", checked <| setting.bgColor == Transparent, onClick <| SetBgColor Transparent ] []
-            , label [for "transparent"] [ text "なし" ]
-            , input [ type_ "radio", id "greenback",  name "bgcolor", checked <| setting.bgColor == GreenBack, onClick <| SetBgColor GreenBack ] []
-            , label [for "greenback"] [ text "グリーンバック" ]
-            , input [ type_ "radio", id "blueback",  name "bgcolor", checked <| setting.bgColor == BlueBack, onClick <| SetBgColor BlueBack ] []
-            , label [for "blueback"] [ text "ブルーバック" ]
+            , input [ type_ "radio", id "transparent", name "bgcolor", checked <| setting.bgColor == Transparent, onClick <| SetBgColor Transparent ] []
+            , label [ for "transparent" ] [ text "なし" ]
+            , input [ type_ "radio", id "greenback", name "bgcolor", checked <| setting.bgColor == GreenBack, onClick <| SetBgColor GreenBack ] []
+            , label [ for "greenback" ] [ text "グリーンバック" ]
+            , input [ type_ "radio", id "blueback", name "bgcolor", checked <| setting.bgColor == BlueBack, onClick <| SetBgColor BlueBack ] []
+            , label [ for "blueback" ] [ text "ブルーバック" ]
+            ]
+        , div []
+            [ strong [] [ text "ミリ秒の表示" ]
+            , input [ type_ "checkbox", id "show-millis", name "show-millis", checked setting.showMillis, onCheck SetShowMillis ] []
+            , label [ for "show-millis" ] [ text "表示する" ]
             ]
         ]
 
