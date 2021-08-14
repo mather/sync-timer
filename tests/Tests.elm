@@ -27,7 +27,6 @@ expected1 =
     , hours = 3
     , minutes = 20
     , seconds = 18
-    , milliSeconds = 729
     }
 
 
@@ -37,5 +36,4 @@ expected2 =
     , hours = 0
     , minutes = 0
     , seconds = 5
-    , milliSeconds = 0
     }
