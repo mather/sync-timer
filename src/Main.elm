@@ -142,7 +142,7 @@ viewHeader =
             ]
         , ul []
             [ li []
-                [ a [ class "twitter-share-icon", attribute "role" "button", href twitterIntentUrl ]
+                [ a [ class "twitter-share-icon", attribute "role" "button", href twitterIntentUrl, A.target "_blank", A.rel "noopener noreferrer" ]
                     [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
                     , text "Share"
                     ]
@@ -159,7 +159,7 @@ viewHeader =
 twitterIntentUrl : String
 twitterIntentUrl =
     "https://twitter.com/intent/tweet"
-        ++ "?text=同時視聴配信用タイマー"
+        ++ "?text=Sync+Timer+同時視聴配信用タイマー"
         ++ "&url=https%3A%2F%2Fmather.github.io%2Fsimple-stopwatch%2F"
         ++ "&via=mather314"
 
@@ -325,11 +325,11 @@ viewFooter : Html Msg
 viewFooter =
     footer []
         [ span [] [ text "© mather" ]
-        , a [ href "https://twitter.com/mather314", attribute "role" "button", class "outline" ]
+        , a [ href "https://twitter.com/mather314", attribute "role" "button", class "outline", A.target "_blank", A.rel "noopener noreferrer" ]
             [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
             , text "mather314"
             ]
-        , a [ href "https://github.com/mather/simple-stopwatch", attribute "role" "button", class "outline", class "secondary" ]
+        , a [ href "https://github.com/mather/simple-stopwatch", attribute "role" "button", class "outline", class "secondary", A.target "_blank", A.rel "noopener noreferrer" ]
             [ i [ class "fab", class "fa-github", class "button-icon" ] []
             , text "mather"
             ]
