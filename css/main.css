@@ -68,6 +68,17 @@ details.settings {
   margin: 1em 1em;
 }
 
-.settings input {
+.settings input[type="radio"] {
   margin-left: 2em;
+}
+
+#fgColorPicker {
+  margin-left: 2em;
+  display: inline-block;
+  width: 7em;
+}
+#fgColorText {
+  margin-left: 2em;
+  display: inline-block;
+  width: 7em;
 }
