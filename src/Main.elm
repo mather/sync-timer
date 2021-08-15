@@ -18,6 +18,7 @@ type alias Model =
 
 type alias Setting =
     { bgColor : BgColor
+    , fgColor : String
     }
 
 
@@ -56,6 +57,7 @@ initialModel _ =
       , initialTimeSeconds = 0
       , setting =
             { bgColor = Transparent
+            , fgColor = "#415462"
             }
       }
     , Cmd.none
@@ -69,6 +71,7 @@ type Msg
     | UpdateTime Int Time.Posix
     | UpdateResetTime Int
     | SetBgColor BgColor
+    | SetFgColor String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -94,10 +97,18 @@ update msg model =
         SetBgColor bgColor ->
             ( { model | setting = updateBgColor bgColor model.setting }, Cmd.none )
 
+        SetFgColor fgColor ->
+            ( { model | setting = updateFgColor fgColor model.setting }, Cmd.none )
+
 
 updateBgColor : BgColor -> Setting -> Setting
 updateBgColor bgColor setting =
     { setting | bgColor = bgColor }
+
+
+updateFgColor : String -> Setting -> Setting
+updateFgColor fgColor setting =
+    { setting | fgColor = fgColor }
 
 
 view : Model -> Browser.Document Msg
@@ -136,7 +147,7 @@ viewTimerDigits millis setting =
             else
                 "hidden"
     in
-    div [ class "timer", timerBgColorClass setting.bgColor ]
+    div [ class "timer", timerBgColorClass setting.bgColor, style "color" setting.fgColor ]
         (List.concat <|
             [ [ span (style "visibility" signVisibility :: styleBigDidits) [ text "-" ] ]
             , renderBig2Digits displayTime.hours
@@ -216,6 +227,11 @@ viewTimerSettings : Setting -> Html Msg
 viewTimerSettings setting =
     details [ class "settings" ]
         [ summary [] [ text "タイマーの表示設定" ]
+        , div []
+            [ strong [] [ text "文字色" ]
+            , input [ type_ "color", id "fgColorPicker", value setting.fgColor, onInput SetFgColor ] []
+            , input [ type_ "text", id "fgColorText", value setting.fgColor, onInput SetFgColor ] []
+            ]
         , div []
             [ strong [] [ text "背景色" ]
             , input [ type_ "radio", id "transparent", name "bgcolor", checked <| setting.bgColor == Transparent, onClick <| SetBgColor Transparent ] []
