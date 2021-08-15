@@ -5,7 +5,6 @@
   "directories": {
     "test": "tests"
   },
-  "dependencies": {},
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@parcel/packager-raw-url": "^2.0.0-rc.0",
@@ -19,7 +18,7 @@
     "parcel": "^2.0.0-rc.0"
   },
   "scripts": {
-    "dev": "parcel serve js/index.js index.html",
+    "dev": "parcel serve index.html",
     "check-format": "elm-format --validate src/*.elm",
     "test": "elm-test",
     "build": "parcel build --public-url '/simple-stopwatch/' index.html"
