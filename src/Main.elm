@@ -1,7 +1,7 @@
 module Main exposing (DisplayTime, main, millisToDisplayTime)
 
 import Browser
-import Html exposing (Attribute, Html, a, button, details, div, footer, h1, i, input, label, li, main_, nav, span, strong, summary, text, ul)
+import Html exposing (Attribute, Html, a, article, button, details, div, footer, h1, h2, i, input, label, li, main_, nav, p, span, strong, summary, text, ul)
 import Html.Attributes as A exposing (attribute, checked, class, for, href, id, name, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Time
@@ -12,6 +12,7 @@ type alias Model =
     , paused : Bool
     , current : Maybe Time.Posix
     , initialTimeSeconds : Int
+    , showHelp : Bool
     , setting : Setting
     }
 
@@ -50,10 +51,11 @@ type BgColor
 
 initialModel : flag -> ( Model, Cmd Msg )
 initialModel _ =
-    ( { timeMillis = 0
+    ( { timeMillis = -10000
       , paused = True
       , current = Nothing
-      , initialTimeSeconds = 0
+      , initialTimeSeconds = -10
+      , showHelp = False
       , setting =
             { bgColor = Transparent
             }
@@ -69,6 +71,7 @@ type Msg
     | UpdateTime Int Time.Posix
     | UpdateResetTime Int
     | SetBgColor BgColor
+    | ShowHelp Bool
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -94,6 +97,9 @@ update msg model =
         SetBgColor bgColor ->
             ( { model | setting = updateBgColor bgColor model.setting }, Cmd.none )
 
+        ShowHelp showHelp ->
+            ( { model | showHelp = showHelp }, Cmd.none )
+
 
 updateBgColor : BgColor -> Setting -> Setting
 updateBgColor bgColor setting =
@@ -102,10 +108,11 @@ updateBgColor bgColor setting =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "Simple Stopwatch"
+    { title = "Sync Timer - 同時視聴用タイマー"
     , body =
         [ main_ [ class "container" ]
-            [ viewHeader
+            [ viewHelpModal model.showHelp
+            , viewHeader
             , viewTimerDigits model.timeMillis model.setting
             , viewTimerControls model
             , viewTimerSettings model.setting
@@ -119,7 +126,60 @@ viewHeader : Html Msg
 viewHeader =
     nav []
         [ ul []
-            [ li [] [ h1 [] [ text "Simple Stopwatch" ] ] ]
+            [ li []
+                [ h1 [] [ text "Sync Timer" ] ]
+            ]
+        , ul []
+            [ li []
+                [ a [ class "twitter-share-icon", attribute "role" "button", href twitterIntentUrl ]
+                    [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
+                    , text "Share"
+                    ]
+                ]
+            , li []
+                [ a [ class "help-icon", onClick <| ShowHelp True ]
+                    [ i [ class "fas", class "fa-question-circle" ] []
+                    ]
+                ]
+            ]
+        ]
+
+
+twitterIntentUrl : String
+twitterIntentUrl =
+    "https://twitter.com/intent/tweet"
+        ++ "?text=同時視聴配信用タイマー"
+        ++ "&url=https%3A%2F%2Fmather.github.io%2Fsimple-stopwatch%2F"
+        ++ "&via=mather314"
+
+
+viewHelpModal : Bool -> Html Msg
+viewHelpModal visible =
+    let
+        classes =
+            if visible then
+                [ style "display" "block" ]
+
+            else
+                []
+    in
+    div (id "help-modal" :: classes)
+        [ div
+            [ id "help-modal-bg" ]
+            [ article [ id "help-content" ]
+                [ h2 [] [ text "このサービスについて" ]
+                , p [] [ text "同時視聴配信などでタイミングを合わせるためのタイマーとしてご利用いただけます" ]
+                , ul []
+                    [ li [] [ text "視聴者と同期させるためマイナスの秒数から開始できます(-30 〜 30)" ]
+                    , li [] [ text "タイマー表示は固定幅です" ]
+                    , li [] [ text "文字色、背景色(GB, BB)が変更できます" ]
+                    ]
+                , p [] [ text "不具合や改善要望などがあれば Twitter, Github へご連絡ください" ]
+                , footer []
+                    [ button [ onClick <| ShowHelp False ] [ text "閉じる" ]
+                    ]
+                ]
+            ]
         ]
 
 
