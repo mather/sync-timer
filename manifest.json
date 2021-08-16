@@ -1,10 +1,10 @@
 {
-  "short_name": "Simple Stopwatch",
-  "name": "Simple Stopwatch",
+  "short_name": "Sync Timer",
+  "name": "Sync Timer - 同時視聴用タイマー",
   "icons": [
     {
       "src": "favicon.ico",
-      "sizes": "192x192",
+      "sizes": "48x48",
       "type": "image/png"
     }
   ],
