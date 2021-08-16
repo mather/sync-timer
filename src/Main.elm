@@ -160,7 +160,7 @@ twitterIntentUrl : String
 twitterIntentUrl =
     "https://twitter.com/intent/tweet"
         ++ "?text=Sync+Timer+同時視聴配信用タイマー"
-        ++ "&url=https%3A%2F%2Fmather.github.io%2Fsimple-stopwatch%2F"
+        ++ "&url=https%3A%2F%2Fsync-timer.netlify.app%2F"
         ++ "&via=mather314"
 
 
