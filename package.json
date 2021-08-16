@@ -5,6 +5,9 @@
   "directories": {
     "test": "tests"
   },
+  "engines": {
+    "node": "14.x"
+  },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@parcel/packager-raw-url": "^2.0.0-rc.0",
