@@ -2,6 +2,8 @@
   "name": "simple-stopwatch",
   "version": "1.0.0",
   "description": "シンプルなストップウォッチです。",
+  "author": "Eisuke Kuwahata",
+  "private": true,
   "directories": {
     "test": "tests"
   },
@@ -21,16 +23,9 @@
     "dev": "parcel serve index.html",
     "check-format": "elm-format --validate src/*.elm",
     "test": "elm-test",
-    "build": "parcel build --public-url '/simple-stopwatch/' index.html"
+    "build": "parcel build index.html"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mather/simple-stopwatch.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/mather/simple-stopwatch/issues"
-  },
-  "homepage": "https://github.com/mather/simple-stopwatch#readme"
+  "targets": {
+    "main": false
+  }
 }
