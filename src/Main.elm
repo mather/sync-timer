@@ -5,6 +5,7 @@ import Html exposing (Attribute, Html, a, article, button, details, div, footer,
 import Html.Attributes as A exposing (attribute, checked, class, for, href, id, name, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Time
+import Url.Builder as UB
 
 
 type alias Model =
@@ -158,10 +159,12 @@ viewHeader =
 
 twitterIntentUrl : String
 twitterIntentUrl =
-    "https://twitter.com/intent/tweet"
-        ++ "?text=Sync+Timer+同時視聴配信用タイマー"
-        ++ "&url=https%3A%2F%2Fsync-timer.netlify.app%2F"
-        ++ "&via=mather314"
+    UB.crossOrigin "https://twitter.com"
+        [ "intent", "tweet" ]
+        [ UB.string "text" "Sync Timer 同時視聴配信用タイマー"
+        , UB.string "url" "https://sync-timer.netlify.app/"
+        , UB.string "via" "mather314"
+        ]
 
 
 viewHelpModal : Bool -> Html Msg
