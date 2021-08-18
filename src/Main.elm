@@ -134,6 +134,11 @@ view model =
     }
 
 
+role : String -> Attribute Msg
+role =
+    attribute "role"
+
+
 viewHeader : Html Msg
 viewHeader =
     nav []
@@ -143,7 +148,7 @@ viewHeader =
             ]
         , ul []
             [ li []
-                [ a [ class "twitter-share-icon", attribute "role" "button", href twitterIntentUrl, A.target "_blank", A.rel "noopener noreferrer" ]
+                [ a [ class "twitter-share-icon", role "button", href twitterIntentUrl, A.target "_blank", A.rel "noopener noreferrer" ]
                     [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
                     , text "Share"
                     ]
@@ -328,11 +333,11 @@ viewFooter : Html Msg
 viewFooter =
     footer []
         [ span [] [ text "© mather" ]
-        , a [ href "https://twitter.com/mather314", attribute "role" "button", class "outline", A.target "_blank", A.rel "noopener noreferrer" ]
+        , a [ href "https://twitter.com/mather314", role "button", class "outline", A.target "_blank", A.rel "noopener noreferrer" ]
             [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
             , text "mather314"
             ]
-        , a [ href "https://github.com/mather/simple-stopwatch", attribute "role" "button", class "outline", class "secondary", A.target "_blank", A.rel "noopener noreferrer" ]
+        , a [ href "https://github.com/mather/simple-stopwatch", role "button", class "outline", class "secondary", A.target "_blank", A.rel "noopener noreferrer" ]
             [ i [ class "fab", class "fa-github", class "button-icon" ] []
             , text "mather"
             ]
