@@ -1,7 +1,7 @@
 module Main exposing (DisplayTime, main, millisToDisplayTime)
 
 import Browser
-import Html exposing (Attribute, Html, a, article, button, details, div, footer, h1, h2, i, input, label, li, main_, nav, p, span, strong, summary, text, ul)
+import Html exposing (Attribute, Html, a, article, button, details, div, footer, h1, h2, h3, h4, i, input, label, li, main_, nav, option, p, select, span, strong, summary, text, ul)
 import Html.Attributes as A exposing (attribute, checked, class, for, href, id, name, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Time
@@ -59,7 +59,7 @@ initialModel _ =
       , initialTimeSeconds = -10
       , showHelp = False
       , setting =
-            { bgColor = Transparent
+            { bgColor = GreenBack
             , fgColor = "#415462"
             }
       }
@@ -125,9 +125,8 @@ view model =
         [ main_ [ class "container" ]
             [ viewHelpModal model.showHelp
             , viewHeader
-            , viewTimerDigits model.timeMillis model.setting
+            , viewTimer model
             , viewTimerControls model
-            , viewTimerSettings model.setting
             , viewFooter
             ]
         ]
@@ -202,6 +201,14 @@ viewHelpModal visible =
         ]
 
 
+viewTimer : Model -> Html Msg
+viewTimer model =
+    div [ class "grid" ]
+        [ viewTimerDigits model.timeMillis model.setting
+        , viewTimerSettings model.setting
+        ]
+
+
 viewTimerDigits : Int -> Setting -> Html Msg
 viewTimerDigits millis setting =
     let
@@ -217,11 +224,11 @@ viewTimerDigits millis setting =
     in
     div [ class "timer", timerBgColorClass setting.bgColor, style "color" setting.fgColor ]
         (List.concat <|
-            [ [ span (style "visibility" signVisibility :: styleBigDidits) [ text "-" ] ]
+            [ [ span (style "visibility" signVisibility :: styleTimerDigit) [ text "-" ] ]
             , renderBig2Digits displayTime.hours
-            , [ span styleBigDidits [ text ":" ] ]
+            , [ span styleTimerSep [ text ":" ] ]
             , renderBig2Digits displayTime.minutes
-            , [ span styleBigDidits [ text ":" ] ]
+            , [ span styleTimerSep [ text ":" ] ]
             , renderBig2Digits displayTime.seconds
             ]
         )
@@ -245,8 +252,13 @@ padZero wt digits =
     String.fromInt digits |> String.padLeft wt '0'
 
 
-styleBigDidits : List (Html.Attribute Msg)
-styleBigDidits =
+styleTimerSep : List (Html.Attribute Msg)
+styleTimerSep =
+    [ class "sep" ]
+
+
+styleTimerDigit : List (Html.Attribute Msg)
+styleTimerDigit =
     [ class "digit" ]
 
 
@@ -254,7 +266,7 @@ renderBig2Digits : Int -> List (Html Msg)
 renderBig2Digits digits =
     padZero 2 digits
         |> String.split ""
-        |> List.map (\d -> span styleBigDidits [ text d ])
+        |> List.map (\d -> span styleTimerDigit [ text d ])
 
 
 viewTimerControls : Model -> Html Msg
@@ -293,34 +305,32 @@ resetButton initialTimeSeconds =
 
 viewTimerSettings : Setting -> Html Msg
 viewTimerSettings setting =
-    details [ class "settings" ]
-        [ summary [] [ text "タイマーの表示設定" ]
-        , div []
+    div [ class "settings" ]
+        [ div []
             [ strong [] [ text "文字色" ]
             , input [ type_ "color", id "fgColorPicker", value setting.fgColor, onInput SetFgColor ] []
             , input [ type_ "text", id "fgColorText", value setting.fgColor, onInput SetFgColor ] []
             ]
         , div []
             [ strong [] [ text "背景色" ]
+            , input [ type_ "radio", id "greenback", name "bgcolor", checked <| setting.bgColor == GreenBack, onClick <| SetBgColor GreenBack ] []
+            , label [ for "greenback" ] [ text "GB" ]
+            , input [ type_ "radio", id "blueback", name "bgcolor", checked <| setting.bgColor == BlueBack, onClick <| SetBgColor BlueBack ] []
+            , label [ for "blueback" ] [ text "BB" ]
             , input [ type_ "radio", id "transparent", name "bgcolor", checked <| setting.bgColor == Transparent, onClick <| SetBgColor Transparent ] []
             , label [ for "transparent" ] [ text "なし" ]
-            , input [ type_ "radio", id "greenback", name "bgcolor", checked <| setting.bgColor == GreenBack, onClick <| SetBgColor GreenBack ] []
-            , label [ for "greenback" ] [ text "グリーンバック" ]
-            , input [ type_ "radio", id "blueback", name "bgcolor", checked <| setting.bgColor == BlueBack, onClick <| SetBgColor BlueBack ] []
-            , label [ for "blueback" ] [ text "ブルーバック" ]
             ]
         ]
 
 
 initialTimeSlider : Int -> Html Msg
 initialTimeSlider initialTimeSeconds =
-    div []
+    div [ class "delay-slider" ]
         [ input
             [ type_ "range"
             , A.min "-30"
             , A.max "30"
             , step "1"
-            , class "delay-slider"
             , onInput (String.toInt >> Maybe.withDefault 0 >> UpdateResetTime)
             , value <| String.fromInt initialTimeSeconds
             , attribute "data-tooltip" "タイマーの開始時間"
