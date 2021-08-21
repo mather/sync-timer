@@ -23,9 +23,8 @@
   font-family: "D-DIN-bold";
   font-size: 5rem;
   text-align: center;
-  max-height: 50%;
   padding: 3rem 0;
-  margin: 3rem 0;
+  margin: 1rem 0;
 }
 
 .timer.greenback {
@@ -38,7 +37,12 @@
 
 .timer .digit {
   display: inline-block;
-  width: 0.9ex;
+  width: 1ex;
+}
+
+.timer .sep {
+  display: inline-block;
+  width: 0.5ex;
 }
 
 .button-icon {
@@ -55,13 +59,14 @@ a[role="button"] {
   margin-right: 1em;
 }
 
+/*
 .delay-slider {
-  vertical-align: middle;
+  margin: auto 0;
 }
+*/
 
-details.settings {
-  margin: 1em;
-  padding: 1ex;
+.settings {
+  margin: auto 0;
 }
 
 .settings div {
