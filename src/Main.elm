@@ -20,6 +20,7 @@ type alias Model =
     , initialTimeSeconds : Int
     , showHelp : Bool
     , setting : Setting
+    , key : Browser.Navigation.Key
     }
 
 
@@ -78,7 +79,7 @@ parser =
 
 
 initialModel : flag -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
-initialModel _ url _ =
+initialModel _ url key =
     let
         initParams =
             UP.parse parser url
@@ -101,6 +102,7 @@ initialModel _ url _ =
             { bgColor = initialBgColor
             , fgColor = initialFgColor
             }
+      , key = key
       }
     , Cmd.none
     )
@@ -116,6 +118,24 @@ type Msg
     | SetFgColor String
     | ShowHelp Bool
     | NoOp
+
+
+bgString : BgColor -> String
+bgString bg =
+    case bg of
+        GreenBack ->
+            "gb"
+
+        BlueBack ->
+            "bb"
+
+        Transparent ->
+            "tp"
+
+
+urlFromConfig : String -> BgColor -> Int -> String
+urlFromConfig fg bg initialTimeSeconds =
+    UB.toQuery [ UB.string "fg" fg, UB.string "bg" <| bgString bg, UB.int "init" initialTimeSeconds ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -136,13 +156,19 @@ update msg model =
             ( { model | timeMillis = millis, current = Just current }, Cmd.none )
 
         UpdateResetTime millis ->
-            ( { model | initialTimeSeconds = millis }, Cmd.none )
+            ( { model | initialTimeSeconds = millis }
+            , Browser.Navigation.replaceUrl model.key <| urlFromConfig model.setting.fgColor model.setting.bgColor millis
+            )
 
         SetBgColor bgColor ->
-            ( { model | setting = updateBgColor bgColor model.setting }, Cmd.none )
+            ( { model | setting = updateBgColor bgColor model.setting }
+            , Browser.Navigation.replaceUrl model.key <| urlFromConfig model.setting.fgColor bgColor model.initialTimeSeconds
+            )
 
         SetFgColor fgColor ->
-            ( { model | setting = updateFgColor fgColor model.setting }, Cmd.none )
+            ( { model | setting = updateFgColor fgColor model.setting }
+            , Browser.Navigation.replaceUrl model.key <| urlFromConfig fgColor model.setting.bgColor model.initialTimeSeconds
+            )
 
         ShowHelp showHelp ->
             ( { model | showHelp = showHelp }, Cmd.none )
