@@ -1,11 +1,16 @@
 module Main exposing (DisplayTime, main, millisToDisplayTime)
 
-import Browser
+import Browser exposing (UrlRequest)
+import Browser.Navigation
+import Dict
 import Html exposing (Attribute, Html, a, article, button, div, footer, h1, h2, i, input, label, li, main_, nav, p, span, strong, text, ul)
 import Html.Attributes as A exposing (attribute, checked, class, for, href, id, name, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Time
+import Url
 import Url.Builder as UB
+import Url.Parser as UP
+import Url.Parser.Query as Query
 
 
 type alias Model =
@@ -51,16 +56,50 @@ type BgColor
     | BlueBack
 
 
-initialModel : flag -> ( Model, Cmd Msg )
-initialModel _ =
-    ( { timeMillis = -10000
+type alias InitParams =
+    { fgColor : Maybe String
+    , bgColor : Maybe BgColor
+    , initialTimeSeconds : Maybe Int
+    }
+
+
+queryParser : Query.Parser InitParams
+queryParser =
+    Query.map3
+        InitParams
+        (Query.string "fg")
+        (Query.enum "bg" <| Dict.fromList [ ( "gb", GreenBack ), ( "bb", BlueBack ), ( "tp", Transparent ) ])
+        (Query.int "init")
+
+
+parser : UP.Parser (InitParams -> a) a
+parser =
+    UP.query queryParser
+
+
+initialModel : flag -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
+initialModel _ url _ =
+    let
+        initParams =
+            UP.parse parser url
+
+        initialTimeSeconds =
+            initParams |> Maybe.andThen (\p -> p.initialTimeSeconds) |> Maybe.withDefault -10 |> Debug.log (Url.toString url)
+
+        initialBgColor =
+            initParams |> Maybe.andThen (\p -> p.bgColor) |> Maybe.withDefault GreenBack
+
+        initialFgColor =
+            initParams |> Maybe.andThen (\p -> p.fgColor) |> Maybe.withDefault "#415462"
+    in
+    ( { timeMillis = initialTimeSeconds * 1000
       , paused = True
       , current = Nothing
-      , initialTimeSeconds = -10
+      , initialTimeSeconds = initialTimeSeconds
       , showHelp = False
       , setting =
-            { bgColor = GreenBack
-            , fgColor = "#415462"
+            { bgColor = initialBgColor
+            , fgColor = initialFgColor
             }
       }
     , Cmd.none
@@ -76,6 +115,7 @@ type Msg
     | SetBgColor BgColor
     | SetFgColor String
     | ShowHelp Bool
+    | NoOp
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -106,6 +146,9 @@ update msg model =
 
         ShowHelp showHelp ->
             ( { model | showHelp = showHelp }, Cmd.none )
+
+        NoOp ->
+            ( model, Cmd.none )
 
 
 updateBgColor : BgColor -> Setting -> Setting
@@ -367,11 +410,23 @@ subscriptions model =
         Time.every 33 tick
 
 
+onUrlRequest : UrlRequest -> Msg
+onUrlRequest _ =
+    NoOp
+
+
+onUrlChange : Url.Url -> Msg
+onUrlChange _ =
+    NoOp
+
+
 main : Program () Model Msg
 main =
-    Browser.document
+    Browser.application
         { init = initialModel
         , view = view
         , update = update
         , subscriptions = subscriptions
+        , onUrlRequest = onUrlRequest
+        , onUrlChange = onUrlChange
         }
