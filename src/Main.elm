@@ -84,7 +84,7 @@ initialModel _ url _ =
             UP.parse parser url
 
         initialTimeSeconds =
-            initParams |> Maybe.andThen (\p -> p.initialTimeSeconds) |> Maybe.withDefault -10 |> Debug.log (Url.toString url)
+            initParams |> Maybe.andThen (\p -> p.initialTimeSeconds) |> Maybe.withDefault -10
 
         initialBgColor =
             initParams |> Maybe.andThen (\p -> p.bgColor) |> Maybe.withDefault GreenBack
