@@ -216,14 +216,9 @@ viewHeader =
             ]
         , ul []
             [ li []
-                [ a [ class "twitter-share-icon", role "button", href twitterIntentUrl, A.target "_blank", A.rel "noopener noreferrer" ]
-                    [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
-                    , text "Share"
-                    ]
-                ]
-            , li []
-                [ a [ class "help-icon", onClick <| ShowHelp True ]
-                    [ i [ class "fas", class "fa-question-circle" ] []
+                [ button [ onClick <| ShowHelp True ]
+                    [ i [ class "fas", class "fa-question-circle", class "button-icon" ] []
+                    , text "ヘルプ"
                     ]
                 ]
             ]
@@ -400,21 +395,30 @@ initialTimeSlider initialTimeSeconds =
             , step "1"
             , onInput (String.toInt >> Maybe.withDefault 0 >> UpdateResetTime)
             , value <| String.fromInt initialTimeSeconds
-            , attribute "data-tooltip" "タイマーの開始時間"
+            , tooltip <| "タイマーの開始時間: " ++ String.fromInt initialTimeSeconds ++ "秒"
             ]
             []
         ]
 
 
+tooltip : String -> Attribute Msg
+tooltip =
+    attribute "data-tooltip"
+
+
 viewFooter : Html Msg
 viewFooter =
     footer []
-        [ span [] [ text "© mather" ]
-        , a [ href "https://twitter.com/mather314", role "button", class "outline", A.target "_blank", A.rel "noopener noreferrer" ]
+        [ span [] [ text "© Eisuke Kuwahata" ]
+        , a [ href "https://twitter.com/intent/user?user_id=62148177", role "button", A.target "_blank", A.rel "noopener noreferrer", tooltip "更新情報をTwitterでつぶやくこともあります" ]
             [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
-            , text "mather314"
+            , text "@mather314"
             ]
-        , a [ href "https://github.com/mather/simple-stopwatch", role "button", class "outline", class "secondary", A.target "_blank", A.rel "noopener noreferrer" ]
+        , a [ role "button", class "outline", href twitterIntentUrl, A.target "_blank", A.rel "noopener noreferrer", tooltip "拡散希望" ]
+            [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
+            , text "シェアする"
+            ]
+        , a [ href "https://github.com/mather/simple-stopwatch", role "button", class "secondary", A.target "_blank", A.rel "noopener noreferrer", tooltip "Issue, PRをお待ちしています" ]
             [ i [ class "fab", class "fa-github", class "button-icon" ] []
             , text "mather"
             ]
