@@ -3,7 +3,7 @@ module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser exposing (UrlRequest)
 import Browser.Navigation
 import Dict
-import Html exposing (Attribute, Html, a, article, button, div, footer, h1, h2, header, i, iframe, input, label, li, main_, nav, node, p, span, strong, text, ul)
+import Html exposing (Attribute, Html, a, article, button, div, footer, h1, header, i, iframe, input, label, li, main_, nav, node, p, span, strong, text, ul)
 import Html.Attributes as A exposing (attribute, checked, class, for, height, href, id, name, src, step, style, type_, value, width)
 import Html.Events exposing (onClick, onInput)
 import Time
