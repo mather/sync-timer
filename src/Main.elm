@@ -3,8 +3,8 @@ module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser exposing (UrlRequest)
 import Browser.Navigation
 import Dict
-import Html exposing (Attribute, Html, a, article, button, div, footer, h1, h2, i, input, label, li, main_, nav, p, span, strong, text, ul)
-import Html.Attributes as A exposing (attribute, checked, class, for, href, id, name, step, style, type_, value)
+import Html exposing (Attribute, Html, a, article, button, div, footer, h1, h2, header, i, iframe, input, label, li, main_, nav, node, p, span, strong, text, ul)
+import Html.Attributes as A exposing (attribute, checked, class, for, height, href, id, name, src, step, style, type_, value, width)
 import Html.Events exposing (onClick, onInput)
 import Time
 import Url
@@ -192,12 +192,12 @@ view model =
     { title = "Sync Timer - 同時視聴用タイマー"
     , body =
         [ main_ [ class "container" ]
-            [ viewHelpModal model.showHelp
-            , viewHeader
+            [ viewHeader
             , viewTimer model
             , viewTimerControls model
             , viewFooter
             ]
+        , viewHelpModal model.showHelp
         ]
     }
 
@@ -240,32 +240,30 @@ twitterIntentUrl =
         ]
 
 
+dialog : Bool -> List (Attribute Msg) -> List (Html Msg) -> Html Msg
+dialog isOpen attributes =
+    if isOpen then
+        node "dialog" <| attribute "open" "" :: attributes
+
+    else
+        node "dialog" attributes
+
+
 viewHelpModal : Bool -> Html Msg
 viewHelpModal visible =
-    let
-        classes =
-            if visible then
-                [ style "display" "block" ]
-
-            else
-                []
-    in
-    div (id "help-modal" :: classes)
-        [ div
-            [ id "help-modal-bg" ]
-            [ article [ id "help-content" ]
-                [ h2 [] [ text "このサービスについて" ]
-                , p [] [ text "同時視聴配信などでタイミングを合わせるためのタイマーとしてご利用いただけます" ]
-                , ul []
-                    [ li [] [ text "視聴者と同期させるためマイナスの秒数から開始できます(-30 〜 30)" ]
-                    , li [] [ text "タイマー表示は固定幅です" ]
-                    , li [] [ text "文字色、背景色(GB, BB)が変更できます" ]
-                    ]
-                , p [] [ text "不具合や改善要望などがあれば Twitter, Github へご連絡ください" ]
-                , footer []
-                    [ button [ onClick <| ShowHelp False ] [ text "閉じる" ]
-                    ]
+    dialog visible
+        []
+        [ article []
+            [ header []
+                [ a [ attribute "aria-label" "Close", class "close", onClick <| ShowHelp False ] []
+                , text "SyncTimerとは？"
                 ]
+            , p [] [ text "YouTube配信などで視聴者と同じ動画を同時視聴するときに動画の開始時間や視聴タイミングを合わせるためのタイマーです" ]
+            , p [] [ text "使い方を動画にまとめましたので、参考にしてください" ]
+            , iframe [ id "ytplayer", type_ "text/html", width 640, height 360, src "https://www.youtube.com/embed/m1Basm-TqGU?rel=0" ] []
+            , p [] [ text "不具合や改善要望などがあれば Twitter, Github へご連絡ください" ]
+            , footer []
+                [ button [ onClick <| ShowHelp False ] [ text "閉じる" ] ]
             ]
         ]
 
