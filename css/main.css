@@ -17,6 +17,7 @@
 @font-face {
   font-family: "D-DIN-bold";
   src: url("D-DIN-Bold.woff2") format("woff2");
+  font-display: swap;
 }
 
 .timer {

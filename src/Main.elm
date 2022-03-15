@@ -255,12 +255,17 @@ viewHelpModal visible =
                 ]
             , p [] [ text "YouTube配信などで視聴者と同じ動画を同時視聴するときに動画の開始時間や視聴タイミングを合わせるためのタイマーです" ]
             , p [] [ text "使い方を動画にまとめましたので、参考にしてください" ]
-            , iframe [ id "ytplayer", type_ "text/html", width 640, height 360, src "https://www.youtube.com/embed/m1Basm-TqGU?rel=0" ] []
+            , iframe [ id "ytplayer", type_ "text/html", width 640, height 360, src "https://www.youtube.com/embed/m1Basm-TqGU?rel=0", lazyLoading ] []
             , p [] [ text "不具合や改善要望などがあれば Twitter, Github へご連絡ください" ]
             , footer []
                 [ button [ onClick <| ShowHelp False ] [ text "閉じる" ] ]
             ]
         ]
+
+
+lazyLoading : Attribute Msg
+lazyLoading =
+    attribute "loading" "lazy"
 
 
 viewTimer : Model -> Html Msg
