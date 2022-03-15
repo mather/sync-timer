@@ -55,8 +55,8 @@ footer {
 }
 
 a[role="button"] {
-  margin-left: 1em;
-  margin-right: 1em;
+  margin-left: 1ex;
+  margin-right: 1ex;
 }
 
 /*
@@ -77,10 +77,6 @@ a[role="button"] {
   margin-left: 2em;
 }
 
-.twitter-share-icon {
-  font-size: medium;
-}
-
 #fgColorPicker {
   margin-left: 2em;
   display: inline-block;
@@ -91,33 +87,4 @@ a[role="button"] {
   margin-left: 2em;
   display: inline-block;
   width: 7em;
-}
-
-.help-icon {
-  font-size: xx-large;
-}
-
-#help-modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  z-index: 1;
-}
-
-#help-modal-bg {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-#help-content {
-  position: relative;
-  top: 50%;
-  left: 50%;
-  width: 80vw;
-  transform: translate(-50%, -50%);
 }
