@@ -14,13 +14,19 @@
       content="マイナスの秒数から開始できるストップウォッチです。同時視聴配信のタイミング合わせなどにどうぞ。"
     />
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LN7KW2PYR4"></script>
-    <script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-LN7KW2PYR4"
+      type="module"
+    ></script>
+    <script async>
       window.dataLayer = window.dataLayer || [];
-      function gtag() { dataLayer.push(arguments); }
-      gtag('js', new Date());
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-      gtag('config', 'G-LN7KW2PYR4');
+      gtag("config", "G-LN7KW2PYR4");
     </script>
     <!--
       manifest.json provides metadata used when your web app is added to the
@@ -28,21 +34,24 @@
     -->
     <link rel="manifest" href="./manifest.json" />
     <link rel="icon" href="./favicon.ico" />
-    <link rel="stylesheet" href="css/pico.min.css" />
-    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="/css/pico.min.css" />
+    <link rel="stylesheet" href="/css/main.css" />
     <title>Sync Timer - 同時視聴用タイマー</title>
     <meta property="og:title" content="Sync Timer - 同時視聴用タイマー" />
-    <meta property="og:description" content="マイナスの秒数から開始できるストップウォッチです。同時視聴配信のタイミング合わせなどにどうぞ。" />
+    <meta
+      property="og:description"
+      content="マイナスの秒数から開始できるストップウォッチです。同時視聴配信のタイミング合わせなどにどうぞ。"
+    />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://sync-timer.netlify.app/" />
-    <meta property="og:image" content="https://sync-timer.netlify.app/images/SyncTimer.png" />
-
+    <meta
+      property="og:image"
+      content="https://sync-timer.netlify.app/images/SyncTimer.png"
+    />
   </head>
   <body>
-    <noscript>
-      You need to enable JavaScript to run this app.
-    </noscript>
+    <noscript> You need to enable JavaScript to run this app. </noscript>
     <div id="root"></div>
-    <script src="./js/index.js" type="module"></script>
+    <script async src="./js/index.js" type="module"></script>
   </body>
 </html>
