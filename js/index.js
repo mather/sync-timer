@@ -1,6 +1,10 @@
 import { Elm } from "../src/Main.elm";
 import * as serviceWorker from "./serviceWorker";
-import "@fortawesome/fontawesome-free/css/all.css";
+import "@picocss/pico/css/pico.css";
+import "@fortawesome/fontawesome-free/css/fontawesome.css";
+import "@fortawesome/fontawesome-free/css/brands.css";
+import "@fortawesome/fontawesome-free/css/solid.css";
+import "../css/main.css";
 
 const app = Elm.Main.init({
   node: document.getElementById("root"),

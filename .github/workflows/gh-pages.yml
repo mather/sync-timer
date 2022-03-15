@@ -25,7 +25,7 @@ jobs:
       - name: Test
         run: yarn test
       - name: Build static files
-        run: yarn parcel build --public-url /simple-stopwatch/ index.html
+        run: yarn vite build --base /simple-stopwatch/
       - name: Deploy to Github Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
