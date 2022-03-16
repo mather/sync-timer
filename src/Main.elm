@@ -423,7 +423,7 @@ viewFooter =
             [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
             , text "シェアする"
             ]
-        , a [ href "https://github.com/mather/simple-stopwatch", role "button", class "secondary", A.target "_blank", A.rel "noopener noreferrer", tooltip "Issue, PRをお待ちしています" ]
+        , a [ href "https://github.com/mather/sync-timer", role "button", class "secondary", A.target "_blank", A.rel "noopener noreferrer", tooltip "Issue, PRをお待ちしています" ]
             [ i [ class "fab", class "fa-github", class "button-icon" ] []
             , text "mather"
             ]
