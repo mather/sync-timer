@@ -231,6 +231,7 @@ twitterIntentUrl =
         [ "intent", "tweet" ]
         [ UB.string "text" "Sync Timer 同時視聴配信用タイマー"
         , UB.string "url" "https://sync-timer.netlify.app/"
+        , UB.string "hashtags" "sync_timer"
         , UB.string "via" "mather314"
         ]
 
