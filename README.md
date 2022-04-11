@@ -1,4 +1,4 @@
-# Simple Stopwatch
+# Sync Timer
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/5293735a-2c79-494b-8193-594332626962/deploy-status)](https://app.netlify.com/sites/sync-timer/deploys)
 
