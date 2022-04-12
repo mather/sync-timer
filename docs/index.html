@@ -111,7 +111,14 @@
           playerVars: {
             rel: 0,
           },
+          events: {
+            'onReady': onPlayerReady,
+          },
         });
+      }
+
+      function onPlayerReady(event) {
+        event.target.setVolume(10);
       }
     </script>
     <script>
