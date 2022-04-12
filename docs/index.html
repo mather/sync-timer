@@ -93,9 +93,8 @@
       </section>
     </main>
     <script>
-      
       const elem = document.getElementById('yt-player');
-      const ytWidth = elem.parentNode.clientWidth;
+      const ytWidth = Math.min(elem.parentNode.clientWidth, 1024);
       const ytHeight = ytWidth / 16 * 9; 
 
       const tag = document.createElement('script');
