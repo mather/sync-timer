@@ -10,6 +10,13 @@ const app = Elm.Main.init({
   node: document.getElementById("root"),
 });
 
+app.ports.sendAnalyticsEvent.subscribe((event) => {
+  const { name, data } = JSON.parse(event);
+  console.debug({ name, data });
+  if (gtag) {
+    gtag("event", name, data);
+  }
+});
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
