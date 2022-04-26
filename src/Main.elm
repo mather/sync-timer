@@ -1,4 +1,4 @@
-module Main exposing (DisplayTime, main, millisToDisplayTime)
+port module Main exposing (DisplayTime, main, millisToDisplayTime)
 
 import Browser exposing (UrlRequest)
 import Browser.Navigation
@@ -6,6 +6,7 @@ import Dict
 import Html exposing (Attribute, Html, a, article, button, div, footer, h1, header, i, iframe, input, label, li, main_, nav, node, p, span, strong, text, ul)
 import Html.Attributes as A exposing (attribute, checked, class, for, height, href, id, name, src, step, style, type_, value, width)
 import Html.Events exposing (onClick, onInput)
+import Json.Encode as E
 import Time
 import Url
 import Url.Builder as UB
@@ -143,14 +144,14 @@ update msg model =
     case msg of
         Start ->
             ( { model | paused = False }
-            , Cmd.none
+            , sendAnalyticsEvent <| encodeCurrentStatus "timer-start" model
             )
 
         Pause ->
-            ( { model | paused = True, current = Nothing }, Cmd.none )
+            ( { model | paused = True, current = Nothing }, sendAnalyticsEvent <| encodeCurrentStatus "timer-pause" model )
 
         Reset ->
-            ( { model | timeMillis = model.initialTimeSeconds * 1000, paused = True, current = Nothing }, Cmd.none )
+            ( { model | timeMillis = model.initialTimeSeconds * 1000, paused = True, current = Nothing }, sendAnalyticsEvent <| encodeCurrentStatus "timer-reset" model )
 
         UpdateTime millis current ->
             ( { model | timeMillis = millis, current = Just current }, Cmd.none )
@@ -171,7 +172,7 @@ update msg model =
             )
 
         ShowHelp showHelp ->
-            ( { model | showHelp = showHelp }, Cmd.none )
+            ( { model | showHelp = showHelp }, sendAnalyticsEvent <| encodeCurrentStatus "show-help" model )
 
         NoOp ->
             ( model, Cmd.none )
@@ -452,6 +453,26 @@ onUrlRequest _ =
 onUrlChange : Url.Url -> Msg
 onUrlChange _ =
     NoOp
+
+
+port sendAnalyticsEvent : String -> Cmd msg
+
+
+encodeCurrentStatus : String -> Model -> String
+encodeCurrentStatus eventName model =
+    E.encode 0 <|
+        E.object
+            [ ( "name", E.string eventName )
+            , ( "data"
+              , E.object
+                    [ ( "timeMillis", E.int model.timeMillis )
+                    , ( "initialTimeSeconds", E.int model.initialTimeSeconds )
+                    , ( "bgColor", E.string <| bgString model.setting.bgColor )
+                    , ( "fgColor", E.string model.setting.fgColor )
+                    , ( "showHelp", E.bool model.showHelp )
+                    ]
+              )
+            ]
 
 
 main : Program () Model Msg
