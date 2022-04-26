@@ -469,23 +469,23 @@ encodeAnalyticsEvent category action label value =
 
 timerStartEvent : Int -> Cmd msg
 timerStartEvent currentTime =
-    encodeAnalyticsEvent "timer" "start" "current" (Just currentTime) |> sendAnalyticsEvent
+    encodeAnalyticsEvent "sync_timer" "sync_timer_start" "sync_timer_start" (Just currentTime) |> sendAnalyticsEvent
 
 
 timerPauseEvent : Int -> Cmd msg
 timerPauseEvent currentTime =
-    encodeAnalyticsEvent "timer" "pause" "current" (Just currentTime) |> sendAnalyticsEvent
+    encodeAnalyticsEvent "sync_timer" "sync_timer_pause" "sync_timer_pause" (Just currentTime) |> sendAnalyticsEvent
 
 
 timerResetEvent : Int -> Cmd msg
 timerResetEvent currentTime =
-    encodeAnalyticsEvent "timer" "reset" "current" (Just currentTime) |> sendAnalyticsEvent
+    encodeAnalyticsEvent "sync_timer" "sync_timer_reset" "sync_timer_reset" (Just currentTime) |> sendAnalyticsEvent
 
 
 showHelpEvent : Bool -> Cmd msg
 showHelpEvent showHelp =
     if showHelp then
-        encodeAnalyticsEvent "help" "show" "opened" Nothing |> sendAnalyticsEvent
+        encodeAnalyticsEvent "sync_timer" "sync_timer_help_opened" "sync_timer_help_opened" Nothing |> sendAnalyticsEvent
 
     else
         Cmd.none
