@@ -11,10 +11,14 @@ const app = Elm.Main.init({
 });
 
 app.ports.sendAnalyticsEvent.subscribe((event) => {
-  const { name, data } = JSON.parse(event);
-  console.debug({ name, data });
+  const { category, action, label, value } = JSON.parse(event);
+  console.debug({ category, action, label, value });
   if (gtag) {
-    gtag("event", name, data);
+    const data = Object.assign({
+      "event_category": category,
+      "event_label": label
+    }, value ? { value } : {});
+    gtag("event", action, data);
   }
 });
 // If you want your app to work offline and load faster, you can change

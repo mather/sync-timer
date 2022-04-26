@@ -143,15 +143,13 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Start ->
-            ( { model | paused = False }
-            , sendAnalyticsEvent <| encodeCurrentStatus "timer-start" model
-            )
+            ( { model | paused = False }, timerStartEvent model.timeMillis )
 
         Pause ->
-            ( { model | paused = True, current = Nothing }, sendAnalyticsEvent <| encodeCurrentStatus "timer-pause" model )
+            ( { model | paused = True, current = Nothing }, timerPauseEvent model.timeMillis )
 
         Reset ->
-            ( { model | timeMillis = model.initialTimeSeconds * 1000, paused = True, current = Nothing }, sendAnalyticsEvent <| encodeCurrentStatus "timer-reset" model )
+            ( { model | timeMillis = model.initialTimeSeconds * 1000, paused = True, current = Nothing }, timerResetEvent model.timeMillis )
 
         UpdateTime millis current ->
             ( { model | timeMillis = millis, current = Just current }, Cmd.none )
@@ -172,7 +170,7 @@ update msg model =
             )
 
         ShowHelp showHelp ->
-            ( { model | showHelp = showHelp }, sendAnalyticsEvent <| encodeCurrentStatus "show-help" model )
+            ( { model | showHelp = showHelp }, showHelpEvent showHelp )
 
         NoOp ->
             ( model, Cmd.none )
@@ -458,21 +456,39 @@ onUrlChange _ =
 port sendAnalyticsEvent : String -> Cmd msg
 
 
-encodeCurrentStatus : String -> Model -> String
-encodeCurrentStatus eventName model =
+encodeAnalyticsEvent : String -> String -> String -> Maybe Int -> String
+encodeAnalyticsEvent category action label value =
     E.encode 0 <|
-        E.object
-            [ ( "name", E.string eventName )
-            , ( "data"
-              , E.object
-                    [ ( "timeMillis", E.int model.timeMillis )
-                    , ( "initialTimeSeconds", E.int model.initialTimeSeconds )
-                    , ( "bgColor", E.string <| bgString model.setting.bgColor )
-                    , ( "fgColor", E.string model.setting.fgColor )
-                    , ( "showHelp", E.bool model.showHelp )
-                    ]
-              )
+        E.object <|
+            [ ( "category", E.string category )
+            , ( "action", E.string action )
+            , ( "label", E.string label )
             ]
+                ++ (Maybe.map (\v -> [ ( "value", E.int v ) ]) value |> Maybe.withDefault [])
+
+
+timerStartEvent : Int -> Cmd msg
+timerStartEvent currentTime =
+    encodeAnalyticsEvent "timer" "start" "current" (Just currentTime) |> sendAnalyticsEvent
+
+
+timerPauseEvent : Int -> Cmd msg
+timerPauseEvent currentTime =
+    encodeAnalyticsEvent "timer" "pause" "current" (Just currentTime) |> sendAnalyticsEvent
+
+
+timerResetEvent : Int -> Cmd msg
+timerResetEvent currentTime =
+    encodeAnalyticsEvent "timer" "reset" "current" (Just currentTime) |> sendAnalyticsEvent
+
+
+showHelpEvent : Bool -> Cmd msg
+showHelpEvent showHelp =
+    if showHelp then
+        encodeAnalyticsEvent "help" "show" "opened" Nothing |> sendAnalyticsEvent
+
+    else
+        Cmd.none
 
 
 main : Program () Model Msg
