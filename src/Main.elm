@@ -149,7 +149,7 @@ update msg model =
             ( { model | paused = True, current = Nothing }, timerPauseEvent model.timeMillis )
 
         Reset ->
-            ( { model | timeMillis = model.initialTimeSeconds * 1000, paused = True, current = Nothing }, timerResetEvent model.timeMillis )
+            ( { model | timeMillis = model.initialTimeSeconds * 1000, paused = True, current = Nothing }, timerResetEvent <| model.initialTimeSeconds * 1000 )
 
         UpdateTime millis current ->
             ( { model | timeMillis = millis, current = Just current }, Cmd.none )
@@ -498,8 +498,8 @@ timerPauseEvent currentTime =
 
 
 timerResetEvent : Int -> Cmd msg
-timerResetEvent currentTime =
-    sendAnalyticsEvent <| encodeAnalyticsEvent "sync_timer" "sync_timer_reset" (formatTimeForAnalytics currentTime) Nothing
+timerResetEvent resetTime =
+    sendAnalyticsEvent <| encodeAnalyticsEvent "sync_timer" "sync_timer_reset" (formatTimeForAnalytics resetTime) Nothing
 
 
 showHelpEvent : Bool -> Cmd msg
