@@ -467,25 +467,45 @@ encodeAnalyticsEvent category action label value =
                 ++ (Maybe.map (\v -> [ ( "value", E.int v ) ]) value |> Maybe.withDefault [])
 
 
+formatTimeForAnalytics : Int -> String
+formatTimeForAnalytics t =
+    let
+        dt =
+            millisToDisplayTime t
+    in
+    [ if dt.isMinus then
+        "-"
+
+      else
+        ""
+    , String.fromInt dt.hours |> String.padLeft 2 '0'
+    , ":"
+    , String.fromInt dt.minutes |> String.padLeft 2 '0'
+    , ":"
+    , String.fromInt dt.seconds |> String.padLeft 2 '0'
+    ]
+        |> String.concat
+
+
 timerStartEvent : Int -> Cmd msg
 timerStartEvent currentTime =
-    encodeAnalyticsEvent "sync_timer" "sync_timer_start" "sync_timer_start" (Just currentTime) |> sendAnalyticsEvent
+    sendAnalyticsEvent <| encodeAnalyticsEvent "sync_timer" "sync_timer_start" (formatTimeForAnalytics currentTime) Nothing
 
 
 timerPauseEvent : Int -> Cmd msg
 timerPauseEvent currentTime =
-    encodeAnalyticsEvent "sync_timer" "sync_timer_pause" "sync_timer_pause" (Just currentTime) |> sendAnalyticsEvent
+    sendAnalyticsEvent <| encodeAnalyticsEvent "sync_timer" "sync_timer_pause" (formatTimeForAnalytics currentTime) Nothing
 
 
 timerResetEvent : Int -> Cmd msg
 timerResetEvent currentTime =
-    encodeAnalyticsEvent "sync_timer" "sync_timer_reset" "sync_timer_reset" (Just currentTime) |> sendAnalyticsEvent
+    sendAnalyticsEvent <| encodeAnalyticsEvent "sync_timer" "sync_timer_reset" (formatTimeForAnalytics currentTime) Nothing
 
 
 showHelpEvent : Bool -> Cmd msg
 showHelpEvent showHelp =
     if showHelp then
-        encodeAnalyticsEvent "sync_timer" "sync_timer_help_opened" "sync_timer_help_opened" Nothing |> sendAnalyticsEvent
+        sendAnalyticsEvent <| encodeAnalyticsEvent "sync_timer" "sync_timer_help_opened" "true" Nothing
 
     else
         Cmd.none
