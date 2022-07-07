@@ -33,7 +33,7 @@
       window.addEventListener("unload", () => {
         gtag("event", "page_unload", {
           event_label: "unload",
-          value: (new Date() - startTime) / 1000,
+          value: Math.floor((new Date() - startTime) / 1000),
         });
       });
     </script>
