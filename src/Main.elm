@@ -3,8 +3,8 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser exposing (UrlRequest)
 import Browser.Navigation
 import Dict
-import Html exposing (Attribute, Html, a, article, button, div, footer, h1, header, i, iframe, input, label, li, main_, nav, node, p, span, strong, text, ul)
-import Html.Attributes as A exposing (attribute, checked, class, for, height, href, id, name, src, step, style, type_, value, width)
+import Html exposing (Attribute, Html, a, article, button, div, footer, h1, header, i, iframe, input, label, li, main_, nav, node, p, span, strong, text, textarea, ul)
+import Html.Attributes as A exposing (attribute, checked, class, for, height, href, id, name, readonly, rows, src, step, style, type_, value, width)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
 import Time
@@ -414,18 +414,21 @@ tooltip =
 viewFooter : Html Msg
 viewFooter =
     footer []
-        [ span [] [ text "© Eisuke Kuwahata" ]
-        , a [ href "https://twitter.com/intent/user?user_id=62148177", role "button", A.target "_blank", A.rel "noopener noreferrer", tooltip "更新情報をTwitterでつぶやくこともあります" ]
-            [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
-            , text "@mather314"
-            ]
-        , a [ role "button", class "outline", href twitterIntentUrl, A.target "_blank", A.rel "noopener noreferrer", tooltip "拡散希望" ]
-            [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
-            , text "シェアする"
-            ]
-        , a [ href "https://github.com/mather/sync-timer", role "button", class "secondary", A.target "_blank", A.rel "noopener noreferrer", tooltip "Issue, PRをお待ちしています" ]
-            [ i [ class "fab", class "fa-github", class "button-icon" ] []
-            , text "mather"
+        [ p [] [ text "気に入っていただけたら概要欄で共有をお願いします（必須ではありません）" ]
+        , div [] [ textarea [ readonly True, rows 2 ] [ text "同時視聴用タイマー SyncTimer を利用しています\nhttps://sync-timer.netlify.app/" ] ]
+        , p [] [ text "ご意見や感想などは以下の連絡先へどうぞ" ]
+        , div []
+            [ a [ href "https://twitter.com/intent/user?user_id=62148177", role "button", A.target "_blank", A.rel "noopener noreferrer", tooltip "更新情報をTwitterでつぶやくこともあります" ]
+                [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
+                , text "@mather314"
+                ]
+            , a [ href "https://github.com/mather/sync-timer", role "button", class "secondary", A.target "_blank", A.rel "noopener noreferrer", tooltip "Issue, PRをお待ちしています" ]
+                [ i [ class "fab", class "fa-github", class "button-icon" ] []
+                , text "source"
+                ]
+            , span
+                []
+                [ text "© Eisuke Kuwahata" ]
             ]
         ]
 
