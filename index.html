@@ -28,15 +28,6 @@
 
       gtag("config", "G-LN7KW2PYR4");
     </script>
-    <script>
-      const startTime = new Date();
-      window.addEventListener("unload", () => {
-        gtag("event", "page_unload", {
-          event_label: "unload",
-          value: Math.floor((new Date() - startTime) / 1000),
-        });
-      });
-    </script>
     <!--
       manifest.json provides metadata used when your web app is added to the
       homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
