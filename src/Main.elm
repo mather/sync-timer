@@ -416,7 +416,10 @@ viewFooter =
     footer []
         [ p [] [ text "気に入っていただけたら概要欄で共有をお願いします（必須ではありません）" ]
         , div [] [ textarea [ readonly True, rows 2 ] [ text "同時視聴用タイマー SyncTimer を利用しています\nhttps://sync-timer.netlify.app/" ] ]
-        , p [] [ text "ご意見や感想などは以下の連絡先へどうぞ" ]
+        , p []
+            [ text "ご意見や感想などは"
+            , a [ A.href "https://docs.google.com/forms/d/e/1FAIpQLSfgmFqq-t-vv6gC1YpgoH3nCK1b7gI0ROC25K1NX9r5jGtndg/viewform?usp=sf_link", A.target "_blank", A.rel "noopener noreferrer" ] [ text "こちらのフォームからどうぞ" ]
+            ]
         , div []
             [ a [ href "https://twitter.com/intent/user?user_id=62148177", role "button", A.target "_blank", A.rel "noopener noreferrer", tooltip "更新情報をTwitterでつぶやくこともあります" ]
                 [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
