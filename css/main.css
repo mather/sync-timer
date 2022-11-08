@@ -39,6 +39,7 @@
 .timer .digit {
   display: inline-block;
   width: 1ex;
+  vertical-align: middle;
 }
 
 .timer .sep {
@@ -51,7 +52,8 @@
 }
 
 footer {
-  margin-top: 5rem;
+  margin-top: 1rem;
+  background-color: #eeeeee;
   text-align: center;
 }
 
@@ -66,12 +68,18 @@ a[role="button"] {
 }
 */
 
-.settings {
+.controls {
   margin: auto 0;
 }
 
-.settings div {
-  margin: 1em 1em;
+.settings {
+  margin: auto;
+  border: 1px dashed #a2afb9;
+  padding: 5px;
+}
+
+.settings > div {
+  margin: 1em 3em;
 }
 
 .settings input[type="radio"] {

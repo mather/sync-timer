@@ -3,7 +3,7 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser exposing (UrlRequest)
 import Browser.Navigation
 import Dict
-import Html exposing (Attribute, Html, a, article, button, div, footer, h1, header, i, iframe, input, label, li, main_, nav, node, p, span, strong, text, textarea, ul)
+import Html exposing (Attribute, Html, a, article, button, div, footer, h1, header, i, iframe, input, label, li, main_, nav, node, p, small, span, strong, text, textarea, ul)
 import Html.Attributes as A exposing (attribute, checked, class, for, height, href, id, name, readonly, rows, src, step, style, type_, value, width)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
@@ -193,9 +193,9 @@ view model =
         [ main_ [ class "container" ]
             [ viewHeader
             , viewTimer model
-            , viewTimerControls model
-            , viewFooter
+            , viewTimerSettings model.setting
             ]
+        , viewFooter
         , viewHelpModal model.showHelp
         ]
     }
@@ -272,7 +272,7 @@ viewTimer : Model -> Html Msg
 viewTimer model =
     div [ class "grid" ]
         [ viewTimerDigits model.timeMillis model.setting
-        , viewTimerSettings model.setting
+        , viewTimerControls model
         ]
 
 
@@ -338,12 +338,10 @@ renderBig2Digits digits =
 
 viewTimerControls : Model -> Html Msg
 viewTimerControls model =
-    div []
+    div [ class "controls" ]
         [ div [] [ startPauseButton model.paused ]
-        , div [ class "grid" ]
-            [ div [] [ resetButton model.initialTimeSeconds ]
-            , div [] [ initialTimeSlider model.initialTimeSeconds ]
-            ]
+        , div [] [ resetButton model.initialTimeSeconds ]
+        , div [] [ initialTimeSlider model.initialTimeSeconds ]
         ]
 
 
@@ -373,7 +371,8 @@ resetButton initialTimeSeconds =
 viewTimerSettings : Setting -> Html Msg
 viewTimerSettings setting =
     div [ class "settings" ]
-        [ div []
+        [ strong [] [ text "表示設定" ]
+        , div []
             [ strong [] [ text "文字色" ]
             , input [ type_ "color", id "fgColorPicker", value setting.fgColor, onInput SetFgColor ] []
             , input [ type_ "text", id "fgColorText", value setting.fgColor, onInput SetFgColor ] []
@@ -414,24 +413,26 @@ tooltip =
 viewFooter : Html Msg
 viewFooter =
     footer []
-        [ p [] [ text "気に入っていただけたら概要欄で共有をお願いします（必須ではありません）" ]
-        , div [] [ textarea [ readonly True, rows 2 ] [ text "同時視聴用タイマー SyncTimer を利用しています\nhttps://sync-timer.netlify.app/" ] ]
-        , p []
-            [ text "ご意見や感想などは"
-            , a [ A.href "https://docs.google.com/forms/d/e/1FAIpQLSfgmFqq-t-vv6gC1YpgoH3nCK1b7gI0ROC25K1NX9r5jGtndg/viewform?usp=sf_link", A.target "_blank", A.rel "noopener noreferrer" ] [ text "こちらのフォームからどうぞ" ]
-            ]
-        , div []
-            [ a [ href "https://twitter.com/intent/user?user_id=62148177", role "button", A.target "_blank", A.rel "noopener noreferrer", tooltip "更新情報をTwitterでつぶやくこともあります" ]
-                [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
-                , text "@mather314"
+        [ div [ class "container" ]
+            [ p []
+                [ text "ご意見や感想などは"
+                , a [ A.href "https://docs.google.com/forms/d/e/1FAIpQLSfgmFqq-t-vv6gC1YpgoH3nCK1b7gI0ROC25K1NX9r5jGtndg/viewform?usp=sf_link", A.target "_blank", A.rel "noopener noreferrer" ] [ text "こちらのフォームからどうぞ" ]
                 ]
-            , a [ href "https://github.com/mather/sync-timer", role "button", class "secondary", A.target "_blank", A.rel "noopener noreferrer", tooltip "Issue, PRをお待ちしています" ]
-                [ i [ class "fab", class "fa-github", class "button-icon" ] []
-                , text "source"
+            , div [] [ small [] [ text "気に入っていただけたら概要欄で共有をお願いします（必須ではありません）" ] ]
+            , textarea [ readonly True, rows 2 ] [ text "同時視聴用タイマー SyncTimer を利用しています\nhttps://sync-timer.netlify.app/" ]
+            , div []
+                [ a [ href "https://twitter.com/intent/user?user_id=62148177", role "button", A.target "_blank", A.rel "noopener noreferrer", tooltip "更新情報をTwitterでつぶやくこともあります" ]
+                    [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
+                    , text "@mather314"
+                    ]
+                , a [ href "https://github.com/mather/sync-timer", role "button", class "secondary", A.target "_blank", A.rel "noopener noreferrer", tooltip "Issue, PRをお待ちしています" ]
+                    [ i [ class "fab", class "fa-github", class "button-icon" ] []
+                    , text "source"
+                    ]
+                , span
+                    []
+                    [ text "© Eisuke Kuwahata" ]
                 ]
-            , span
-                []
-                [ text "© Eisuke Kuwahata" ]
             ]
         ]
 
