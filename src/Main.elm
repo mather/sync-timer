@@ -3,7 +3,7 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser exposing (UrlRequest)
 import Browser.Navigation
 import Dict
-import Html exposing (Attribute, Html, a, article, button, div, footer, h1, header, i, iframe, input, label, li, main_, nav, node, p, small, span, strong, text, textarea, ul)
+import Html exposing (Attribute, Html, a, article, button, details, div, footer, h1, header, i, iframe, input, label, li, main_, nav, node, p, small, span, strong, summary, text, textarea, ul)
 import Html.Attributes as A exposing (attribute, checked, class, for, height, href, id, name, readonly, rows, src, step, style, type_, value, width)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
@@ -377,15 +377,15 @@ resetButton initialTimeSeconds =
 
 viewTimerSettings : Setting -> Html Msg
 viewTimerSettings setting =
-    div [ class "settings" ]
-        [ strong [] [ text "表示設定" ]
+    details [ class "settings", attribute "open" "true" ]
+        [ summary [] [ text "表示設定" ]
         , div []
-            [ strong [] [ text "文字色" ]
+            [ text "文字色"
             , input [ type_ "color", id "fgColorPicker", value setting.fgColor, onInput SetFgColor ] []
             , input [ type_ "text", id "fgColorText", value setting.fgColor, onInput SetFgColor ] []
             ]
         , div []
-            [ strong [] [ text "背景色" ]
+            [ text "背景色"
             , input [ type_ "radio", id "greenback", name "bgcolor", checked <| setting.bgColor == GreenBack, onClick <| SetBgColor GreenBack ] []
             , label [ for "greenback" ] [ text "GB" ]
             , input [ type_ "radio", id "blueback", name "bgcolor", checked <| setting.bgColor == BlueBack, onClick <| SetBgColor BlueBack ] []
