@@ -281,17 +281,10 @@ viewTimerDigits millis setting =
     let
         displayTime =
             millisToDisplayTime millis
-
-        signVisibility =
-            if displayTime.isMinus then
-                "visible"
-
-            else
-                "hidden"
     in
     div [ class "timer", timerBgColorClass setting.bgColor, style "color" setting.fgColor ]
         (List.concat <|
-            [ [ span (style "visibility" signVisibility :: styleTimerDigit) [ text "-" ] ]
+            [ [ span (styleTimerSign displayTime.isMinus) [ text "-" ] ]
             , renderBig2Digits displayTime.hours
             , [ span styleTimerSep [ text ":" ] ]
             , renderBig2Digits displayTime.minutes
@@ -327,6 +320,20 @@ styleTimerSep =
 styleTimerDigit : List (Html.Attribute Msg)
 styleTimerDigit =
     [ class "digit" ]
+
+
+styleTimerSign : Bool -> List (Html.Attribute Msg)
+styleTimerSign isMinus =
+    let
+        visibility =
+            style "visibility" <|
+                if isMinus then
+                    "visible"
+
+                else
+                    "hidden"
+    in
+    visibility :: styleTimerDigit
 
 
 renderBig2Digits : Int -> List (Html Msg)
