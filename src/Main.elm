@@ -430,11 +430,11 @@ viewFooter =
             , div []
                 [ a [ href "https://twitter.com/intent/user?user_id=62148177", role "button", A.target "_blank", A.rel "noopener noreferrer", tooltip "更新情報をTwitterでつぶやくこともあります" ]
                     [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
-                    , text "@mather314"
+                    , text "作者 Twitter"
                     ]
                 , a [ href "https://github.com/mather/sync-timer", role "button", class "secondary", A.target "_blank", A.rel "noopener noreferrer", tooltip "Issue, PRをお待ちしています" ]
                     [ i [ class "fab", class "fa-github", class "button-icon" ] []
-                    , text "source"
+                    , text "ソースコード"
                     ]
                 , span
                     []
