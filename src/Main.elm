@@ -3,8 +3,8 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser exposing (UrlRequest)
 import Browser.Navigation
 import Dict
-import Html exposing (Attribute, Html, a, article, button, details, div, footer, h1, header, i, iframe, input, label, li, main_, nav, node, p, small, span, strong, summary, text, textarea, ul)
-import Html.Attributes as A exposing (attribute, checked, class, for, height, href, id, name, readonly, rows, src, step, style, type_, value, width)
+import Html exposing (Attribute, Html, a, article, button, details, div, footer, h1, header, i, iframe, input, label, li, main_, nav, node, option, p, select, small, span, summary, text, textarea, ul)
+import Html.Attributes as A exposing (attribute, checked, class, for, height, href, id, name, readonly, rows, selected, src, step, style, type_, value, width)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
 import Time
@@ -28,6 +28,7 @@ type alias Model =
 type alias Setting =
     { bgColor : BgColor
     , fgColor : String
+    , fontFamily : FontFamily
     }
 
 
@@ -58,20 +59,109 @@ type BgColor
     | BlueBack
 
 
+encodeBgColor : BgColor -> String
+encodeBgColor bgColor =
+    case bgColor of
+        GreenBack ->
+            "gb"
+
+        BlueBack ->
+            "bb"
+
+        Transparent ->
+            "tp"
+
+
+dictBgColor : Dict.Dict String BgColor
+dictBgColor =
+    let
+        pairwise =
+            \bg -> ( encodeBgColor bg, bg )
+    in
+    Dict.fromList
+        [ pairwise GreenBack
+        , pairwise BlueBack
+        , pairwise Transparent
+        ]
+
+
+type FontFamily
+    = DDinBold
+    | MPlus1P
+    | MPlus1PBold
+    | IBMPlexSerif
+    | IBMPlexSerifBold
+
+
+encodeFontFamily : FontFamily -> String
+encodeFontFamily fontFamily =
+    case fontFamily of
+        DDinBold ->
+            "d-din-bold"
+
+        MPlus1P ->
+            "m-plus-1p"
+
+        MPlus1PBold ->
+            "m-plus-1p-bold"
+
+        IBMPlexSerif ->
+            "ibm-plex-serif"
+
+        IBMPlexSerifBold ->
+            "ibm-plex-serif-bold"
+
+
+dictFontFamily : Dict.Dict String FontFamily
+dictFontFamily =
+    let
+        pairwise =
+            \ff -> ( encodeFontFamily ff, ff )
+    in
+    Dict.fromList
+        [ pairwise DDinBold
+        , pairwise MPlus1P
+        , pairwise MPlus1PBold
+        , pairwise IBMPlexSerif
+        , pairwise IBMPlexSerifBold
+        ]
+
+
+fontClass : FontFamily -> Attribute Msg
+fontClass fontFamily =
+    class <| "font-" ++ encodeFontFamily fontFamily
+
+
 type alias InitParams =
-    { fgColor : Maybe String
-    , bgColor : Maybe BgColor
-    , initialTimeSeconds : Maybe Int
+    { fgColor : String
+    , bgColor : BgColor
+    , initialTimeSeconds : Int
+    , fontFamily : FontFamily
     }
+
+
+defaultParams : InitParams
+defaultParams =
+    { bgColor = GreenBack
+    , fgColor = "#415462"
+    , fontFamily = DDinBold
+    , initialTimeSeconds = -10
+    }
+
+
+queryWithDefault : a -> Query.Parser (Maybe a) -> Query.Parser a
+queryWithDefault defaultValue =
+    Query.map (Maybe.withDefault defaultValue)
 
 
 queryParser : Query.Parser InitParams
 queryParser =
-    Query.map3
+    Query.map4
         InitParams
-        (Query.string "fg")
-        (Query.enum "bg" <| Dict.fromList [ ( "gb", GreenBack ), ( "bb", BlueBack ), ( "tp", Transparent ) ])
-        (Query.int "init")
+        (Query.string "fg" |> queryWithDefault defaultParams.fgColor)
+        (Query.enum "bg" dictBgColor |> queryWithDefault defaultParams.bgColor)
+        (Query.int "init" |> queryWithDefault defaultParams.initialTimeSeconds)
+        (Query.enum "font" dictFontFamily |> queryWithDefault defaultParams.fontFamily)
 
 
 parser : UP.Parser (InitParams -> a) a
@@ -84,24 +174,17 @@ initialModel _ url key =
     let
         initParams =
             UP.parse parser url
-
-        initialTimeSeconds =
-            initParams |> Maybe.andThen (\p -> p.initialTimeSeconds) |> Maybe.withDefault -10
-
-        initialBgColor =
-            initParams |> Maybe.andThen (\p -> p.bgColor) |> Maybe.withDefault GreenBack
-
-        initialFgColor =
-            initParams |> Maybe.andThen (\p -> p.fgColor) |> Maybe.withDefault "#415462"
+                |> Maybe.withDefault defaultParams
     in
-    ( { timeMillis = initialTimeSeconds * 1000
+    ( { timeMillis = initParams.initialTimeSeconds * 1000
       , paused = True
       , current = Nothing
-      , initialTimeSeconds = initialTimeSeconds
+      , initialTimeSeconds = initParams.initialTimeSeconds
       , showHelp = False
       , setting =
-            { bgColor = initialBgColor
-            , fgColor = initialFgColor
+            { bgColor = initParams.bgColor
+            , fgColor = initParams.fgColor
+            , fontFamily = initParams.fontFamily
             }
       , key = key
       }
@@ -117,26 +200,19 @@ type Msg
     | UpdateResetTime Int
     | SetBgColor BgColor
     | SetFgColor String
+    | SetFontFamily FontFamily
     | ShowHelp Bool
     | NoOp
 
 
-bgString : BgColor -> String
-bgString bg =
-    case bg of
-        GreenBack ->
-            "gb"
-
-        BlueBack ->
-            "bb"
-
-        Transparent ->
-            "tp"
-
-
-urlFromConfig : String -> BgColor -> Int -> String
-urlFromConfig fg bg initialTimeSeconds =
-    UB.toQuery [ UB.string "fg" fg, UB.string "bg" <| bgString bg, UB.int "init" initialTimeSeconds ]
+urlFromConfig : String -> BgColor -> Int -> FontFamily -> String
+urlFromConfig fg bg initialTimeSeconds fontFamily =
+    UB.toQuery
+        [ UB.string "fg" fg
+        , UB.string "bg" <| encodeBgColor bg
+        , UB.int "init" initialTimeSeconds
+        , UB.string "font" <| encodeFontFamily fontFamily
+        ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -156,17 +232,26 @@ update msg model =
 
         UpdateResetTime millis ->
             ( { model | initialTimeSeconds = millis }
-            , Browser.Navigation.replaceUrl model.key <| urlFromConfig model.setting.fgColor model.setting.bgColor millis
+            , Browser.Navigation.replaceUrl model.key <|
+                urlFromConfig model.setting.fgColor model.setting.bgColor millis model.setting.fontFamily
             )
 
         SetBgColor bgColor ->
             ( { model | setting = updateBgColor bgColor model.setting }
-            , Browser.Navigation.replaceUrl model.key <| urlFromConfig model.setting.fgColor bgColor model.initialTimeSeconds
+            , Browser.Navigation.replaceUrl model.key <|
+                urlFromConfig model.setting.fgColor bgColor model.initialTimeSeconds model.setting.fontFamily
             )
 
         SetFgColor fgColor ->
             ( { model | setting = updateFgColor fgColor model.setting }
-            , Browser.Navigation.replaceUrl model.key <| urlFromConfig fgColor model.setting.bgColor model.initialTimeSeconds
+            , Browser.Navigation.replaceUrl model.key <|
+                urlFromConfig fgColor model.setting.bgColor model.initialTimeSeconds model.setting.fontFamily
+            )
+
+        SetFontFamily fontFamily ->
+            ( { model | setting = updateFontFamily fontFamily model.setting }
+            , Browser.Navigation.replaceUrl model.key <|
+                urlFromConfig model.setting.fgColor model.setting.bgColor model.initialTimeSeconds fontFamily
             )
 
         ShowHelp showHelp ->
@@ -184,6 +269,11 @@ updateBgColor bgColor setting =
 updateFgColor : String -> Setting -> Setting
 updateFgColor fgColor setting =
     { setting | fgColor = fgColor }
+
+
+updateFontFamily : FontFamily -> Setting -> Setting
+updateFontFamily fontFamily setting =
+    { setting | fontFamily = fontFamily }
 
 
 view : Model -> Browser.Document Msg
@@ -224,15 +314,18 @@ viewHeader =
         ]
 
 
-twitterIntentUrl : String
-twitterIntentUrl =
-    UB.crossOrigin "https://twitter.com"
-        [ "intent", "tweet" ]
-        [ UB.string "text" "Sync Timer 同時視聴配信用タイマー"
-        , UB.string "url" "https://sync-timer.netlify.app/"
-        , UB.string "hashtags" "sync_timer"
-        , UB.string "via" "mather314"
-        ]
+
+{-
+   twitterIntentUrl : String
+   twitterIntentUrl =
+       UB.crossOrigin "https://twitter.com"
+           [ "intent", "tweet" ]
+           [ UB.string "text" "Sync Timer 同時視聴配信用タイマー"
+           , UB.string "url" "https://sync-timer.netlify.app/"
+           , UB.string "hashtags" "sync_timer"
+           , UB.string "via" "mather314"
+           ]
+-}
 
 
 dialog : Bool -> List (Attribute Msg) -> List (Html Msg) -> Html Msg
@@ -282,7 +375,7 @@ viewTimerDigits millis setting =
         displayTime =
             millisToDisplayTime millis
     in
-    div [ class "timer", timerBgColorClass setting.bgColor, style "color" setting.fgColor ]
+    div [ class "timer", fontClass setting.fontFamily, timerBgColorClass setting.bgColor, style "color" setting.fgColor ]
         (List.concat <|
             [ [ span (styleTimerSign displayTime.isMinus) [ text "-" ] ]
             , renderBig2Digits displayTime.hours
@@ -375,6 +468,13 @@ resetButton initialTimeSeconds =
         [ text <| String.fromInt initialTimeSeconds ++ " 秒にリセット" ]
 
 
+selectFontFamily : String -> Msg
+selectFontFamily fontName =
+    Dict.get fontName dictFontFamily
+        |> Maybe.map SetFontFamily
+        |> Maybe.withDefault NoOp
+
+
 viewTimerSettings : Setting -> Html Msg
 viewTimerSettings setting =
     details [ class "settings", attribute "open" "true" ]
@@ -392,6 +492,16 @@ viewTimerSettings setting =
             , label [ for "blueback" ] [ text "BB" ]
             , input [ type_ "radio", id "transparent", name "bgcolor", checked <| setting.bgColor == Transparent, onClick <| SetBgColor Transparent ] []
             , label [ for "transparent" ] [ text "なし" ]
+            ]
+        , div []
+            [ text "フォント"
+            , select [ id "fontFamily", onInput selectFontFamily ]
+                [ option [ value <| encodeFontFamily DDinBold, selected <| setting.fontFamily == DDinBold ] [ text "D-Din-Bold" ]
+                , option [ value <| encodeFontFamily MPlus1P, selected <| setting.fontFamily == MPlus1P ] [ text "M Plus 1P" ]
+                , option [ value <| encodeFontFamily MPlus1PBold, selected <| setting.fontFamily == MPlus1PBold ] [ text "M Plus 1P Bold" ]
+                , option [ value <| encodeFontFamily IBMPlexSerif, selected <| setting.fontFamily == IBMPlexSerif ] [ text "IBM Plex Serif" ]
+                , option [ value <| encodeFontFamily IBMPlexSerifBold, selected <| setting.fontFamily == IBMPlexSerifBold ] [ text "IBM Plex Serif Bold" ]
+                ]
             ]
         ]
 

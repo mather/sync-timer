@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;600&family=M+PLUS+1p:wght@400;700&display=swap');
+
 /*
   elm-hot creates an additional div wrapper around the app to make HMR possible.
   This could break styling in development mode if you are using Elm UI.
@@ -21,30 +24,53 @@
 }
 
 .timer {
-  font-family: "D-DIN-bold";
   font-size: 5rem;
   text-align: center;
   padding: 3rem 0;
   margin: 1rem 0;
 }
 
+.timer .digit {
+  display: inline-block;
+}
+
+.timer .sep {
+  display: inline-block;
+}
+
+.timer.font-d-din-bold {
+  font-family: "D-DIN-bold", sans-serif;
+}
+.timer.font-d-din-bold .digit {
+  width: 1ex;
+  vertical-align: middle;
+}
+.timer.font-d-din-bold .sep {
+  width: 0.5ex;
+}
+
+.timer.font-m-plus-1p {
+  font-family: "M PLUS 1p", sans-serif;
+  font-weight: 400;
+}
+.timer.font-m-plus-1p-bold {
+  font-family: "M PLUS 1p", sans-serif;
+  font-weight: 700;
+}
+.timer.font-ibm-plex-serif {
+  font-family: "IBM Plex Serif", serif;
+  font-weight: 400;
+}
+.timer.font-ibm-plex-serif-bold {
+  font-family: "IBM Plex Serif", serif;
+  font-weight: 600;
+}
 .timer.greenback {
   background-color: #00ff00;
 }
 
 .timer.blueback {
   background-color: #0000ff;
-}
-
-.timer .digit {
-  display: inline-block;
-  width: 1ex;
-  vertical-align: middle;
-}
-
-.timer .sep {
-  display: inline-block;
-  width: 0.5ex;
 }
 
 .button-icon {
@@ -97,4 +123,8 @@ a[role="button"] {
   margin-left: 2em;
   display: inline-block;
   width: 7em;
+}
+
+#fontFamily {
+  display: inline-block;
 }
