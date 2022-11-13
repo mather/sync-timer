@@ -3,7 +3,7 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser exposing (UrlRequest)
 import Browser.Navigation
 import Dict
-import Html exposing (Attribute, Html, a, article, button, details, div, footer, h1, header, i, iframe, input, label, li, main_, nav, node, p, small, span, strong, summary, text, textarea, ul)
+import Html exposing (Attribute, Html, a, article, button, details, div, footer, h1, header, i, iframe, input, label, li, main_, nav, node, p, small, span, summary, text, textarea, ul)
 import Html.Attributes as A exposing (attribute, checked, class, for, height, href, id, name, readonly, rows, src, step, style, type_, value, width)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
@@ -18,7 +18,6 @@ type alias Model =
     { timeMillis : Int
     , paused : Bool
     , current : Maybe Time.Posix
-    , initialTimeSeconds : Int
     , showHelp : Bool
     , setting : Setting
     , key : Browser.Navigation.Key
@@ -28,6 +27,15 @@ type alias Model =
 type alias Setting =
     { bgColor : BgColor
     , fgColor : String
+    , initialTimeSeconds : Int
+    }
+
+
+defaultSetting : Setting
+defaultSetting =
+    { fgColor = "#415462"
+    , bgColor = GreenBack
+    , initialTimeSeconds = -10
     }
 
 
@@ -58,51 +66,56 @@ type BgColor
     | BlueBack
 
 
-type alias InitParams =
-    { fgColor : Maybe String
-    , bgColor : Maybe BgColor
-    , initialTimeSeconds : Maybe Int
-    }
+encodeBgColor : BgColor -> String
+encodeBgColor bg =
+    case bg of
+        GreenBack ->
+            "gb"
+
+        BlueBack ->
+            "bb"
+
+        Transparent ->
+            "tp"
 
 
-queryParser : Query.Parser InitParams
+dictBgColor : Dict.Dict String BgColor
+dictBgColor =
+    let
+        pairwise bgColor =
+            ( encodeBgColor bgColor, bgColor )
+    in
+    Dict.fromList <| List.map pairwise [ GreenBack, BlueBack, Transparent ]
+
+
+parserWithDefault : a -> Query.Parser (Maybe a) -> Query.Parser a
+parserWithDefault default =
+    Query.map <| Maybe.withDefault default
+
+
+queryParser : Query.Parser Setting
 queryParser =
     Query.map3
-        InitParams
-        (Query.string "fg")
-        (Query.enum "bg" <| Dict.fromList [ ( "gb", GreenBack ), ( "bb", BlueBack ), ( "tp", Transparent ) ])
-        (Query.int "init")
-
-
-parser : UP.Parser (InitParams -> a) a
-parser =
-    UP.query queryParser
+        Setting
+        (parserWithDefault defaultSetting.bgColor <| Query.enum "bg" dictBgColor)
+        (parserWithDefault defaultSetting.fgColor <| Query.string "fg")
+        (parserWithDefault defaultSetting.initialTimeSeconds <| Query.int "init")
 
 
 initialModel : flag -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
 initialModel _ url key =
     let
-        initParams =
-            UP.parse parser url
+        urlParser =
+            UP.query queryParser
 
-        initialTimeSeconds =
-            initParams |> Maybe.andThen (\p -> p.initialTimeSeconds) |> Maybe.withDefault -10
-
-        initialBgColor =
-            initParams |> Maybe.andThen (\p -> p.bgColor) |> Maybe.withDefault GreenBack
-
-        initialFgColor =
-            initParams |> Maybe.andThen (\p -> p.fgColor) |> Maybe.withDefault "#415462"
+        initSetting =
+            UP.parse urlParser url |> Maybe.withDefault defaultSetting
     in
-    ( { timeMillis = initialTimeSeconds * 1000
+    ( { timeMillis = initSetting.initialTimeSeconds * 1000
       , paused = True
       , current = Nothing
-      , initialTimeSeconds = initialTimeSeconds
       , showHelp = False
-      , setting =
-            { bgColor = initialBgColor
-            , fgColor = initialFgColor
-            }
+      , setting = initSetting
       , key = key
       }
     , Cmd.none
@@ -121,26 +134,17 @@ type Msg
     | NoOp
 
 
-bgString : BgColor -> String
-bgString bg =
-    case bg of
-        GreenBack ->
-            "gb"
-
-        BlueBack ->
-            "bb"
-
-        Transparent ->
-            "tp"
-
-
 urlFromConfig : String -> BgColor -> Int -> String
 urlFromConfig fg bg initialTimeSeconds =
-    UB.toQuery [ UB.string "fg" fg, UB.string "bg" <| bgString bg, UB.int "init" initialTimeSeconds ]
+    UB.toQuery
+        [ UB.string "fg" fg
+        , UB.string "bg" <| encodeBgColor bg
+        , UB.int "init" initialTimeSeconds
+        ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update msg ({ setting } as model) =
     case msg of
         Start ->
             ( { model | paused = False }, timerStartEvent model.timeMillis )
@@ -149,24 +153,33 @@ update msg model =
             ( { model | paused = True, current = Nothing }, timerPauseEvent model.timeMillis )
 
         Reset ->
-            ( { model | timeMillis = model.initialTimeSeconds * 1000, paused = True, current = Nothing }, timerResetEvent <| model.initialTimeSeconds * 1000 )
+            ( { model
+                | timeMillis = model.setting.initialTimeSeconds * 1000
+                , paused = True
+                , current = Nothing
+              }
+            , timerResetEvent <| model.setting.initialTimeSeconds * 1000
+            )
 
         UpdateTime millis current ->
             ( { model | timeMillis = millis, current = Just current }, Cmd.none )
 
         UpdateResetTime millis ->
-            ( { model | initialTimeSeconds = millis }
-            , Browser.Navigation.replaceUrl model.key <| urlFromConfig model.setting.fgColor model.setting.bgColor millis
+            ( { model | setting = { setting | initialTimeSeconds = millis } }
+            , Browser.Navigation.replaceUrl model.key <|
+                urlFromConfig model.setting.fgColor model.setting.bgColor millis
             )
 
         SetBgColor bgColor ->
-            ( { model | setting = updateBgColor bgColor model.setting }
-            , Browser.Navigation.replaceUrl model.key <| urlFromConfig model.setting.fgColor bgColor model.initialTimeSeconds
+            ( { model | setting = { setting | bgColor = bgColor } }
+            , Browser.Navigation.replaceUrl model.key <|
+                urlFromConfig model.setting.fgColor bgColor model.setting.initialTimeSeconds
             )
 
         SetFgColor fgColor ->
-            ( { model | setting = updateFgColor fgColor model.setting }
-            , Browser.Navigation.replaceUrl model.key <| urlFromConfig fgColor model.setting.bgColor model.initialTimeSeconds
+            ( { model | setting = { setting | fgColor = fgColor } }
+            , Browser.Navigation.replaceUrl model.key <|
+                urlFromConfig fgColor model.setting.bgColor model.setting.initialTimeSeconds
             )
 
         ShowHelp showHelp ->
@@ -174,16 +187,6 @@ update msg model =
 
         NoOp ->
             ( model, Cmd.none )
-
-
-updateBgColor : BgColor -> Setting -> Setting
-updateBgColor bgColor setting =
-    { setting | bgColor = bgColor }
-
-
-updateFgColor : String -> Setting -> Setting
-updateFgColor fgColor setting =
-    { setting | fgColor = fgColor }
 
 
 view : Model -> Browser.Document Msg
@@ -221,17 +224,6 @@ viewHeader =
                     ]
                 ]
             ]
-        ]
-
-
-twitterIntentUrl : String
-twitterIntentUrl =
-    UB.crossOrigin "https://twitter.com"
-        [ "intent", "tweet" ]
-        [ UB.string "text" "Sync Timer 同時視聴配信用タイマー"
-        , UB.string "url" "https://sync-timer.netlify.app/"
-        , UB.string "hashtags" "sync_timer"
-        , UB.string "via" "mather314"
         ]
 
 
@@ -347,8 +339,8 @@ viewTimerControls : Model -> Html Msg
 viewTimerControls model =
     div [ class "controls" ]
         [ div [] [ startPauseButton model.paused ]
-        , div [] [ resetButton model.initialTimeSeconds ]
-        , div [] [ initialTimeSlider model.initialTimeSeconds ]
+        , div [] [ resetButton model.setting.initialTimeSeconds ]
+        , div [] [ initialTimeSlider model.setting.initialTimeSeconds ]
         ]
 
 
