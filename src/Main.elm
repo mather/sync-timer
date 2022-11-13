@@ -3,7 +3,7 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser exposing (UrlRequest)
 import Browser.Navigation
 import Dict
-import Html exposing (Attribute, Html, a, article, button, details, div, footer, h1, header, i, iframe, input, label, li, main_, nav, node, p, small, span, summary, text, textarea, ul)
+import Html exposing (Attribute, Html, a, article, button, details, div, footer, h1, h2, header, i, iframe, input, label, li, main_, nav, node, p, small, span, summary, text, textarea, ul)
 import Html.Attributes as A exposing (attribute, checked, class, for, height, href, id, name, readonly, rows, src, step, style, type_, value, width)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
@@ -202,11 +202,6 @@ view model =
         , viewHelpModal model.showHelp
         ]
     }
-
-
-role : String -> Attribute Msg
-role =
-    attribute "role"
 
 
 viewHeader : Html Msg
@@ -414,23 +409,39 @@ viewFooter =
     footer []
         [ div [ class "container" ]
             [ p []
-                [ text "ご意見や感想などは"
+                [ text "機能要望や質問・感想などは"
                 , a [ A.href "https://docs.google.com/forms/d/e/1FAIpQLSfgmFqq-t-vv6gC1YpgoH3nCK1b7gI0ROC25K1NX9r5jGtndg/viewform?usp=sf_link", A.target "_blank", A.rel "noopener noreferrer" ] [ text "こちらのフォームからどうぞ" ]
                 ]
-            , div [] [ small [] [ text "気に入っていただけたら概要欄で共有をお願いします（必須ではありません）" ] ]
-            , textarea [ readonly True, rows 2 ] [ text "同時視聴用タイマー SyncTimer を利用しています\nhttps://sync-timer.netlify.app/" ]
-            , div []
-                [ a [ href "https://twitter.com/intent/user?user_id=62148177", role "button", A.target "_blank", A.rel "noopener noreferrer", tooltip "更新情報をTwitterでつぶやくこともあります" ]
-                    [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
-                    , text "作者 Twitter"
+            , div [] [ small [] [ text "よろしければ概要欄でタイマーの紹介をお願いします（必須ではありません）" ] ]
+            , textarea [ readonly True, rows 2, id "introduce-request" ] [ text "同時視聴用タイマー SyncTimer を利用しています\nhttps://sync-timer.netlify.app/" ]
+            , div [ class "grid" ]
+                [ div [ class "footer-left" ]
+                    [ h2 [] [ text "お知らせ" ]
+                    , ul []
+                        [ li [] [ text "YouTubeでの利用例を紹介しました" ]
+                        ]
                     ]
-                , a [ href "https://github.com/mather/sync-timer", role "button", class "secondary", A.target "_blank", A.rel "noopener noreferrer", tooltip "Issue, PRをお待ちしています" ]
-                    [ i [ class "fab", class "fa-github", class "button-icon" ] []
-                    , text "ソースコード"
+                , div [ class "footer-right" ]
+                    [ div []
+                        [ a [ href "https://youtube.com/playlist?list=PLzz5NMXBDKoZ8UoGCgQI9mdcfmyjugbwz", A.target "_blank", A.rel "noopener noreferrer" ]
+                            [ i [ class "fab", class "fa-youtube", class "button-icon" ] []
+                            , text "YouTubeでの利用例"
+                            ]
+                        ]
+                    , div []
+                        [ a [ href "https://twitter.com/intent/user?user_id=62148177", A.target "_blank", A.rel "noopener noreferrer" ]
+                            [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
+                            , text "@mather314 (開発者)"
+                            ]
+                        ]
+                    , div []
+                        [ a [ href "https://github.com/mather/sync-timer", class "secondary", A.target "_blank", A.rel "noopener noreferrer" ]
+                            [ i [ class "fab", class "fa-github", class "button-icon" ] []
+                            , text "mather/sync-timer"
+                            ]
+                        ]
+                    , div [] [ text "© Eisuke Kuwahata" ]
                     ]
-                , span
-                    []
-                    [ text "© Eisuke Kuwahata" ]
                 ]
             ]
         ]

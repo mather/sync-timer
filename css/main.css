@@ -56,6 +56,15 @@ footer {
   background-color: #eeeeee;
   text-align: center;
 }
+.footer-left {
+  text-align: left;
+}
+.footer-right {
+  text-align: left;
+}
+footer #introduce-request {
+  background-color: white;
+}
 
 a[role="button"] {
   margin-left: 1ex;
