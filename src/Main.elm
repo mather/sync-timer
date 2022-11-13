@@ -149,7 +149,7 @@ urlFromConfig fg bg initialTimeSeconds =
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
+update msg ({ setting } as model) =
     case msg of
         Start ->
             ( { model | paused = False }, timerStartEvent model.timeMillis )
@@ -170,19 +170,19 @@ update msg model =
             ( { model | timeMillis = millis, current = Just current }, Cmd.none )
 
         UpdateResetTime millis ->
-            ( { model | setting = updateInitialTimeSeconds millis model.setting }
+            ( { model | setting = { setting | initialTimeSeconds = millis } }
             , Browser.Navigation.replaceUrl model.key <|
                 urlFromConfig model.setting.fgColor model.setting.bgColor millis
             )
 
         SetBgColor bgColor ->
-            ( { model | setting = updateBgColor bgColor model.setting }
+            ( { model | setting = { setting | bgColor = bgColor } }
             , Browser.Navigation.replaceUrl model.key <|
                 urlFromConfig model.setting.fgColor bgColor model.setting.initialTimeSeconds
             )
 
         SetFgColor fgColor ->
-            ( { model | setting = updateFgColor fgColor model.setting }
+            ( { model | setting = { setting | fgColor = fgColor } }
             , Browser.Navigation.replaceUrl model.key <|
                 urlFromConfig fgColor model.setting.bgColor model.setting.initialTimeSeconds
             )
@@ -192,21 +192,6 @@ update msg model =
 
         NoOp ->
             ( model, Cmd.none )
-
-
-updateBgColor : BgColor -> Setting -> Setting
-updateBgColor bgColor setting =
-    { setting | bgColor = bgColor }
-
-
-updateFgColor : String -> Setting -> Setting
-updateFgColor fgColor setting =
-    { setting | fgColor = fgColor }
-
-
-updateInitialTimeSeconds : Int -> Setting -> Setting
-updateInitialTimeSeconds init setting =
-    { setting | initialTimeSeconds = init }
 
 
 view : Model -> Browser.Document Msg
