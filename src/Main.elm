@@ -97,9 +97,9 @@ queryParser : Query.Parser Setting
 queryParser =
     Query.map3
         Setting
-        (Query.enum "bg" dictBgColor |> parserWithDefault defaultSetting.bgColor)
-        (Query.string "fg" |> parserWithDefault defaultSetting.fgColor)
-        (Query.int "init" |> parserWithDefault defaultSetting.initialTimeSeconds)
+        (parserWithDefault defaultSetting.bgColor <| Query.enum "bg" dictBgColor)
+        (parserWithDefault defaultSetting.fgColor <| Query.string "fg")
+        (parserWithDefault defaultSetting.initialTimeSeconds <| Query.int "init")
 
 
 initialModel : flag -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
