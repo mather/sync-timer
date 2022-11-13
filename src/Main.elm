@@ -3,7 +3,7 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser exposing (UrlRequest)
 import Browser.Navigation
 import Dict
-import Html exposing (Attribute, Html, a, article, button, details, div, footer, h1, header, i, iframe, input, label, li, main_, nav, node, p, small, span, strong, summary, text, textarea, ul)
+import Html exposing (Attribute, Html, a, article, button, details, div, footer, h1, header, i, iframe, input, label, li, main_, nav, node, p, small, span, summary, text, textarea, ul)
 import Html.Attributes as A exposing (attribute, checked, class, for, height, href, id, name, readonly, rows, src, step, style, type_, value, width)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
@@ -229,17 +229,6 @@ viewHeader =
                     ]
                 ]
             ]
-        ]
-
-
-twitterIntentUrl : String
-twitterIntentUrl =
-    UB.crossOrigin "https://twitter.com"
-        [ "intent", "tweet" ]
-        [ UB.string "text" "Sync Timer 同時視聴配信用タイマー"
-        , UB.string "url" "https://sync-timer.netlify.app/"
-        , UB.string "hashtags" "sync_timer"
-        , UB.string "via" "mather314"
         ]
 
 
