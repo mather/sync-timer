@@ -31,6 +31,14 @@ type alias Setting =
     }
 
 
+defaultSetting : Setting
+defaultSetting =
+    { fgColor = "#415462"
+    , bgColor = GreenBack
+    , initialTimeSeconds = -10
+    }
+
+
 type alias DisplayTime =
     { isMinus : Bool
     , hours : Int
@@ -78,14 +86,6 @@ dictBgColor =
             \bg -> ( encodeBgColor bg, bg )
     in
     Dict.fromList <| List.map pairwise [ GreenBack, BlueBack, Transparent ]
-
-
-defaultSetting : Setting
-defaultSetting =
-    { fgColor = "#415462"
-    , bgColor = GreenBack
-    , initialTimeSeconds = -10
-    }
 
 
 parserWithDefault : a -> Query.Parser (Maybe a) -> Query.Parser a
