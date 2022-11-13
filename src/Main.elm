@@ -80,13 +80,6 @@ dictBgColor =
     Dict.fromList <| List.map pairwise [ GreenBack, BlueBack, Transparent ]
 
 
-type alias InitParams =
-    { fgColor : String
-    , bgColor : BgColor
-    , initialTimeSeconds : Int
-    }
-
-
 defaultSetting : Setting
 defaultSetting =
     { fgColor = "#415462"
@@ -109,16 +102,14 @@ queryParser =
         (Query.int "init" |> parserWithDefault defaultSetting.initialTimeSeconds)
 
 
-parser : UP.Parser (InitParams -> a) a
-parser =
-    UP.query queryParser
-
-
 initialModel : flag -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
 initialModel _ url key =
     let
+        urlParser =
+            UP.query queryParser
+
         initSetting =
-            UP.parse parser url |> Maybe.withDefault defaultSetting
+            UP.parse urlParser url |> Maybe.withDefault defaultSetting
     in
     ( { timeMillis = initSetting.initialTimeSeconds * 1000
       , paused = True
