@@ -82,8 +82,8 @@ encodeBgColor bg =
 dictBgColor : Dict.Dict String BgColor
 dictBgColor =
     let
-        pairwise =
-            \bg -> ( encodeBgColor bg, bg )
+        pairwise bgColor =
+            ( encodeBgColor bgColor, bgColor )
     in
     Dict.fromList <| List.map pairwise [ GreenBack, BlueBack, Transparent ]
 
@@ -136,7 +136,11 @@ type Msg
 
 urlFromConfig : String -> BgColor -> Int -> String
 urlFromConfig fg bg initialTimeSeconds =
-    UB.toQuery [ UB.string "fg" fg, UB.string "bg" <| encodeBgColor bg, UB.int "init" initialTimeSeconds ]
+    UB.toQuery
+        [ UB.string "fg" fg
+        , UB.string "bg" <| encodeBgColor bg
+        , UB.int "init" initialTimeSeconds
+        ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
