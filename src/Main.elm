@@ -59,19 +59,32 @@ type BgColor
 
 
 type alias InitParams =
-    { fgColor : Maybe String
-    , bgColor : Maybe BgColor
-    , initialTimeSeconds : Maybe Int
+    { fgColor : String
+    , bgColor : BgColor
+    , initialTimeSeconds : Int
     }
+
+
+defaultInitParams : InitParams
+defaultInitParams =
+    { fgColor = "#415462"
+    , bgColor = GreenBack
+    , initialTimeSeconds = -10
+    }
+
+
+parserWithDefault : a -> Query.Parser (Maybe a) -> Query.Parser a
+parserWithDefault default =
+    Query.map <| Maybe.withDefault default
 
 
 queryParser : Query.Parser InitParams
 queryParser =
     Query.map3
         InitParams
-        (Query.string "fg")
-        (Query.enum "bg" <| Dict.fromList [ ( "gb", GreenBack ), ( "bb", BlueBack ), ( "tp", Transparent ) ])
-        (Query.int "init")
+        (Query.string "fg" |> parserWithDefault defaultInitParams.fgColor)
+        (Query.enum "bg" (Dict.fromList [ ( "gb", GreenBack ), ( "bb", BlueBack ), ( "tp", Transparent ) ]) |> parserWithDefault defaultInitParams.bgColor)
+        (Query.int "init" |> parserWithDefault defaultInitParams.initialTimeSeconds)
 
 
 parser : UP.Parser (InitParams -> a) a
@@ -83,25 +96,16 @@ initialModel : flag -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
 initialModel _ url key =
     let
         initParams =
-            UP.parse parser url
-
-        initialTimeSeconds =
-            initParams |> Maybe.andThen (\p -> p.initialTimeSeconds) |> Maybe.withDefault -10
-
-        initialBgColor =
-            initParams |> Maybe.andThen (\p -> p.bgColor) |> Maybe.withDefault GreenBack
-
-        initialFgColor =
-            initParams |> Maybe.andThen (\p -> p.fgColor) |> Maybe.withDefault "#415462"
+            UP.parse parser url |> Maybe.withDefault defaultInitParams
     in
-    ( { timeMillis = initialTimeSeconds * 1000
+    ( { timeMillis = initParams.initialTimeSeconds * 1000
       , paused = True
       , current = Nothing
-      , initialTimeSeconds = initialTimeSeconds
+      , initialTimeSeconds = initParams.initialTimeSeconds
       , showHelp = False
       , setting =
-            { bgColor = initialBgColor
-            , fgColor = initialFgColor
+            { bgColor = initParams.bgColor
+            , fgColor = initParams.fgColor
             }
       , key = key
       }
