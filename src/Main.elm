@@ -58,6 +58,28 @@ type BgColor
     | BlueBack
 
 
+encodeBgColor : BgColor -> String
+encodeBgColor bg =
+    case bg of
+        GreenBack ->
+            "gb"
+
+        BlueBack ->
+            "bb"
+
+        Transparent ->
+            "tp"
+
+
+dictBgColor : Dict.Dict String BgColor
+dictBgColor =
+    let
+        pairwise =
+            \bg -> ( encodeBgColor bg, bg )
+    in
+    Dict.fromList <| List.map pairwise [ GreenBack, BlueBack, Transparent ]
+
+
 type alias InitParams =
     { fgColor : String
     , bgColor : BgColor
@@ -83,7 +105,7 @@ queryParser =
     Query.map3
         InitParams
         (Query.string "fg" |> parserWithDefault defaultInitParams.fgColor)
-        (Query.enum "bg" (Dict.fromList [ ( "gb", GreenBack ), ( "bb", BlueBack ), ( "tp", Transparent ) ]) |> parserWithDefault defaultInitParams.bgColor)
+        (Query.enum "bg" dictBgColor |> parserWithDefault defaultInitParams.bgColor)
         (Query.int "init" |> parserWithDefault defaultInitParams.initialTimeSeconds)
 
 
@@ -125,22 +147,9 @@ type Msg
     | NoOp
 
 
-bgString : BgColor -> String
-bgString bg =
-    case bg of
-        GreenBack ->
-            "gb"
-
-        BlueBack ->
-            "bb"
-
-        Transparent ->
-            "tp"
-
-
 urlFromConfig : String -> BgColor -> Int -> String
 urlFromConfig fg bg initialTimeSeconds =
-    UB.toQuery [ UB.string "fg" fg, UB.string "bg" <| bgString bg, UB.int "init" initialTimeSeconds ]
+    UB.toQuery [ UB.string "fg" fg, UB.string "bg" <| encodeBgColor bg, UB.int "init" initialTimeSeconds ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
