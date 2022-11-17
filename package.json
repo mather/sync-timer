@@ -13,7 +13,7 @@
     "elm": "^0.19.1-5",
     "elm-format": "^0.8.5",
     "elm-hot": "^1.1.6",
-    "elm-test": "^0.19.1-revision7",
+    "elm-test": "^0.19.1-revision10",
     "node-elm-compiler": "^5.0.6",
     "vite": "^2.9.13",
     "vite-plugin-elm": "^2.5.1"
