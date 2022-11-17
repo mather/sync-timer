@@ -96,14 +96,6 @@ a[role="button"] {
   margin-left: 2em;
 }
 
-#fgColorPicker {
-  margin-left: 2em;
+.bgColor label {
   display: inline-block;
-  width: 7em;
-}
-
-#fgColorText {
-  margin-left: 2em;
-  display: inline-block;
-  width: 7em;
 }

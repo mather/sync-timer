@@ -3,7 +3,7 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser exposing (UrlRequest)
 import Browser.Navigation
 import Dict
-import Html exposing (Attribute, Html, a, article, button, details, div, footer, h1, h2, header, i, iframe, input, label, li, main_, nav, node, p, small, span, summary, text, textarea, ul)
+import Html exposing (Attribute, Html, a, article, button, details, div, fieldset, footer, h1, h2, header, i, iframe, input, label, legend, li, main_, nav, node, p, small, span, summary, text, textarea, ul)
 import Html.Attributes as A exposing (attribute, checked, class, for, height, href, id, name, readonly, rows, src, step, style, type_, value, width)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
@@ -409,24 +409,43 @@ viewTimerSettings : Setting -> Html Msg
 viewTimerSettings setting =
     details [ class "settings", attribute "open" "true" ]
         [ summary [] [ text "表示設定" ]
-        , div []
-            [ text "文字色"
-            , input [ type_ "color", id "fgColorPicker", value setting.fgColor, onInput SetFgColor ] []
-            , input [ type_ "text", id "fgColorText", value setting.fgColor, onInput SetFgColor ] []
+        , div [ class "grid" ]
+            [ div []
+                [ label [ for "fgColorPicker" ]
+                    [ text "文字色"
+                    , input [ type_ "color", id "fgColorPicker", value setting.fgColor, onInput SetFgColor ] []
+                    ]
+                ]
+            , div []
+                [ label [ for "fgColorText" ]
+                    [ text "文字色(RGB指定)"
+                    , input [ type_ "text", id "fgColorText", value setting.fgColor, onInput SetFgColor ] []
+                    ]
+                ]
             ]
         , div []
-            [ text "背景色"
-            , input [ type_ "radio", id "greenback", name "bgcolor", checked <| setting.bgColor == GreenBack, onClick <| SetBgColor GreenBack ] []
-            , label [ for "greenback" ] [ text "GB" ]
-            , input [ type_ "radio", id "blueback", name "bgcolor", checked <| setting.bgColor == BlueBack, onClick <| SetBgColor BlueBack ] []
-            , label [ for "blueback" ] [ text "BB" ]
-            , input [ type_ "radio", id "transparent", name "bgcolor", checked <| setting.bgColor == Transparent, onClick <| SetBgColor Transparent ] []
-            , label [ for "transparent" ] [ text "なし" ]
+            [ fieldset [ class "bgColor" ]
+                [ legend [] [ text "背景色" ]
+                , label [ for "greenback" ]
+                    [ input [ type_ "radio", id "greenback", name "bgcolor", checked <| setting.bgColor == GreenBack, onClick <| SetBgColor GreenBack ] []
+                    , text "GB"
+                    ]
+                , label [ for "blueback" ]
+                    [ input [ type_ "radio", id "blueback", name "bgcolor", checked <| setting.bgColor == BlueBack, onClick <| SetBgColor BlueBack ] []
+                    , text "BB"
+                    ]
+                , label [ for "transparent" ]
+                    [ input [ type_ "radio", id "transparent", name "bgcolor", checked <| setting.bgColor == Transparent, onClick <| SetBgColor Transparent ] []
+                    , text "なし"
+                    ]
+                ]
             ]
         , div
             []
-            [ text "時間を表示する"
-            , input [ type_ "checkbox", id "showHour", role "switch", checked setting.showHour, onClick ToggleShowHour ] []
+            [ label [ for "showHour" ]
+                [ input [ type_ "checkbox", id "showHour", role "switch", checked setting.showHour, onClick ToggleShowHour ] []
+                , text "時間を表示する"
+                ]
             ]
         ]
 
