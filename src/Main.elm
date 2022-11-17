@@ -28,6 +28,7 @@ type alias Setting =
     { bgColor : BgColor
     , fgColor : String
     , initialTimeSeconds : Int
+    , showHour : Bool
     }
 
 
@@ -36,6 +37,7 @@ defaultSetting =
     { fgColor = "#415462"
     , bgColor = GreenBack
     , initialTimeSeconds = -10
+    , showHour = True
     }
 
 
@@ -88,6 +90,20 @@ dictBgColor =
     Dict.fromList <| List.map pairwise [ GreenBack, BlueBack, Transparent ]
 
 
+encodeShowHour : Bool -> String
+encodeShowHour b =
+    if b then
+        "true"
+
+    else
+        "false"
+
+
+dictShowHour : Dict.Dict String Bool
+dictShowHour =
+    Dict.fromList [ ( "true", True ), ( "false", False ) ]
+
+
 parserWithDefault : a -> Query.Parser (Maybe a) -> Query.Parser a
 parserWithDefault default =
     Query.map <| Maybe.withDefault default
@@ -95,11 +111,12 @@ parserWithDefault default =
 
 queryParser : Query.Parser Setting
 queryParser =
-    Query.map3
+    Query.map4
         Setting
         (parserWithDefault defaultSetting.bgColor <| Query.enum "bg" dictBgColor)
         (parserWithDefault defaultSetting.fgColor <| Query.string "fg")
         (parserWithDefault defaultSetting.initialTimeSeconds <| Query.int "init")
+        (parserWithDefault defaultSetting.showHour <| Query.enum "h" dictShowHour)
 
 
 initialModel : flag -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
@@ -130,16 +147,18 @@ type Msg
     | UpdateResetTime Int
     | SetBgColor BgColor
     | SetFgColor String
+    | ToggleShowHour
     | ShowHelp Bool
     | NoOp
 
 
-urlFromConfig : String -> BgColor -> Int -> String
-urlFromConfig fg bg initialTimeSeconds =
+urlFromSetting : Setting -> String
+urlFromSetting setting =
     UB.toQuery
-        [ UB.string "fg" fg
-        , UB.string "bg" <| encodeBgColor bg
-        , UB.int "init" initialTimeSeconds
+        [ UB.string "fg" setting.fgColor
+        , UB.string "bg" <| encodeBgColor setting.bgColor
+        , UB.int "init" setting.initialTimeSeconds
+        , UB.string "h" <| encodeShowHour setting.showHour
         ]
 
 
@@ -167,19 +186,25 @@ update msg ({ setting } as model) =
         UpdateResetTime millis ->
             ( { model | setting = { setting | initialTimeSeconds = millis } }
             , Browser.Navigation.replaceUrl model.key <|
-                urlFromConfig model.setting.fgColor model.setting.bgColor millis
+                urlFromSetting { setting | initialTimeSeconds = millis }
             )
 
         SetBgColor bgColor ->
             ( { model | setting = { setting | bgColor = bgColor } }
             , Browser.Navigation.replaceUrl model.key <|
-                urlFromConfig model.setting.fgColor bgColor model.setting.initialTimeSeconds
+                urlFromSetting { setting | bgColor = bgColor }
             )
 
         SetFgColor fgColor ->
             ( { model | setting = { setting | fgColor = fgColor } }
             , Browser.Navigation.replaceUrl model.key <|
-                urlFromConfig fgColor model.setting.bgColor model.setting.initialTimeSeconds
+                urlFromSetting { setting | fgColor = fgColor }
+            )
+
+        ToggleShowHour ->
+            ( { model | setting = { setting | showHour = not setting.showHour } }
+            , Browser.Navigation.replaceUrl model.key <|
+                urlFromSetting { setting | showHour = not setting.showHour }
             )
 
         ShowHelp showHelp ->
@@ -268,17 +293,30 @@ viewTimerDigits millis setting =
     let
         displayTime =
             millisToDisplayTime millis
+
+        displaySegments =
+            if setting.showHour || displayTime.hours > 0 then
+                [ displayTime.hours, displayTime.minutes, displayTime.seconds ]
+
+            else
+                [ displayTime.minutes, displayTime.seconds ]
     in
     div [ class "timer", timerBgColorClass setting.bgColor, style "color" setting.fgColor ]
         (List.concat <|
             [ [ span (styleTimerSign displayTime.isMinus) [ text "-" ] ]
-            , renderBig2Digits displayTime.hours
-            , [ span styleTimerSep [ text ":" ] ]
-            , renderBig2Digits displayTime.minutes
-            , [ span styleTimerSep [ text ":" ] ]
-            , renderBig2Digits displayTime.seconds
+            , List.foldr joinWithSegment [] <| List.map renderBig2Digits displaySegments
             ]
         )
+
+
+joinWithSegment : List (Html Msg) -> List (Html Msg) -> List (Html Msg)
+joinWithSegment a b =
+    case b of
+        [] ->
+            a
+
+        _ ->
+            List.concat [ a, [ span styleTimerSep [ text ":" ] ], b ]
 
 
 timerBgColorClass : BgColor -> Attribute Msg
@@ -362,6 +400,11 @@ resetButton initialTimeSeconds =
         [ text <| String.fromInt initialTimeSeconds ++ " 秒にリセット" ]
 
 
+role : String -> Attribute Msg
+role s =
+    attribute "role" s
+
+
 viewTimerSettings : Setting -> Html Msg
 viewTimerSettings setting =
     details [ class "settings", attribute "open" "true" ]
@@ -379,6 +422,11 @@ viewTimerSettings setting =
             , label [ for "blueback" ] [ text "BB" ]
             , input [ type_ "radio", id "transparent", name "bgcolor", checked <| setting.bgColor == Transparent, onClick <| SetBgColor Transparent ] []
             , label [ for "transparent" ] [ text "なし" ]
+            ]
+        , div
+            []
+            [ text "時間を表示する"
+            , input [ type_ "checkbox", id "showHour", role "switch", checked setting.showHour, onClick ToggleShowHour ] []
             ]
         ]
 
