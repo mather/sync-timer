@@ -3,7 +3,7 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser exposing (UrlRequest)
 import Browser.Navigation
 import Dict
-import Html exposing (Attribute, Html, a, article, button, details, div, footer, h1, h2, header, i, iframe, input, label, li, main_, nav, node, p, small, span, summary, text, textarea, ul)
+import Html exposing (Attribute, Html, a, article, button, details, div, fieldset, footer, h1, h2, header, i, iframe, input, label, legend, li, main_, nav, node, p, small, span, summary, text, textarea, ul)
 import Html.Attributes as A exposing (attribute, checked, class, for, height, href, id, name, readonly, rows, src, step, style, type_, value, width)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
@@ -28,6 +28,7 @@ type alias Setting =
     { bgColor : BgColor
     , fgColor : String
     , initialTimeSeconds : Int
+    , showHour : Bool
     }
 
 
@@ -36,6 +37,7 @@ defaultSetting =
     { fgColor = "#415462"
     , bgColor = GreenBack
     , initialTimeSeconds = -10
+    , showHour = True
     }
 
 
@@ -88,6 +90,20 @@ dictBgColor =
     Dict.fromList <| List.map pairwise [ GreenBack, BlueBack, Transparent ]
 
 
+encodeShowHour : Bool -> String
+encodeShowHour b =
+    if b then
+        "true"
+
+    else
+        "false"
+
+
+dictShowHour : Dict.Dict String Bool
+dictShowHour =
+    Dict.fromList [ ( "true", True ), ( "false", False ) ]
+
+
 parserWithDefault : a -> Query.Parser (Maybe a) -> Query.Parser a
 parserWithDefault default =
     Query.map <| Maybe.withDefault default
@@ -95,11 +111,12 @@ parserWithDefault default =
 
 queryParser : Query.Parser Setting
 queryParser =
-    Query.map3
+    Query.map4
         Setting
         (parserWithDefault defaultSetting.bgColor <| Query.enum "bg" dictBgColor)
         (parserWithDefault defaultSetting.fgColor <| Query.string "fg")
         (parserWithDefault defaultSetting.initialTimeSeconds <| Query.int "init")
+        (parserWithDefault defaultSetting.showHour <| Query.enum "h" dictShowHour)
 
 
 initialModel : flag -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
@@ -130,16 +147,18 @@ type Msg
     | UpdateResetTime Int
     | SetBgColor BgColor
     | SetFgColor String
+    | ToggleShowHour
     | ShowHelp Bool
     | NoOp
 
 
-urlFromConfig : String -> BgColor -> Int -> String
-urlFromConfig fg bg initialTimeSeconds =
+urlFromSetting : Setting -> String
+urlFromSetting setting =
     UB.toQuery
-        [ UB.string "fg" fg
-        , UB.string "bg" <| encodeBgColor bg
-        , UB.int "init" initialTimeSeconds
+        [ UB.string "fg" setting.fgColor
+        , UB.string "bg" <| encodeBgColor setting.bgColor
+        , UB.int "init" setting.initialTimeSeconds
+        , UB.string "h" <| encodeShowHour setting.showHour
         ]
 
 
@@ -167,19 +186,25 @@ update msg ({ setting } as model) =
         UpdateResetTime millis ->
             ( { model | setting = { setting | initialTimeSeconds = millis } }
             , Browser.Navigation.replaceUrl model.key <|
-                urlFromConfig model.setting.fgColor model.setting.bgColor millis
+                urlFromSetting { setting | initialTimeSeconds = millis }
             )
 
         SetBgColor bgColor ->
             ( { model | setting = { setting | bgColor = bgColor } }
             , Browser.Navigation.replaceUrl model.key <|
-                urlFromConfig model.setting.fgColor bgColor model.setting.initialTimeSeconds
+                urlFromSetting { setting | bgColor = bgColor }
             )
 
         SetFgColor fgColor ->
             ( { model | setting = { setting | fgColor = fgColor } }
             , Browser.Navigation.replaceUrl model.key <|
-                urlFromConfig fgColor model.setting.bgColor model.setting.initialTimeSeconds
+                urlFromSetting { setting | fgColor = fgColor }
+            )
+
+        ToggleShowHour ->
+            ( { model | setting = { setting | showHour = not setting.showHour } }
+            , Browser.Navigation.replaceUrl model.key <|
+                urlFromSetting { setting | showHour = not setting.showHour }
             )
 
         ShowHelp showHelp ->
@@ -268,17 +293,30 @@ viewTimerDigits millis setting =
     let
         displayTime =
             millisToDisplayTime millis
+
+        displaySegments =
+            if setting.showHour || displayTime.hours > 0 then
+                [ displayTime.hours, displayTime.minutes, displayTime.seconds ]
+
+            else
+                [ displayTime.minutes, displayTime.seconds ]
     in
     div [ class "timer", timerBgColorClass setting.bgColor, style "color" setting.fgColor ]
         (List.concat <|
             [ [ span (styleTimerSign displayTime.isMinus) [ text "-" ] ]
-            , renderBig2Digits displayTime.hours
-            , [ span styleTimerSep [ text ":" ] ]
-            , renderBig2Digits displayTime.minutes
-            , [ span styleTimerSep [ text ":" ] ]
-            , renderBig2Digits displayTime.seconds
+            , List.foldr joinWithSegment [] <| List.map renderBig2Digits displaySegments
             ]
         )
+
+
+joinWithSegment : List (Html Msg) -> List (Html Msg) -> List (Html Msg)
+joinWithSegment a b =
+    case b of
+        [] ->
+            a
+
+        _ ->
+            List.concat [ a, [ span styleTimerSep [ text ":" ] ], b ]
 
 
 timerBgColorClass : BgColor -> Attribute Msg
@@ -362,23 +400,52 @@ resetButton initialTimeSeconds =
         [ text <| String.fromInt initialTimeSeconds ++ " 秒にリセット" ]
 
 
+role : String -> Attribute Msg
+role s =
+    attribute "role" s
+
+
 viewTimerSettings : Setting -> Html Msg
 viewTimerSettings setting =
     details [ class "settings", attribute "open" "true" ]
         [ summary [] [ text "表示設定" ]
-        , div []
-            [ text "文字色"
-            , input [ type_ "color", id "fgColorPicker", value setting.fgColor, onInput SetFgColor ] []
-            , input [ type_ "text", id "fgColorText", value setting.fgColor, onInput SetFgColor ] []
+        , div [ class "grid" ]
+            [ div []
+                [ label [ for "fgColorPicker" ]
+                    [ text "文字色"
+                    , input [ type_ "color", id "fgColorPicker", value setting.fgColor, onInput SetFgColor ] []
+                    ]
+                ]
+            , div []
+                [ label [ for "fgColorText" ]
+                    [ text "文字色(RGB指定)"
+                    , input [ type_ "text", id "fgColorText", value setting.fgColor, onInput SetFgColor ] []
+                    ]
+                ]
             ]
         , div []
-            [ text "背景色"
-            , input [ type_ "radio", id "greenback", name "bgcolor", checked <| setting.bgColor == GreenBack, onClick <| SetBgColor GreenBack ] []
-            , label [ for "greenback" ] [ text "GB" ]
-            , input [ type_ "radio", id "blueback", name "bgcolor", checked <| setting.bgColor == BlueBack, onClick <| SetBgColor BlueBack ] []
-            , label [ for "blueback" ] [ text "BB" ]
-            , input [ type_ "radio", id "transparent", name "bgcolor", checked <| setting.bgColor == Transparent, onClick <| SetBgColor Transparent ] []
-            , label [ for "transparent" ] [ text "なし" ]
+            [ fieldset [ class "bgColor" ]
+                [ legend [] [ text "背景色" ]
+                , label [ for "greenback" ]
+                    [ input [ type_ "radio", id "greenback", name "bgcolor", checked <| setting.bgColor == GreenBack, onClick <| SetBgColor GreenBack ] []
+                    , text "GB"
+                    ]
+                , label [ for "blueback" ]
+                    [ input [ type_ "radio", id "blueback", name "bgcolor", checked <| setting.bgColor == BlueBack, onClick <| SetBgColor BlueBack ] []
+                    , text "BB"
+                    ]
+                , label [ for "transparent" ]
+                    [ input [ type_ "radio", id "transparent", name "bgcolor", checked <| setting.bgColor == Transparent, onClick <| SetBgColor Transparent ] []
+                    , text "なし"
+                    ]
+                ]
+            ]
+        , div
+            []
+            [ label [ for "showHour" ]
+                [ input [ type_ "checkbox", id "showHour", role "switch", checked setting.showHour, onClick ToggleShowHour ] []
+                , text "時間を表示する"
+                ]
             ]
         ]
 
@@ -416,9 +483,10 @@ viewFooter =
             , textarea [ readonly True, rows 2, id "introduce-request" ] [ text "同時視聴用タイマー SyncTimer を利用しています\nhttps://sync-timer.netlify.app/" ]
             , div [ class "grid" ]
                 [ div [ class "footer-left" ]
-                    [ h2 [] [ text "お知らせ" ]
+                    [ h2 [] [ text "更新情報" ]
                     , ul []
-                        [ li [] [ text "YouTubeでの利用例を紹介しました" ]
+                        [ li [] [ text "2022-11-18 時間の表示をON/OFFできるようにしました" ]
+                        , li [] [ text "2022-11-14 YouTubeでの利用例を紹介しました" ]
                         ]
                     ]
                 , div [ class "footer-right" ]

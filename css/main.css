@@ -62,6 +62,11 @@ footer {
 .footer-right {
   text-align: left;
 }
+
+footer h2 {
+  margin-bottom: 1ex;
+}
+
 footer #introduce-request {
   background-color: white;
 }
@@ -96,14 +101,6 @@ a[role="button"] {
   margin-left: 2em;
 }
 
-#fgColorPicker {
-  margin-left: 2em;
+.bgColor label {
   display: inline-block;
-  width: 7em;
-}
-
-#fgColorText {
-  margin-left: 2em;
-  display: inline-block;
-  width: 7em;
 }
