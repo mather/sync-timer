@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="ja" data-theme="dark">
 
 <head>
@@ -28,6 +29,7 @@
         content.style.display = "none";
         if (content.id == to + "-content") content.style.display = "block";
       }
+      gtag("event", "activate_tab", { "event_label": to });
     }
   </script>
 </head>
@@ -38,7 +40,8 @@
       <h1 class="title">Sync Timer</h1>
       <p class="subtitle">同時視聴配信のためのシンプルなタイマー</p>
       <div>
-        <a href="https://sync-timer.netlify.app/?utm_source=about-ja"><button class="button is-large">アプリを開く</button></a>
+        <a href="https://sync-timer.netlify.app/?utm_source=about-ja"><button
+            class="button is-large">アプリを開く</button></a>
       </div>
     </div>
     <div class="hero-foot">
@@ -123,8 +126,8 @@
         <iframe
           src="https://docs.google.com/forms/d/e/1FAIpQLSfgmFqq-t-vv6gC1YpgoH3nCK1b7gI0ROC25K1NX9r5jGtndg/viewform?embedded=true"
           width="800" height="1800" frameborder="0" marginheight="0" marginwidth="0">読み込んでいます…</iframe>
+      </section>
     </div>
-    </section>
   </main>
   <footer class="footer">
     <div class="content">
@@ -133,6 +136,7 @@
       </p>
     </div>
   </footer>
+  <script src="https://www.youtube.com/iframe_api"></script>
   <script>
     const elem = document.getElementById("yt-player");
     const ytWidth = Math.min(elem.parentNode.clientWidth, 1024);
