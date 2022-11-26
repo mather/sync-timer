@@ -204,9 +204,9 @@ update msg ({ setting } as model) =
             , Browser.Navigation.replaceUrl model.key <|
                 urlFromSetting { setting | showHour = not setting.showHour }
             )
-        
+
         LinkClicked urlRequest ->
-            case urlRequest of 
+            case urlRequest of
                 Browser.Internal url ->
                     ( model, Browser.Navigation.load (Url.toString url) )
 
