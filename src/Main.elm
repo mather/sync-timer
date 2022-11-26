@@ -239,12 +239,6 @@ viewHeader =
         ]
 
 
-
-
-
-
-
-
 viewTimer : Model -> Html Msg
 viewTimer model =
     div [ class "grid" ]
@@ -550,9 +544,6 @@ timerPauseEvent currentTime =
 timerResetEvent : Int -> Cmd msg
 timerResetEvent resetTime =
     sendAnalyticsEvent <| encodeAnalyticsEvent "sync_timer" "sync_timer_reset" (formatTimeForAnalytics resetTime) Nothing
-
-
-
 
 
 main : Program () Model Msg
