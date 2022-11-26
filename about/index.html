@@ -29,6 +29,7 @@
         content.style.display = "none";
         if (content.id == to + "-content") content.style.display = "block";
       }
+      gtag("event", "activate_tab", { "event_label": to });
     }
   </script>
 </head>
