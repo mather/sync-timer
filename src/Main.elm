@@ -3,8 +3,8 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser exposing (UrlRequest)
 import Browser.Navigation
 import Dict
-import Html exposing (Attribute, Html, a, article, button, details, div, fieldset, footer, h1, h2, header, i, iframe, input, label, legend, li, main_, nav, node, p, small, span, summary, text, textarea, ul)
-import Html.Attributes as A exposing (attribute, checked, class, for, height, href, id, name, readonly, rows, src, step, style, type_, value, width)
+import Html exposing (Attribute, Html, a, button, details, div, fieldset, footer, h1, h2, i, input, label, legend, li, main_, nav, p, small, span, summary, text, textarea, ul)
+import Html.Attributes as A exposing (attribute, checked, class, for, href, id, name, readonly, rows, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
 import Time
@@ -18,7 +18,6 @@ type alias Model =
     { timeMillis : Int
     , paused : Bool
     , current : Maybe Time.Posix
-    , showHelp : Bool
     , setting : Setting
     , key : Browser.Navigation.Key
     }
@@ -131,7 +130,6 @@ initialModel _ url key =
     ( { timeMillis = initSetting.initialTimeSeconds * 1000
       , paused = True
       , current = Nothing
-      , showHelp = False
       , setting = initSetting
       , key = key
       }
@@ -148,7 +146,6 @@ type Msg
     | SetBgColor BgColor
     | SetFgColor String
     | ToggleShowHour
-    | ShowHelp Bool
     | NoOp
 
 
@@ -207,9 +204,6 @@ update msg ({ setting } as model) =
                 urlFromSetting { setting | showHour = not setting.showHour }
             )
 
-        ShowHelp showHelp ->
-            ( { model | showHelp = showHelp }, showHelpEvent showHelp )
-
         NoOp ->
             ( model, Cmd.none )
 
@@ -224,7 +218,6 @@ view model =
             , viewTimerSettings model.setting
             ]
         , viewFooter
-        , viewHelpModal model.showHelp
         ]
     }
 
@@ -238,46 +231,18 @@ viewHeader =
             ]
         , ul []
             [ li []
-                [ button [ onClick <| ShowHelp True ]
-                    [ i [ class "fas", class "fa-question-circle", class "button-icon" ] []
-                    , text "ヘルプ"
+                [ a [ href "/docs/", role "button", class "outline" ]
+                    [ text "SyncTimerとは？"
                     ]
                 ]
             ]
         ]
 
 
-dialog : Bool -> List (Attribute Msg) -> List (Html Msg) -> Html Msg
-dialog isOpen attributes =
-    if isOpen then
-        node "dialog" <| attribute "open" "" :: attributes
-
-    else
-        node "dialog" attributes
 
 
-viewHelpModal : Bool -> Html Msg
-viewHelpModal visible =
-    dialog visible
-        []
-        [ article []
-            [ header []
-                [ a [ attribute "aria-label" "Close", class "close", onClick <| ShowHelp False ] []
-                , text "SyncTimerとは？"
-                ]
-            , p [] [ text "YouTube配信などで視聴者と同じ動画を同時視聴するときに動画の開始時間や視聴タイミングを合わせるためのタイマーです" ]
-            , p [] [ text "使い方を動画にまとめましたので、参考にしてください" ]
-            , iframe [ id "ytplayer", type_ "text/html", width 640, height 360, src "https://www.youtube.com/embed/m1Basm-TqGU?rel=0", lazyLoading ] []
-            , p [] [ text "不具合や改善要望などがあれば Twitter, Github へご連絡ください" ]
-            , footer []
-                [ button [ onClick <| ShowHelp False ] [ text "閉じる" ] ]
-            ]
-        ]
 
 
-lazyLoading : Attribute Msg
-lazyLoading =
-    attribute "loading" "lazy"
 
 
 viewTimer : Model -> Html Msg
@@ -587,13 +552,7 @@ timerResetEvent resetTime =
     sendAnalyticsEvent <| encodeAnalyticsEvent "sync_timer" "sync_timer_reset" (formatTimeForAnalytics resetTime) Nothing
 
 
-showHelpEvent : Bool -> Cmd msg
-showHelpEvent showHelp =
-    if showHelp then
-        sendAnalyticsEvent <| encodeAnalyticsEvent "sync_timer" "sync_timer_help_opened" "true" Nothing
 
-    else
-        Cmd.none
 
 
 main : Program () Model Msg
