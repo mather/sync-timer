@@ -146,6 +146,7 @@ type Msg
     | SetBgColor BgColor
     | SetFgColor String
     | ToggleShowHour
+    | LinkClicked UrlRequest
     | NoOp
 
 
@@ -203,6 +204,14 @@ update msg ({ setting } as model) =
             , Browser.Navigation.replaceUrl model.key <|
                 urlFromSetting { setting | showHour = not setting.showHour }
             )
+        
+        LinkClicked urlRequest ->
+            case urlRequest of 
+                Browser.Internal url ->
+                    ( model, Browser.Navigation.load (Url.toString url) )
+
+                Browser.External href ->
+                    ( model, Browser.Navigation.load href )
 
         NoOp ->
             ( model, Cmd.none )
@@ -488,8 +497,8 @@ subscriptions model =
 
 
 onUrlRequest : UrlRequest -> Msg
-onUrlRequest _ =
-    NoOp
+onUrlRequest =
+    LinkClicked
 
 
 onUrlChange : Url.Url -> Msg
