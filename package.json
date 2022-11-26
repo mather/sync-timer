@@ -23,7 +23,7 @@
     "dev": "vite",
     "check-format": "elm-format --validate src/*.elm",
     "test": "elm-test",
-    "build": "vite build && copyfiles -V docs/images/* docs/* dist"
+    "build": "vite build && copyfiles about/images/* about/* dist"
   },
   "targets": {
     "main": false

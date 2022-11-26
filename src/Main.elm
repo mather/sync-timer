@@ -240,7 +240,7 @@ viewHeader =
             ]
         , ul []
             [ li []
-                [ a [ href "/docs/", role "button", class "outline" ]
+                [ a [ href "/about/?utm_source=top", role "button", class "outline" ]
                     [ text "SyncTimerとは？"
                     ]
                 ]
