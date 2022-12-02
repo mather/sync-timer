@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="ja" data-theme="light" prefix="og: https://ogp.me/ns#">
   <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5262330257175244"
-     crossorigin="anonymous"></script>
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5262330257175244"
+      crossorigin="anonymous"
+    ></script>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta
@@ -60,7 +63,85 @@
   </head>
   <body>
     <noscript> You need to enable JavaScript to run this app. </noscript>
+    <header>
+      <nav class="container">
+        <ul>
+          <li><strong style="font-size: xx-large">SyncTimer</strong></li>
+        </ul>
+        <ul>
+          <li>
+            <a href="/about/?utm_source=top" class="outline" role="button"
+              >SyncTimerとは？</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </header>
     <div id="root"></div>
+    <footer>
+      <div class="container">
+        <p>
+          機能要望や質問・感想などは<a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSfgmFqq-t-vv6gC1YpgoH3nCK1b7gI0ROC25K1NX9r5jGtndg/viewform?usp=sf_link"
+            target="_blank"
+            rel="noopener noreferrer"
+            >こちらのフォームからどうぞ</a
+          >
+        </p>
+        <div>
+          <small
+            >よろしければ概要欄でタイマーの紹介をお願いします（必須ではありません）</small
+          >
+        </div>
+        <textarea
+          name="introduce-request"
+          id="introduce-request"
+          rows="2"
+          readonly
+        >
+同時視聴用タイマー SyncTimer を利用しています
+https://sync-timer.netlify.app/
+        </textarea>
+        <div class="grid">
+          <div class="footer-left">
+            <h2>更新情報</h2>
+            <ul>
+              <li>2022-11-18 時間の表示をON/OFFできるようにしました</li>
+              <li>2022-11-14 YouTubeでの利用例を紹介しました</li>
+            </ul>
+          </div>
+          <div class="footer-right">
+            <div>
+              <a
+                href="https://youtube.com/playlist?list=PLzz5NMXBDKoZ8UoGCgQI9mdcfmyjugbwz"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><i class="fab fa-youtube button-icon"></i>YouTubeでの利用例</a
+              >
+            </div>
+            <div>
+              <a
+                href="https://twitter.com/intent/user?user_id=62148177"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><i class="fab fa-twitter button-icon"></i>@mather314
+                (開発者)</a
+              >
+            </div>
+            <div>
+              <a
+                href="https://github.com/mather/sync-timer"
+                class="secondary"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><i class="fab fa-github button-icon"></i>mather/sync-timer</a
+              >
+            </div>
+            <div>© Eisuke Kuwahata</div>
+          </div>
+        </div>
+      </div>
+    </footer>
     <script async src="./js/index.js" type="module"></script>
   </body>
 </html>

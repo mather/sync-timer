@@ -3,15 +3,13 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser exposing (UrlRequest)
 import Browser.Navigation
 import Dict
-import Html exposing (Attribute, Html, a, button, details, div, fieldset, footer, h1, h2, i, input, label, legend, li, main_, nav, p, small, span, summary, text, textarea, ul)
-import Html.Attributes as A exposing (attribute, checked, class, for, href, id, name, readonly, rows, step, style, type_, value)
+import Html exposing (Attribute, Html, a, button, details, div, fieldset, i, input, label, legend, main_, span, summary, text)
+import Html.Attributes as A exposing (attribute, checked, class, for, href, id, name, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
 import Time
 import Url
 import Url.Builder as UB
-import Url.Parser as UP
-import Url.Parser.Query as Query
 
 
 type alias Model =
@@ -19,7 +17,6 @@ type alias Model =
     , paused : Bool
     , current : Maybe Time.Posix
     , setting : Setting
-    , key : Browser.Navigation.Key
     }
 
 
@@ -89,6 +86,11 @@ dictBgColor =
     Dict.fromList <| List.map pairwise [ GreenBack, BlueBack, Transparent ]
 
 
+decodeBgColor : String -> Maybe BgColor
+decodeBgColor =
+    flip Dict.get dictBgColor
+
+
 encodeShowHour : Bool -> String
 encodeShowHour b =
     if b then
@@ -103,35 +105,43 @@ dictShowHour =
     Dict.fromList [ ( "true", True ), ( "false", False ) ]
 
 
-parserWithDefault : a -> Query.Parser (Maybe a) -> Query.Parser a
-parserWithDefault default =
-    Query.map <| Maybe.withDefault default
+decodeShowHour : String -> Maybe Bool
+decodeShowHour =
+    flip Dict.get dictShowHour
 
 
-queryParser : Query.Parser Setting
-queryParser =
-    Query.map4
-        Setting
-        (parserWithDefault defaultSetting.bgColor <| Query.enum "bg" dictBgColor)
-        (parserWithDefault defaultSetting.fgColor <| Query.string "fg")
-        (parserWithDefault defaultSetting.initialTimeSeconds <| Query.int "init")
-        (parserWithDefault defaultSetting.showHour <| Query.enum "h" dictShowHour)
+type alias SettingFromQuery =
+    { fg : Maybe String
+    , bg : Maybe String
+    , init : Maybe Int
+    , h : Maybe String
+    }
 
 
-initialModel : flag -> Url.Url -> Browser.Navigation.Key -> ( Model, Cmd Msg )
-initialModel _ url key =
+flip : (a -> b -> c) -> b -> a -> c
+flip f b a =
+    f a b
+
+
+parseSettingFromQuery : SettingFromQuery -> Setting
+parseSettingFromQuery setting =
+    { fgColor = setting.fg |> Maybe.withDefault defaultSetting.fgColor
+    , bgColor = setting.bg |> Maybe.andThen decodeBgColor |> Maybe.withDefault defaultSetting.bgColor
+    , initialTimeSeconds = setting.init |> Maybe.withDefault defaultSetting.initialTimeSeconds
+    , showHour = setting.h |> Maybe.andThen decodeShowHour |> Maybe.withDefault defaultSetting.showHour
+    }
+
+
+initialModel : SettingFromQuery -> ( Model, Cmd Msg )
+initialModel setting =
     let
-        urlParser =
-            UP.query queryParser
-
         initSetting =
-            UP.parse urlParser url |> Maybe.withDefault defaultSetting
+            parseSettingFromQuery setting
     in
     ( { timeMillis = initSetting.initialTimeSeconds * 1000
       , paused = True
       , current = Nothing
-      , setting = initSetting
-      , key = key
+      , setting = parseSettingFromQuery setting
       }
     , Cmd.none
     )
@@ -183,26 +193,22 @@ update msg ({ setting } as model) =
 
         UpdateResetTime millis ->
             ( { model | setting = { setting | initialTimeSeconds = millis } }
-            , Browser.Navigation.replaceUrl model.key <|
-                urlFromSetting { setting | initialTimeSeconds = millis }
+            , setQueryString <| urlFromSetting { setting | initialTimeSeconds = millis }
             )
 
         SetBgColor bgColor ->
             ( { model | setting = { setting | bgColor = bgColor } }
-            , Browser.Navigation.replaceUrl model.key <|
-                urlFromSetting { setting | bgColor = bgColor }
+            , setQueryString <| urlFromSetting { setting | bgColor = bgColor }
             )
 
         SetFgColor fgColor ->
             ( { model | setting = { setting | fgColor = fgColor } }
-            , Browser.Navigation.replaceUrl model.key <|
-                urlFromSetting { setting | fgColor = fgColor }
+            , setQueryString <| urlFromSetting { setting | fgColor = fgColor }
             )
 
         ToggleShowHour ->
             ( { model | setting = { setting | showHour = not setting.showHour } }
-            , Browser.Navigation.replaceUrl model.key <|
-                urlFromSetting { setting | showHour = not setting.showHour }
+            , setQueryString <| urlFromSetting { setting | showHour = not setting.showHour }
             )
 
         LinkClicked urlRequest ->
@@ -217,34 +223,11 @@ update msg ({ setting } as model) =
             ( model, Cmd.none )
 
 
-view : Model -> Browser.Document Msg
+view : Model -> Html Msg
 view model =
-    { title = "Sync Timer - 同時視聴用タイマー"
-    , body =
-        [ main_ [ class "container" ]
-            [ viewHeader
-            , viewTimer model
-            , viewTimerSettings model.setting
-            ]
-        , viewFooter
-        ]
-    }
-
-
-viewHeader : Html Msg
-viewHeader =
-    nav []
-        [ ul []
-            [ li []
-                [ h1 [] [ text "Sync Timer" ] ]
-            ]
-        , ul []
-            [ li []
-                [ a [ href "/about/?utm_source=top", role "button", class "outline" ]
-                    [ text "SyncTimerとは？"
-                    ]
-                ]
-            ]
+    main_ [ class "container" ]
+        [ viewTimer model
+        , viewTimerSettings model.setting
         ]
 
 
@@ -439,50 +422,6 @@ tooltip =
     attribute "data-tooltip"
 
 
-viewFooter : Html Msg
-viewFooter =
-    footer []
-        [ div [ class "container" ]
-            [ p []
-                [ text "機能要望や質問・感想などは"
-                , a [ A.href "https://docs.google.com/forms/d/e/1FAIpQLSfgmFqq-t-vv6gC1YpgoH3nCK1b7gI0ROC25K1NX9r5jGtndg/viewform?usp=sf_link", A.target "_blank", A.rel "noopener noreferrer" ] [ text "こちらのフォームからどうぞ" ]
-                ]
-            , div [] [ small [] [ text "よろしければ概要欄でタイマーの紹介をお願いします（必須ではありません）" ] ]
-            , textarea [ readonly True, rows 2, id "introduce-request" ] [ text "同時視聴用タイマー SyncTimer を利用しています\nhttps://sync-timer.netlify.app/" ]
-            , div [ class "grid" ]
-                [ div [ class "footer-left" ]
-                    [ h2 [] [ text "更新情報" ]
-                    , ul []
-                        [ li [] [ text "2022-11-18 時間の表示をON/OFFできるようにしました" ]
-                        , li [] [ text "2022-11-14 YouTubeでの利用例を紹介しました" ]
-                        ]
-                    ]
-                , div [ class "footer-right" ]
-                    [ div []
-                        [ a [ href "https://youtube.com/playlist?list=PLzz5NMXBDKoZ8UoGCgQI9mdcfmyjugbwz", A.target "_blank", A.rel "noopener noreferrer" ]
-                            [ i [ class "fab", class "fa-youtube", class "button-icon" ] []
-                            , text "YouTubeでの利用例"
-                            ]
-                        ]
-                    , div []
-                        [ a [ href "https://twitter.com/intent/user?user_id=62148177", A.target "_blank", A.rel "noopener noreferrer" ]
-                            [ i [ class "fab", class "fa-twitter", class "button-icon" ] []
-                            , text "@mather314 (開発者)"
-                            ]
-                        ]
-                    , div []
-                        [ a [ href "https://github.com/mather/sync-timer", class "secondary", A.target "_blank", A.rel "noopener noreferrer" ]
-                            [ i [ class "fab", class "fa-github", class "button-icon" ] []
-                            , text "mather/sync-timer"
-                            ]
-                        ]
-                    , div [] [ text "© Eisuke Kuwahata" ]
-                    ]
-                ]
-            ]
-        ]
-
-
 subscriptions : Model -> Sub Msg
 subscriptions model =
     let
@@ -496,14 +435,7 @@ subscriptions model =
         Time.every 33 tick
 
 
-onUrlRequest : UrlRequest -> Msg
-onUrlRequest =
-    LinkClicked
-
-
-onUrlChange : Url.Url -> Msg
-onUrlChange _ =
-    NoOp
+port setQueryString : String -> Cmd msg
 
 
 port sendAnalyticsEvent : String -> Cmd msg
@@ -555,13 +487,11 @@ timerResetEvent resetTime =
     sendAnalyticsEvent <| encodeAnalyticsEvent "sync_timer" "sync_timer_reset" (formatTimeForAnalytics resetTime) Nothing
 
 
-main : Program () Model Msg
+main : Program SettingFromQuery Model Msg
 main =
-    Browser.application
+    Browser.element
         { init = initialModel
         , view = view
         , update = update
         , subscriptions = subscriptions
-        , onUrlRequest = onUrlRequest
-        , onUrlChange = onUrlChange
         }
