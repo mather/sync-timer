@@ -34,7 +34,6 @@ const app = Elm.Main.init({
 });
 
 app.ports.setQueryString.subscribe((newQS) => {
-  console.debug(newQS);
   const currentUrl = new URL(document.location);
   const newUrl = currentUrl.origin + currentUrl.pathname + newQS;
   window.history.replaceState(null, "", newUrl);
