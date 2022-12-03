@@ -3,7 +3,7 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser exposing (UrlRequest)
 import Browser.Navigation
 import Dict
-import Html exposing (Attribute, Html, a, button, details, div, fieldset, i, input, label, legend, main_, span, summary, text)
+import Html exposing (Attribute, Html, a, button, details, div, fieldset, i, input, label, legend, span, summary, text)
 import Html.Attributes as A exposing (attribute, checked, class, for, href, id, name, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
@@ -225,7 +225,7 @@ update msg ({ setting } as model) =
 
 view : Model -> Html Msg
 view model =
-    main_ [ class "container" ]
+    div [ class "container" ]
         [ viewTimer model
         , viewTimerSettings model.setting
         ]
