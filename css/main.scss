@@ -10,8 +10,9 @@
 }
 
 /* Customize Pico CSS */
-:root {
-  --spacing: 1ex;
+body > header,
+body > main {
+  --block-spacing-vertical: calc(var(--spacing) * 1);
 }
 
 /*
