@@ -1,14 +1,12 @@
 port module Main exposing (DisplayTime, main, millisToDisplayTime)
 
-import Browser exposing (UrlRequest)
-import Browser.Navigation
+import Browser
 import Dict
-import Html exposing (Attribute, Html, a, button, details, div, fieldset, i, input, label, legend, progress, span, summary, text)
-import Html.Attributes as A exposing (attribute, checked, class, for, href, id, name, step, style, type_, value)
+import Html exposing (Attribute, Html, a, button, details, div, fieldset, i, input, label, legend, span, summary, text)
+import Html.Attributes as A exposing (attribute, checked, class, for, id, name, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
 import Time
-import Url
 import Url.Builder as UB
 
 
@@ -161,7 +159,6 @@ type Msg
     | SetFgColor String
     | ToggleShowHour
     | ToggleShowProgress
-    | LinkClicked UrlRequest
     | NoOp
 
 
@@ -221,14 +218,6 @@ update msg ({ setting } as model) =
             ( { model | setting = { setting | showProgress = not setting.showProgress } }
             , setQueryString <| urlFromSetting { setting | showProgress = not setting.showProgress }
             )
-
-        LinkClicked urlRequest ->
-            case urlRequest of
-                Browser.Internal url ->
-                    ( model, Browser.Navigation.load (Url.toString url) )
-
-                Browser.External href ->
-                    ( model, Browser.Navigation.load href )
 
         NoOp ->
             ( model, Cmd.none )
