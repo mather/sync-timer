@@ -3,7 +3,7 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser exposing (UrlRequest)
 import Browser.Navigation
 import Dict
-import Html exposing (Attribute, Html, a, button, details, div, fieldset, i, input, label, legend, span, summary, text)
+import Html exposing (Attribute, Html, a, button, details, div, fieldset, i, input, label, legend, progress, span, summary, text)
 import Html.Attributes as A exposing (attribute, checked, class, for, href, id, name, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
@@ -25,6 +25,7 @@ type alias Setting =
     , fgColor : String
     , initialTimeSeconds : Int
     , showHour : Bool
+    , showProgress : Bool
     }
 
 
@@ -34,6 +35,7 @@ defaultSetting =
     , bgColor = GreenBack
     , initialTimeSeconds = -10
     , showHour = True
+    , showProgress = False
     }
 
 
@@ -91,8 +93,8 @@ decodeBgColor =
     flip Dict.get dictBgColor
 
 
-encodeShowHour : Bool -> String
-encodeShowHour b =
+encodeBoolean : Bool -> String
+encodeBoolean b =
     if b then
         "true"
 
@@ -100,14 +102,14 @@ encodeShowHour b =
         "false"
 
 
-dictShowHour : Dict.Dict String Bool
-dictShowHour =
+dictBoolean : Dict.Dict String Bool
+dictBoolean =
     Dict.fromList [ ( "true", True ), ( "false", False ) ]
 
 
-decodeShowHour : String -> Maybe Bool
-decodeShowHour =
-    flip Dict.get dictShowHour
+decodeBoolean : String -> Maybe Bool
+decodeBoolean =
+    flip Dict.get dictBoolean
 
 
 type alias SettingFromQuery =
@@ -115,6 +117,7 @@ type alias SettingFromQuery =
     , bg : Maybe String
     , init : Maybe Int
     , h : Maybe String
+    , p : Maybe String
     }
 
 
@@ -128,7 +131,8 @@ parseSettingFromQuery setting =
     { fgColor = setting.fg |> Maybe.withDefault defaultSetting.fgColor
     , bgColor = setting.bg |> Maybe.andThen decodeBgColor |> Maybe.withDefault defaultSetting.bgColor
     , initialTimeSeconds = setting.init |> Maybe.withDefault defaultSetting.initialTimeSeconds
-    , showHour = setting.h |> Maybe.andThen decodeShowHour |> Maybe.withDefault defaultSetting.showHour
+    , showHour = setting.h |> Maybe.andThen decodeBoolean |> Maybe.withDefault defaultSetting.showHour
+    , showProgress = setting.p |> Maybe.andThen decodeBoolean |> Maybe.withDefault defaultSetting.showProgress
     }
 
 
@@ -156,6 +160,7 @@ type Msg
     | SetBgColor BgColor
     | SetFgColor String
     | ToggleShowHour
+    | ToggleShowProgress
     | LinkClicked UrlRequest
     | NoOp
 
@@ -166,7 +171,8 @@ urlFromSetting setting =
         [ UB.string "fg" setting.fgColor
         , UB.string "bg" <| encodeBgColor setting.bgColor
         , UB.int "init" setting.initialTimeSeconds
-        , UB.string "h" <| encodeShowHour setting.showHour
+        , UB.string "h" <| encodeBoolean setting.showHour
+        , UB.string "p" <| encodeBoolean setting.showProgress
         ]
 
 
@@ -211,6 +217,11 @@ update msg ({ setting } as model) =
             , setQueryString <| urlFromSetting { setting | showHour = not setting.showHour }
             )
 
+        ToggleShowProgress ->
+            ( { model | setting = { setting | showProgress = not setting.showProgress } }
+            , setQueryString <| urlFromSetting { setting | showProgress = not setting.showProgress }
+            )
+
         LinkClicked urlRequest ->
             case urlRequest of
                 Browser.Internal url ->
@@ -253,11 +264,48 @@ viewTimerDigits millis setting =
                 [ displayTime.minutes, displayTime.seconds ]
     in
     div [ class "timer", timerBgColorClass setting.bgColor, style "color" setting.fgColor ]
-        (List.concat <|
-            [ [ span (styleTimerSign displayTime.isMinus) [ text "-" ] ]
-            , List.foldr joinWithSegment [] <| List.map renderBig2Digits displaySegments
+        [ div [ class "digits" ] <|
+            (List.concat <|
+                [ [ span (styleTimerSign displayTime.isMinus) [ text "-" ] ]
+                , List.foldr joinWithSegment [] <| List.map renderBig2Digits displaySegments
+                ]
+            )
+                ++ viewProgressBar millis setting
+        ]
+
+
+progress : Int -> Int -> String
+progress millis initialTimeSeconds =
+    if millis < 0 then
+        (String.fromFloat <| min 100.0 <| toFloat millis / (toFloat initialTimeSeconds * 10)) ++ "%"
+
+    else
+        "100%"
+
+
+viewProgressBar : Int -> Setting -> List (Html Msg)
+viewProgressBar millis setting =
+    let
+        visibility =
+            style "visibility" <|
+                if millis >= 0 then
+                    "hidden"
+
+                else
+                    "visible"
+    in
+    if setting.showProgress then
+        [ div
+            [ class "progress"
+            , style "width" <| progress millis setting.initialTimeSeconds
+            , style "background-color" setting.fgColor
+            , visibility
             ]
-        )
+            []
+        ]
+
+    else
+        []
 
 
 joinWithSegment : List (Html Msg) -> List (Html Msg) -> List (Html Msg)
@@ -392,10 +440,14 @@ viewTimerSettings setting =
                 ]
             ]
         , div
-            []
+            [ class "grid" ]
             [ label [ for "showHour" ]
                 [ input [ type_ "checkbox", id "showHour", role "switch", checked setting.showHour, onClick ToggleShowHour ] []
                 , text "時間を表示する"
+                ]
+            , label [ for "showProgress" ]
+                [ input [ type_ "checkbox", id "showProgress", role "switch", checked setting.showProgress, onClick ToggleShowProgress ] []
+                , text "カウントダウンをバーで表示する"
                 ]
             ]
         ]

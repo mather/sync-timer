@@ -26,7 +26,8 @@ const parseParams = () => {
     fg: parseFg(searchParams.get("fg")),
     bg: searchParams.get("bg"),
     init: parseInit(searchParams.get("init")),
-    h: searchParams.get("h")
+    h: searchParams.get("h"),
+    p: searchParams.get("p")
   };
 };
 

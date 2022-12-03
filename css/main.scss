@@ -30,7 +30,7 @@ body > main {
   font-family: "D-DIN-bold";
   font-size: 5rem;
   text-align: center;
-  padding: 3rem 0;
+  padding: 4rem 0;
   margin: 1rem 0;
 
   &.greenback {
@@ -38,6 +38,17 @@ body > main {
   }
   &.blueback {
     background-color: #0000ff;
+  }
+
+  .digits {
+    display: inline-block;
+    line-height: 0.8;
+
+    .progress {
+      height: 10px;
+      border-radius: 3px;
+      float: right;
+    }
   }
 
   .digit {
