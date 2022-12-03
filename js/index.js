@@ -4,7 +4,7 @@ import "@picocss/pico/css/pico.css";
 import "@fortawesome/fontawesome-free/css/fontawesome.css";
 import "@fortawesome/fontawesome-free/css/brands.css";
 import "@fortawesome/fontawesome-free/css/solid.css";
-import "../css/main.css";
+import "../css/main.scss";
 
 const searchParams = (new URL(document.location)).searchParams;
 const parseFg = (s) => {
