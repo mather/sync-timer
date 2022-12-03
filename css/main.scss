@@ -9,6 +9,12 @@
   height: inherit;
 }
 
+/* Customize Pico CSS */
+body > header,
+body > main {
+  --block-spacing-vertical: calc(var(--spacing) * 1);
+}
+
 /*
  * "D-DIN" is licensed under the SIL Open Font License 1.1
  * https://www.1001fonts.com/d-din-font.html
@@ -26,25 +32,23 @@
   text-align: center;
   padding: 3rem 0;
   margin: 1rem 0;
-}
 
-.timer.greenback {
-  background-color: #00ff00;
-}
+  &.greenback {
+    background-color: #00ff00;
+  }
+  &.blueback {
+    background-color: #0000ff;
+  }
 
-.timer.blueback {
-  background-color: #0000ff;
-}
-
-.timer .digit {
-  display: inline-block;
-  width: 1ex;
-  vertical-align: middle;
-}
-
-.timer .sep {
-  display: inline-block;
-  width: 0.5ex;
+  .digit {
+    display: inline-block;
+    width: 1ex;
+    vertical-align: middle;
+  }
+  .sep {
+    display: inline-block;
+    width: 0.5ex;
+  }
 }
 
 .button-icon {
@@ -55,6 +59,13 @@ footer {
   margin-top: 1rem;
   background-color: #eeeeee;
   text-align: center;
+
+  h2 {
+    margin-bottom: 1ex;
+  }
+  #introduce-request {
+    background-color: white;
+  }
 }
 .footer-left {
   text-align: left;
@@ -63,24 +74,10 @@ footer {
   text-align: left;
 }
 
-footer h2 {
-  margin-bottom: 1ex;
-}
-
-footer #introduce-request {
-  background-color: white;
-}
-
 a[role="button"] {
   margin-left: 1ex;
   margin-right: 1ex;
 }
-
-/*
-.delay-slider {
-  margin: auto 0;
-}
-*/
 
 .controls {
   margin: auto 0;
@@ -91,14 +88,14 @@ a[role="button"] {
   border: 1px solid #a2afb9;
   border-radius: 5px;
   padding: 1ex;
-}
 
-.settings > div {
-  margin: 1em 3em;
-}
+  > div {
+    margin: 1em 3em;
+  }
 
-.settings input[type="radio"] {
-  margin-left: 2em;
+  input[type="radio"] {
+    margin-left: 2em;
+  }
 }
 
 .bgColor label {
