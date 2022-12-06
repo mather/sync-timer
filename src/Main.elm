@@ -2,8 +2,8 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 
 import Browser
 import Dict
-import Html exposing (Attribute, Html, a, button, details, div, fieldset, i, input, label, legend, span, summary, text)
-import Html.Attributes as A exposing (attribute, checked, class, for, id, name, step, style, type_, value)
+import Html exposing (Attribute, Html, a, button, details, div, i, input, label, option, select, span, summary, text)
+import Html.Attributes as A exposing (attribute, checked, class, for, id, selected, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
 import Time
@@ -398,35 +398,8 @@ viewTimerSettings setting =
     details [ class "settings", attribute "open" "true" ]
         [ summary [] [ text "表示設定" ]
         , div [ class "grid" ]
-            [ div []
-                [ label [ for "fgColorPicker" ]
-                    [ text "文字色"
-                    , input [ type_ "color", id "fgColorPicker", value setting.fgColor, onInput SetFgColor ] []
-                    ]
-                ]
-            , div []
-                [ label [ for "fgColorText" ]
-                    [ text "文字色(RGB指定)"
-                    , input [ type_ "text", id "fgColorText", value setting.fgColor, onInput SetFgColor ] []
-                    ]
-                ]
-            ]
-        , div []
-            [ fieldset [ class "bgColor" ]
-                [ legend [] [ text "背景色" ]
-                , label [ for "greenback" ]
-                    [ input [ type_ "radio", id "greenback", name "bgcolor", checked <| setting.bgColor == GreenBack, onClick <| SetBgColor GreenBack ] []
-                    , text "GB"
-                    ]
-                , label [ for "blueback" ]
-                    [ input [ type_ "radio", id "blueback", name "bgcolor", checked <| setting.bgColor == BlueBack, onClick <| SetBgColor BlueBack ] []
-                    , text "BB"
-                    ]
-                , label [ for "transparent" ]
-                    [ input [ type_ "radio", id "transparent", name "bgcolor", checked <| setting.bgColor == Transparent, onClick <| SetBgColor Transparent ] []
-                    , text "なし"
-                    ]
-                ]
+            [ viewFgColorInput setting.fgColor
+            , viewBgColorInput setting.bgColor
             ]
         , div
             [ class "grid" ]
@@ -440,6 +413,41 @@ viewTimerSettings setting =
                 ]
             ]
         ]
+
+
+viewFgColorInput : String -> Html Msg
+viewFgColorInput fgColor =
+    div [ class "grid" ]
+        [ div []
+            [ label [ for "fgColorPicker" ]
+                [ text "文字色"
+                , input [ type_ "color", id "fgColorPicker", value fgColor, onInput SetFgColor ] []
+                ]
+            ]
+        , div []
+            [ label [ for "fgColorText" ]
+                [ text "文字色(RGB)"
+                , input [ type_ "text", id "fgColorText", value fgColor, onInput SetFgColor ] []
+                ]
+            ]
+        ]
+
+
+viewBgColorInput : BgColor -> Html Msg
+viewBgColorInput bgColor =
+    div []
+        [ label [ for "bgColor" ] [ text "背景色" ]
+        , select [ id "bgColor", onInput selectBgColor ]
+            [ option [ value "gb", selected <| bgColor == GreenBack ] [ text "グリーンバック(GB, #00ff00)" ]
+            , option [ value "bb", selected <| bgColor == BlueBack ] [ text "ブルーバック(BB, #0000ff)" ]
+            , option [ value "tp", selected <| bgColor == Transparent ] [ text "なし (White)" ]
+            ]
+        ]
+
+
+selectBgColor : String -> Msg
+selectBgColor =
+    flip Dict.get dictBgColor >> Maybe.map SetBgColor >> Maybe.withDefault NoOp
 
 
 initialTimeSlider : Int -> Html Msg
