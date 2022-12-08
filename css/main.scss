@@ -67,7 +67,7 @@ body > main {
 }
 
 .button-icon {
-  margin-right: 5px;
+  margin-right: 0.5ex;
 }
 
 footer {
@@ -92,6 +92,11 @@ footer {
 a[role="button"] {
   margin-left: 1ex;
   margin-right: 1ex;
+}
+
+a[role="button"],
+button .button-icon {
+  margin-left: 0.5ex;
 }
 
 .controls {

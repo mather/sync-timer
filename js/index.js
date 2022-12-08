@@ -43,14 +43,14 @@ app.ports.setQueryString.subscribe((newQS) => {
 })
 
 app.ports.sendAnalyticsEvent.subscribe((event) => {
-  const { category, action, label, value } = JSON.parse(event);
-  console.debug({ category, action, label, value });
+  const { category, action, label, value, ...others } = JSON.parse(event);
+  console.debug({ category, action, label, value, others });
   if (gtag) {
     const data = Object.assign({
       "event_category": category,
       "event_label": label
     }, value ? { value } : {});
-    gtag("event", action, data);
+    gtag("event", action, Object.assign({}, data, others));
   }
 });
 // If you want your app to work offline and load faster, you can change
