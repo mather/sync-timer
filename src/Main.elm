@@ -3,7 +3,7 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser
 import Dict
 import Html exposing (Attribute, Html, a, button, details, div, i, input, label, option, select, span, summary, text)
-import Html.Attributes as A exposing (attribute, checked, class, for, id, selected, step, style, type_, value)
+import Html.Attributes as A exposing (attribute, checked, class, disabled, for, id, selected, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
 import Time
@@ -155,6 +155,8 @@ type Msg
     | Reset
     | UpdateTime Int Time.Posix
     | UpdateResetTime Int
+    | RewindSec Int
+    | FastForwardSec Int
     | SetBgColor BgColor
     | SetFgColor String
     | ToggleShowHour
@@ -198,6 +200,12 @@ update msg ({ setting } as model) =
             ( { model | setting = { setting | initialTimeSeconds = millis } }
             , setQueryString <| urlFromSetting { setting | initialTimeSeconds = millis }
             )
+
+        RewindSec sec ->
+            ( { model | timeMillis = model.timeMillis - sec * 1000 }, Cmd.none )
+
+        FastForwardSec sec ->
+            ( { model | timeMillis = model.timeMillis + sec * 1000 }, Cmd.none )
 
         SetBgColor bgColor ->
             ( { model | setting = { setting | bgColor = bgColor } }
@@ -360,6 +368,10 @@ viewTimerControls : Model -> Html Msg
 viewTimerControls model =
     div [ class "controls" ]
         [ div [] [ startPauseButton model.paused ]
+        , div [ class "grid" ]
+            [ div [] [ rewindButton ]
+            , div [] [ fastForwardButton ]
+            ]
         , div [] [ resetButton model.setting.initialTimeSeconds ]
         , div [] [ initialTimeSlider model.setting.initialTimeSeconds ]
         ]
@@ -376,15 +388,31 @@ startPauseButton paused =
 
     else
         button
-            [ onClick Pause ]
+            [ onClick Pause, class "secondary" ]
             [ i [ class "fas", class "fa-pause", class "button-icon" ] []
             , text "一時停止"
             ]
 
 
+rewindButton : Html Msg
+rewindButton =
+    button [ class "outline", onClick <| RewindSec 1 ]
+        [ i [ class "fas", class "fa-backward", class "button-icon" ] []
+        , text "1秒戻す"
+        ]
+
+
+fastForwardButton : Html Msg
+fastForwardButton =
+    button [ class "outline", onClick <| FastForwardSec 1 ]
+        [ text "1秒進める"
+        , i [ class "fas", class "fa-forward", class "button-icon" ] []
+        ]
+
+
 resetButton : Int -> Html Msg
 resetButton initialTimeSeconds =
-    button [ class "secondary", onClick Reset ]
+    button [ class "contrast", onClick Reset ]
         [ text <| String.fromInt initialTimeSeconds ++ " 秒にリセット" ]
 
 
