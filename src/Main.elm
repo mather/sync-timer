@@ -179,10 +179,10 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ setting } as model) =
     case msg of
         Start ->
-            ( { model | paused = False }, timerStartEvent model.timeMillis )
+            ( { model | paused = False }, timerStartEvent model.timeMillis setting )
 
         Pause ->
-            ( { model | paused = True, current = Nothing }, timerPauseEvent model.timeMillis )
+            ( { model | paused = True, current = Nothing }, timerPauseEvent model.timeMillis setting )
 
         Reset ->
             ( { model
@@ -190,7 +190,7 @@ update msg ({ setting } as model) =
                 , paused = True
                 , current = Nothing
               }
-            , timerResetEvent <| model.setting.initialTimeSeconds * 1000
+            , timerResetEvent model.timeMillis setting
             )
 
         UpdateTime millis current ->
@@ -202,10 +202,10 @@ update msg ({ setting } as model) =
             )
 
         RewindSec sec ->
-            ( { model | timeMillis = model.timeMillis - sec * 1000 }, Cmd.none )
+            ( { model | timeMillis = model.timeMillis - sec * 1000 }, timerRewindEvent model.timeMillis setting )
 
         FastForwardSec sec ->
-            ( { model | timeMillis = model.timeMillis + sec * 1000 }, Cmd.none )
+            ( { model | timeMillis = model.timeMillis + sec * 1000 }, timerFastForwardEvent model.timeMillis setting )
 
         SetBgColor bgColor ->
             ( { model | setting = { setting | bgColor = bgColor } }
@@ -413,7 +413,9 @@ fastForwardButton =
 resetButton : Int -> Html Msg
 resetButton initialTimeSeconds =
     button [ class "contrast", onClick Reset ]
-        [ text <| String.fromInt initialTimeSeconds ++ " 秒にリセット" ]
+        [ i [ class "fas", class "fa-backward-fast", class "button-icon" ] []
+        , text <| String.fromInt initialTimeSeconds ++ " 秒にリセット"
+        ]
 
 
 role : String -> Attribute Msg
@@ -518,15 +520,19 @@ port setQueryString : String -> Cmd msg
 port sendAnalyticsEvent : String -> Cmd msg
 
 
-encodeAnalyticsEvent : String -> String -> String -> Maybe Int -> String
-encodeAnalyticsEvent category action label value =
+encodeAnalyticsEvent : String -> String -> String -> Setting -> String
+encodeAnalyticsEvent category action label setting =
     E.encode 0 <|
         E.object <|
             [ ( "category", E.string category )
             , ( "action", E.string action )
             , ( "label", E.string label )
+            , ( "setting_fgColor", E.string setting.fgColor )
+            , ( "setting_bgColor", E.string <| encodeBgColor setting.bgColor )
+            , ( "setting_initial", E.int setting.initialTimeSeconds )
+            , ( "setting_show_hours", E.bool setting.showHour )
+            , ( "setting_show_progress", E.bool setting.showProgress )
             ]
-                ++ (Maybe.map (\v -> [ ( "value", E.int v ) ]) value |> Maybe.withDefault [])
 
 
 formatTimeForAnalytics : Int -> String
@@ -549,19 +555,34 @@ formatTimeForAnalytics t =
         |> String.concat
 
 
-timerStartEvent : Int -> Cmd msg
-timerStartEvent currentTime =
-    sendAnalyticsEvent <| encodeAnalyticsEvent "sync_timer" "sync_timer_start" (formatTimeForAnalytics currentTime) Nothing
+sendEvent : String -> Int -> Setting -> Cmd msg
+sendEvent action currentTime setting =
+    sendAnalyticsEvent <| encodeAnalyticsEvent "sync_timer" action (formatTimeForAnalytics currentTime) setting
 
 
-timerPauseEvent : Int -> Cmd msg
-timerPauseEvent currentTime =
-    sendAnalyticsEvent <| encodeAnalyticsEvent "sync_timer" "sync_timer_pause" (formatTimeForAnalytics currentTime) Nothing
+timerStartEvent : Int -> Setting -> Cmd msg
+timerStartEvent =
+    sendEvent "sync_timer_start"
 
 
-timerResetEvent : Int -> Cmd msg
-timerResetEvent resetTime =
-    sendAnalyticsEvent <| encodeAnalyticsEvent "sync_timer" "sync_timer_reset" (formatTimeForAnalytics resetTime) Nothing
+timerPauseEvent : Int -> Setting -> Cmd msg
+timerPauseEvent =
+    sendEvent "sync_timer_pause"
+
+
+timerRewindEvent : Int -> Setting -> Cmd msg
+timerRewindEvent =
+    sendEvent "sync_timer_rewind"
+
+
+timerFastForwardEvent : Int -> Setting -> Cmd msg
+timerFastForwardEvent =
+    sendEvent "sync_timer_fastforward"
+
+
+timerResetEvent : Int -> Setting -> Cmd msg
+timerResetEvent =
+    sendEvent "sync_timer_reset"
 
 
 main : Program SettingFromQuery Model Msg
