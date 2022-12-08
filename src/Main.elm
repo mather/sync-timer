@@ -3,7 +3,7 @@ port module Main exposing (DisplayTime, main, millisToDisplayTime)
 import Browser
 import Dict
 import Html exposing (Attribute, Html, a, button, details, div, i, input, label, option, select, span, summary, text)
-import Html.Attributes as A exposing (attribute, checked, class, disabled, for, id, selected, step, style, type_, value)
+import Html.Attributes as A exposing (attribute, checked, class, for, id, selected, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Json.Encode as E
 import Time
