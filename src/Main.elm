@@ -1,4 +1,4 @@
-port module Main exposing (DisplayTime, main, millisToDisplayTime)
+port module Main exposing (..)
 
 import Browser
 import Dict
@@ -79,11 +79,7 @@ encodeBgColor bg =
 
 dictBgColor : Dict.Dict String BgColor
 dictBgColor =
-    let
-        pairwise bgColor =
-            ( encodeBgColor bgColor, bgColor )
-    in
-    Dict.fromList <| List.map pairwise [ GreenBack, BlueBack, Transparent ]
+    List.foldl (\bg -> Dict.insert (encodeBgColor bg) bg) Dict.empty [ GreenBack, BlueBack, Transparent ]
 
 
 decodeBgColor : String -> Maybe BgColor
