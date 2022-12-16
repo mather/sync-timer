@@ -1,179 +1,203 @@
 <!DOCTYPE html>
-<html lang="ja" data-theme="dark">
-
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SyncTimer</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
-  <script src="https://kit.fontawesome.com/d8feeee699.js" crossorigin="anonymous"></script>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LN7KW2PYR4"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
-    gtag("config", "G-LN7KW2PYR4");
-  </script>
-  <script>
-    function activateTab(to) {
-      const tabs = document.querySelectorAll(".tabs li");
-      const tabContents = document.getElementsByClassName("tab-content");
-      for (const tab of tabs) {
-        tab.className = "";
-        if (tab.id == to + "-tab") tab.className = "is-active";
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SyncTimer</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+    />
+    <script
+      src="https://kit.fontawesome.com/d8feeee699.js"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-LN7KW2PYR4"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
       }
-      for (const content of tabContents) {
-        content.style.display = "none";
-        if (content.id == to + "-content") content.style.display = "block";
+      gtag("js", new Date());
+      gtag("config", "G-LN7KW2PYR4");
+    </script>
+    <script>
+      function activateTab(to) {
+        const tabs = document.querySelectorAll(".tabs li");
+        const tabContents = document.getElementsByClassName("tab-content");
+        for (const tab of tabs) {
+          tab.className = "";
+          if (tab.id == to + "-tab") tab.className = "is-active";
+        }
+        for (const content of tabContents) {
+          content.style.display = "none";
+          if (content.id == to + "-content") content.style.display = "block";
+        }
+        gtag("event", "activate_tab", { event_label: to });
       }
-      gtag("event", "activate_tab", { "event_label": to });
-    }
-  </script>
-</head>
+    </script>
+  </head>
 
-<body class="has-text-centered">
-  <header class="hero is-info">
-    <div class="hero-body">
-      <h1 class="title">Sync Timer</h1>
-      <p class="subtitle">同時視聴配信のためのシンプルなタイマー</p>
-      <div>
-        <a href="https://sync-timer.netlify.app/?utm_source=about-ja"><button
-            class="button is-large">アプリを開く</button></a>
-      </div>
-    </div>
-    <div class="hero-foot">
-      <div class="container tabs is-centered is-large is-boxed">
-        <ul>
-          <li id="about-tab" class="is-active"><a onclick="activateTab('about')">概要</a></li>
-          <li id="caution-tab"><a onclick="activateTab('caution')">利用時の注意</a></li>
-          <li id="inquiry-tab"><a onclick="activateTab('inquiry')">お問い合わせ</a></li>
-        </ul>
-      </div>
-    </div>
-  </header>
-  <main class="container">
-    <div class="tab-content" id="about-content">
-      <section class="section">
-        <h2 class="title">Sync Timer とは？</h2>
-        <p>
-          YouTubeなどでファンと一緒に映画などの同時視聴配信を行うときに使えるタイマーです。
-        </p>
-        <p>ブラウザのみで動作し、ログイン不要でどなたでも無料で使えます。</p>
-      </section>
-      <section class="section">
-        <h2 class="title">SyncTimerの特徴</h2>
-        <div class="columns is-desktop">
-          <div class="column">
-            <figure class="image is-16by9">
-              <img src="images/SyncTimer1.webp" alt="SyncTimer1" />
-            </figure>
-            <p class="is-size-4"><strong>マイナスから開始できる</strong></p>
-            <ul>
-              <li>カウントダウンで視聴者とタイミングを合わせやすい</li>
-              <li>動画の開始操作をする余裕ができる</li>
-            </ul>
-          </div>
-          <div class="column">
-            <figure class="image is-16by9">
-              <img src="images/SyncTimer2.webp" alt="SyncTimer2" />
-            </figure>
-            <p class="is-size-4"><strong>クロマキー合成対応・等幅表示</strong></p>
-            <ul>
-              <li>OBSなどで背景を透過して表示可能</li>
-              <li>文字幅を固定しているのでレイアウトが崩れない</li>
-            </ul>
-          </div>
-          <div class="column">
-            <figure class="image is-16by9">
-              <img src="images/SyncTimer3.webp" alt="SyncTimer3" />
-            </figure>
-            <p class="is-size-4"><strong>設定を維持できる</strong></p>
-            <ul>
-              <li>タイマーの設定がブラウザのURLに自動反映される</li>
-              <li>URLを入力するだけで同じ設定が適用される</li>
-            </ul>
-          </div>
+  <body class="has-text-centered">
+    <header class="hero is-info">
+      <div class="hero-body">
+        <h1 class="title">Sync Timer</h1>
+        <p class="subtitle">同時視聴配信のためのシンプルなタイマー</p>
+        <div>
+          <a href="https://sync-timer.netlify.app/?utm_source=about-ja"
+            ><button class="button is-large">アプリを開く</button></a
+          >
         </div>
-      </section>
-      <section class="section">
-        <h2 class="title">使い方を動画で見る</h2>
-        <div id="yt-player"></div>
-      </section>
-    </div>
-    <div id="caution-content" class="tab-content" style="display: none;">
-      <section class="section">
-        <h2 class="title">利用時の注意</h2>
-        <div class="has-text-centered">
+      </div>
+      <div class="hero-foot">
+        <div class="container tabs is-centered is-large is-boxed">
           <ul>
-            <li>本サービスの利用により利用者に何らかの損害が発生しても、開発者としては一切の責任を負いません。</li>
-            <li>本サービスは事前の予告なく内容の変更や停止を行う可能性があります。あらかじめご容赦ください。</li>
+            <li id="about-tab" class="is-active">
+              <a onclick="activateTab('about')">概要</a>
+            </li>
+            <li id="caution-tab">
+              <a onclick="activateTab('caution')">利用時の注意</a>
+            </li>
+            <li id="inquiry-tab">
+              <a onclick="activateTab('inquiry')">お問い合わせ</a>
+            </li>
           </ul>
         </div>
-      </section>
-    </div>
-    <div class="tab-content" id="inquiry-content" style="display: none;">
-      <section class="section">
-        <h2 class="title">お問い合わせ</h2>
-        <p>開発者の<a href="https://twitter.com/mather314">Twitterアカウント</a>または以下のフォームからご連絡ください</p>
+      </div>
+    </header>
+    <main class="container">
+      <div class="tab-content" id="about-content">
+        <section class="section">
+          <h2 class="title">Sync Timer とは？</h2>
+          <p>
+            YouTubeなどでファンと一緒に映画などの同時視聴配信を行うときに使えるタイマーです。
+          </p>
+          <p>ブラウザのみで動作し、ログイン不要でどなたでも無料で使えます。</p>
+        </section>
+        <section class="section">
+          <h2 class="title">SyncTimerの特徴</h2>
+          <div class="columns is-desktop">
+            <div class="column">
+              <figure class="image is-16by9">
+                <img src="images/SyncTimer1.webp" alt="SyncTimer1" />
+              </figure>
+              <p class="is-size-4"><strong>マイナスから開始できる</strong></p>
+              <ul>
+                <li>カウントダウンで視聴者とタイミングを合わせやすい</li>
+                <li>動画の開始操作をする余裕ができる</li>
+              </ul>
+            </div>
+            <div class="column">
+              <figure class="image is-16by9">
+                <img src="images/SyncTimer2.webp" alt="SyncTimer2" />
+              </figure>
+              <p class="is-size-4">
+                <strong>クロマキー合成対応・等幅表示</strong>
+              </p>
+              <ul>
+                <li>OBSなどで背景を透過して表示可能</li>
+                <li>文字幅を固定しているのでレイアウトが崩れない</li>
+              </ul>
+            </div>
+            <div class="column">
+              <figure class="image is-16by9">
+                <img src="images/SyncTimer3.webp" alt="SyncTimer3" />
+              </figure>
+              <p class="is-size-4"><strong>設定を維持できる</strong></p>
+              <ul>
+                <li>タイマーの設定がブラウザのURLに自動反映される</li>
+                <li>URLを入力するだけで同じ設定が適用される</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+        <section class="section">
+          <h2 class="title">使い方を動画で見る</h2>
+          <div id="yt-player"></div>
+        </section>
+      </div>
+      <div id="caution-content" class="tab-content" style="display: none">
+        <section class="section">
+          <h2 class="title">利用時の注意</h2>
+          <div class="has-text-centered">
+            <ul>
+              <li>
+                本サービスの利用により利用者に何らかの損害が発生しても、開発者としては一切の責任を負いません。
+              </li>
+              <li>
+                本サービスは事前の予告なく内容の変更や停止を行う可能性があります。あらかじめご容赦ください。
+              </li>
+            </ul>
+          </div>
+        </section>
+      </div>
+      <div class="tab-content" id="inquiry-content" style="display: none">
+        <section class="section">
+          <h2 class="title">お問い合わせ</h2>
+          <p>
+            開発者の<a href="https://twitter.com/mather314">Twitterアカウント</a
+            >または以下のフォームからご連絡ください
+          </p>
+          <p>
+            <a href="https://twitter.com/mather314">
+              <button class="button is-info">
+                <i class="fa-brands fa-twitter"></i> @mather314
+              </button>
+            </a>
+          </p>
+          <iframe
+            src="https://docs.google.com/forms/d/e/1FAIpQLSfgmFqq-t-vv6gC1YpgoH3nCK1b7gI0ROC25K1NX9r5jGtndg/viewform?embedded=true"
+            width="800"
+            height="1800"
+            frameborder="0"
+            marginheight="0"
+            marginwidth="0"
+            >読み込んでいます…</iframe
+          >
+        </section>
+      </div>
+    </main>
+    <footer class="footer">
+      <div class="content">
         <p>
-          <a href="https://twitter.com/mather314">
-            <button class="button is-info"><i class="fa-brands fa-twitter"></i> @mather314</button>
-          </a>
+          <strong>Sync Timer</strong> by
+          <a href="https://github.com/mather">mather</a>.
         </p>
-        <iframe
-          src="https://docs.google.com/forms/d/e/1FAIpQLSfgmFqq-t-vv6gC1YpgoH3nCK1b7gI0ROC25K1NX9r5jGtndg/viewform?embedded=true"
-          width="800" height="1800" frameborder="0" marginheight="0" marginwidth="0">読み込んでいます…</iframe>
-      </section>
-    </div>
-  </main>
-  <footer class="footer">
-    <div class="content">
-      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5262330257175244"
-        crossorigin="anonymous"></script>
-      <!-- 横長広告 -->
-      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5262330257175244" data-ad-slot="3096648696"
-        data-ad-format="auto" data-full-width-responsive="true"></ins>
-      <script>
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      </script>
-      <p>
-        <strong>Sync Timer</strong> by <a href="https://github.com/mather">mather</a>.
-      </p>
-    </div>
-  </footer>
-  <script src="https://www.youtube.com/iframe_api"></script>
-  <script>
-    const elem = document.getElementById("yt-player");
-    const ytWidth = Math.min(elem.parentNode.clientWidth, 1024);
-    const ytHeight = (ytWidth / 16) * 9;
+      </div>
+    </footer>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+      const elem = document.getElementById("yt-player");
+      const ytWidth = Math.min(elem.parentNode.clientWidth, 1024);
+      const ytHeight = (ytWidth / 16) * 9;
 
-    const tag = document.createElement("script");
-    tag.src = "https://www.youtube.com/iframe_api";
-    const firstScriptTag = document.getElementsByTagName("script")[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName("script")[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-    let player;
-    function onYouTubeIframeAPIReady() {
-      player = new YT.Player("yt-player", {
-        width: ytWidth.toString(),
-        height: ytHeight.toString(),
-        videoId: "m1Basm-TqGU",
-        playerVars: {
-          rel: 0,
-        },
-        events: {
-          onReady: onPlayerReady,
-        },
-      });
-    }
+      let player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player("yt-player", {
+          width: ytWidth.toString(),
+          height: ytHeight.toString(),
+          videoId: "m1Basm-TqGU",
+          playerVars: {
+            rel: 0,
+          },
+          events: {
+            onReady: onPlayerReady,
+          },
+        });
+      }
 
-    function onPlayerReady(event) {
-      event.target.setVolume(10);
-    }
-  </script>
-</body>
-
+      function onPlayerReady(event) {
+        event.target.setVolume(10);
+      }
+    </script>
+  </body>
 </html>
