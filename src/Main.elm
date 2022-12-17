@@ -534,19 +534,29 @@ encodeAnalyticsEvent category action label setting =
 formatTimeForAnalytics : Int -> String
 formatTimeForAnalytics t =
     let
-        dt =
-            millisToDisplayTime t
+        absMilliSeconds =
+            abs t
+
+        actualTime =
+            { isMinus = t < 0
+            , hours = absMilliSeconds // 3600000
+            , minutes = absMilliSeconds // 60000 |> modBy 60
+            , seconds = absMilliSeconds // 1000 |> modBy 60
+            , milliSeconds = modBy 1000 absMilliSeconds
+            }
     in
-    [ if dt.isMinus then
+    [ if actualTime.isMinus then
         "-"
 
       else
         ""
-    , String.fromInt dt.hours |> String.padLeft 2 '0'
+    , String.fromInt actualTime.hours |> String.padLeft 2 '0'
     , ":"
-    , String.fromInt dt.minutes |> String.padLeft 2 '0'
+    , String.fromInt actualTime.minutes |> String.padLeft 2 '0'
     , ":"
-    , String.fromInt dt.seconds |> String.padLeft 2 '0'
+    , String.fromInt actualTime.seconds |> String.padLeft 2 '0'
+    , "."
+    , String.fromInt actualTime.milliSeconds |> String.padLeft 3 '0'
     ]
         |> String.concat
 
