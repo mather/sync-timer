@@ -21,16 +21,30 @@ type alias Model =
 type alias Setting =
     { bgColor : BgColor
     , fgColor : String
+    , fgFont : FgFont
     , initialTimeSeconds : Int
     , showHour : Bool
     , showProgress : Bool
     }
 
 
+settingToDict : Setting -> Dict.Dict String String
+settingToDict setting =
+    Dict.fromList
+        [ ( "fg", setting.fgColor )
+        , ( "bg", setting.bgColor |> encodeBgColor )
+        , ( "ff", setting.fgFont |> encodeFgFont )
+        , ( "init", setting.initialTimeSeconds |> String.fromInt )
+        , ( "h", setting.showHour |> encodeBoolean )
+        , ( "p", setting.showProgress |> encodeBoolean )
+        ]
+
+
 defaultSetting : Setting
 defaultSetting =
     { fgColor = "#415462"
     , bgColor = GreenBack
+    , fgFont = DDinBold
     , initialTimeSeconds = -10
     , showHour = True
     , showProgress = False
@@ -58,10 +72,35 @@ millisToDisplayTime t =
     }
 
 
+type FgFont
+    = DDinBold
+    | Lora
+
+
+encodeFgFont : FgFont -> String
+encodeFgFont fgFont =
+    case fgFont of
+        DDinBold ->
+            "d-din-bold"
+
+        Lora ->
+            "lora"
+
+
 type BgColor
     = Transparent
     | GreenBack
     | BlueBack
+
+
+dictFgFont : Dict.Dict String FgFont
+dictFgFont =
+    List.foldl (\bg -> Dict.insert (encodeFgFont bg) bg) Dict.empty [ DDinBold, Lora ]
+
+
+decodeFgFont : String -> Maybe FgFont
+decodeFgFont =
+    flip Dict.get dictFgFont
 
 
 encodeBgColor : BgColor -> String
@@ -109,6 +148,7 @@ decodeBoolean =
 type alias SettingFromQuery =
     { fg : Maybe String
     , bg : Maybe String
+    , ff : Maybe String
     , init : Maybe Int
     , h : Maybe String
     , p : Maybe String
@@ -124,6 +164,7 @@ parseSettingFromQuery : SettingFromQuery -> Setting
 parseSettingFromQuery setting =
     { fgColor = setting.fg |> Maybe.withDefault defaultSetting.fgColor
     , bgColor = setting.bg |> Maybe.andThen decodeBgColor |> Maybe.withDefault defaultSetting.bgColor
+    , fgFont = setting.ff |> Maybe.andThen decodeFgFont |> Maybe.withDefault defaultSetting.fgFont
     , initialTimeSeconds = setting.init |> Maybe.withDefault defaultSetting.initialTimeSeconds
     , showHour = setting.h |> Maybe.andThen decodeBoolean |> Maybe.withDefault defaultSetting.showHour
     , showProgress = setting.p |> Maybe.andThen decodeBoolean |> Maybe.withDefault defaultSetting.showProgress
@@ -160,15 +201,30 @@ type Msg
     | NoOp
 
 
+defaultSettingDict : Dict.Dict String String
+defaultSettingDict =
+    settingToDict defaultSetting
+
+
+isNotDefault : String -> String -> Bool
+isNotDefault key value =
+    Dict.get key defaultSettingDict
+        |> Maybe.map ((==) value >> not)
+        |> Maybe.withDefault False
+
+
+diffSettingDict : Setting -> Dict.Dict String String
+diffSettingDict setting =
+    settingToDict setting
+        |> Dict.filter isNotDefault
+
+
 urlFromSetting : Setting -> String
 urlFromSetting setting =
-    UB.toQuery
-        [ UB.string "fg" setting.fgColor
-        , UB.string "bg" <| encodeBgColor setting.bgColor
-        , UB.int "init" setting.initialTimeSeconds
-        , UB.string "h" <| encodeBoolean setting.showHour
-        , UB.string "p" <| encodeBoolean setting.showProgress
-        ]
+    diffSettingDict setting
+        |> Dict.toList
+        |> List.map (\( k, v ) -> UB.string k v)
+        |> UB.toQuery
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
