@@ -48,6 +48,7 @@ settingFromQueryTest =
             \_ ->
                 { fg = Nothing
                 , bg = Nothing
+                , ff = Nothing
                 , init = Nothing
                 , h = Nothing
                 , p = Nothing
@@ -58,6 +59,7 @@ settingFromQueryTest =
             \_ ->
                 { fg = Just "#ffffff"
                 , bg = Just "bb"
+                , ff = Just "lora"
                 , init = Just -5
                 , h = Just "false"
                 , p = Just "true"
@@ -66,6 +68,7 @@ settingFromQueryTest =
                     |> Expect.equal
                         { fgColor = "#ffffff"
                         , bgColor = BlueBack
+                        , fgFont = Lora
                         , initialTimeSeconds = -5
                         , showHour = False
                         , showProgress = True
@@ -74,16 +77,18 @@ settingFromQueryTest =
             \_ ->
                 { fg = Just "#000000"
                 , bg = Nothing
+                , ff = Just "lora"
                 , init = Just -30
                 , h = Nothing
                 , p = Nothing
                 }
                     |> parseSettingFromQuery
-                    |> Expect.equal { defaultSetting | fgColor = "#000000", initialTimeSeconds = -30 }
+                    |> Expect.equal { defaultSetting | fgColor = "#000000", initialTimeSeconds = -30, fgFont = Lora }
         , test "with some correct enums" <|
             \_ ->
                 { fg = Nothing
                 , bg = Just "tp"
+                , ff = Nothing
                 , init = Nothing
                 , h = Just "true"
                 , p = Just "true"
@@ -94,6 +99,7 @@ settingFromQueryTest =
             \_ ->
                 { fg = Nothing
                 , bg = Just "aa"
+                , ff = Just "bb"
                 , init = Nothing
                 , h = Just "test"
                 , p = Just "hogehoge"
