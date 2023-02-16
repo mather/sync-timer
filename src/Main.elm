@@ -196,6 +196,7 @@ type Msg
     | FastForwardSec Int
     | SetBgColor BgColor
     | SetFgColor String
+    | SetFgFont FgFont
     | ToggleShowHour
     | ToggleShowProgress
     | NoOp
@@ -269,6 +270,11 @@ update msg ({ setting } as model) =
             , setQueryString <| urlFromSetting { setting | fgColor = fgColor }
             )
 
+        SetFgFont fgFont ->
+            ( { model | setting = { setting | fgFont = fgFont } }
+            , setQueryString <| urlFromSetting { setting | fgFont = fgFont }
+            )
+
         ToggleShowHour ->
             ( { model | setting = { setting | showHour = not setting.showHour } }
             , setQueryString <| urlFromSetting { setting | showHour = not setting.showHour }
@@ -312,7 +318,7 @@ viewTimerDigits millis setting =
             else
                 [ displayTime.minutes, displayTime.seconds ]
     in
-    div [ class "timer", class "d-din-bold", timerBgColorClass setting.bgColor, style "color" setting.fgColor ]
+    div [ class "timer", fontClass setting.fgFont, timerBgColorClass setting.bgColor, style "color" setting.fgColor ]
         [ div [ class "digits" ] <|
             (List.concat <|
                 [ [ span (styleTimerSign displayTime.isMinus) [ text "-" ] ]
@@ -321,6 +327,16 @@ viewTimerDigits millis setting =
             )
                 ++ viewProgressBar millis setting
         ]
+
+
+fontClass : FgFont -> Html.Attribute Msg
+fontClass font =
+    case font of
+        DDinBold ->
+            class "d-din-bold"
+
+        Lora ->
+            class "lora"
 
 
 progress : Int -> Int -> String
@@ -481,8 +497,9 @@ viewTimerSettings setting =
         [ summary [] [ text "表示設定" ]
         , div [ class "grid" ]
             [ viewFgColorInput setting.fgColor
-            , viewBgColorInput setting.bgColor
+            , viewFgFontInput setting.fgFont
             ]
+        , viewBgColorInput setting.bgColor
         , div
             [ class "grid" ]
             [ label [ for "showHour" ]
@@ -513,6 +530,22 @@ viewFgColorInput fgColor =
                 ]
             ]
         ]
+
+
+viewFgFontInput : FgFont -> Html Msg
+viewFgFontInput font =
+    div []
+        [ label [ for "fgFont" ] [ text "フォント" ]
+        , select [ id "fgFont", onInput selectFgFont ]
+            [ option [ value <| encodeFgFont DDinBold, selected <| font == DDinBold ] [ text "D-DIN bold (Sans Serif)" ]
+            , option [ value <| encodeFgFont Lora, selected <| font == Lora ] [ text "Lora (Serif)" ]
+            ]
+        ]
+
+
+selectFgFont : String -> Msg
+selectFgFont =
+    decodeFgFont >> Maybe.withDefault DDinBold >> SetFgFont
 
 
 viewBgColorInput : BgColor -> Html Msg
