@@ -256,7 +256,7 @@ viewTimerDigits millis setting =
             else
                 [ displayTime.minutes, displayTime.seconds ]
     in
-    div [ class "timer", timerBgColorClass setting.bgColor, style "color" setting.fgColor ]
+    div [ class "timer", class "d-din-bold", timerBgColorClass setting.bgColor, style "color" setting.fgColor ]
         [ div [ class "digits" ] <|
             (List.concat <|
                 [ [ span (styleTimerSign displayTime.isMinus) [ text "-" ] ]

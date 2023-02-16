@@ -27,7 +27,6 @@ body > main {
 }
 
 .timer {
-  font-family: "D-DIN-bold";
   font-size: 5rem;
   text-align: center;
   padding: 4rem 0;
@@ -54,11 +53,17 @@ body > main {
   .digit {
     display: inline-block;
     width: 1ex;
-    vertical-align: middle;
   }
   .sep {
     display: inline-block;
-    width: 0.5ex;
+  }
+}
+
+.timer.d-din-bold {
+  font-family: "D-DIN-bold";
+
+  .sep {
+    vertical-align: text-top;
   }
 }
 
