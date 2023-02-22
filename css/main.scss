@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Lora&display=swap&text=-:.0123456789");
+
 /*
   elm-hot creates an additional div wrapper around the app to make HMR possible.
   This could break styling in development mode if you are using Elm UI.
@@ -27,7 +29,6 @@ body > main {
 }
 
 .timer {
-  font-family: "D-DIN-bold";
   font-size: 5rem;
   text-align: center;
   padding: 4rem 0;
@@ -51,14 +52,28 @@ body > main {
     }
   }
 
-  .digit {
-    display: inline-block;
-    width: 1ex;
-    vertical-align: middle;
-  }
+  .digit,
   .sep {
     display: inline-block;
-    width: 0.5ex;
+  }
+}
+
+.timer.d-din-bold {
+  font-family: "D-DIN-bold";
+
+  .digit {
+    width: 1ex;
+  }
+  .sep {
+    vertical-align: text-top;
+  }
+}
+
+.timer.lora {
+  font-family: "Lora";
+
+  .digit {
+    width: 1.15ex;
   }
 }
 
