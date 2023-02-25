@@ -504,11 +504,11 @@ viewTimerSettings setting =
             [ class "grid" ]
             [ label [ for "showHour" ]
                 [ input [ type_ "checkbox", id "showHour", role "switch", checked setting.showHour, onClick ToggleShowHour ] []
-                , text "時間を表示する"
+                , text "1時間以上の動画を見る"
                 ]
             , label [ for "showProgress" ]
                 [ input [ type_ "checkbox", id "showProgress", role "switch", checked setting.showProgress, onClick ToggleShowProgress ] []
-                , text "カウントダウンをバーで表示する"
+                , text "カウントダウンを視覚的に表現する"
                 ]
             ]
         ]
@@ -614,6 +614,7 @@ encodeAnalyticsEvent category action label setting =
             , ( "label", E.string label )
             , ( "setting_fgColor", E.string setting.fgColor )
             , ( "setting_bgColor", E.string <| encodeBgColor setting.bgColor )
+            , ( "setting_fgFont", E.string <| encodeFgFont setting.fgFont )
             , ( "setting_initial", E.int setting.initialTimeSeconds )
             , ( "setting_show_hours", E.bool setting.showHour )
             , ( "setting_show_progress", E.bool setting.showProgress )
