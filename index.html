@@ -62,6 +62,14 @@
       <nav class="container">
         <ul>
           <li><strong style="font-size: xx-large">SyncTimer</strong></li>
+          <li>
+            <a
+              href="/about/?utm_source=top"
+              class="secondary"
+              data-tooltip="SyncTimerはどんなアプリ？"
+              ><i class="fas fa-circle-question"></i
+            ></a>
+          </li>
         </ul>
         <ul>
           <li style="text-align: center">
@@ -74,10 +82,17 @@
               <span class="hashtag-helper">利用報告待ってます！</span>
             </div>
           </li>
+
           <li>
-            <a href="/about/?utm_source=top" class="secondary" role="button"
-              >SyncTimerとは？</a
+            <a
+              href="#"
+              onClick="openDialog()"
+              class="secondary"
+              role="button"
+              data-tooltip="使い方を動画で見る"
             >
+              <i class="fab fa-youtube button-icon"></i>使い方
+            </a>
           </li>
         </ul>
       </nav>
@@ -127,6 +142,7 @@ https://sync-timer.netlify.app/</textarea
                 href="https://youtube.com/playlist?list=PLzz5NMXBDKoZ8UoGCgQI9mdcfmyjugbwz"
                 target="_blank"
                 rel="noopener noreferrer"
+                data-tooltip="YouTubeでの利用例を集めてみました"
                 ><i class="fab fa-youtube button-icon"></i>YouTubeでの利用例</a
               >
             </div>
@@ -135,6 +151,7 @@ https://sync-timer.netlify.app/</textarea
                 href="https://twitter.com/intent/user?user_id=62148177"
                 target="_blank"
                 rel="noopener noreferrer"
+                data-tooltip="開発者のTwitterアカウント"
                 ><i class="fab fa-twitter button-icon"></i>@mather314
                 (開発者)</a
               >
@@ -145,6 +162,7 @@ https://sync-timer.netlify.app/</textarea
                 class="secondary"
                 target="_blank"
                 rel="noopener noreferrer"
+                data-tooltip="ソースコードを見る"
                 ><i class="fab fa-github button-icon"></i>mather/sync-timer</a
               >
             </div>
@@ -153,6 +171,49 @@ https://sync-timer.netlify.app/</textarea
         </div>
       </div>
     </footer>
+    <dialog id="usage-dialog">
+      <article>
+        <header>
+          <a
+            href="#"
+            aria-label="Close"
+            class="close"
+            onclick="closeDialog()"
+          ></a
+          >使い方を動画で見る
+        </header>
+        <div id="ytplayer"></div>
+      </article>
+    </dialog>
     <script async src="./js/index.js" type="module"></script>
+    <script>
+      // Load the IFrame Player API code asynchronously.
+      const ytWidth = Math.min(window.innerWidth * 0.8, 1024);
+      const ytHeight = (ytWidth / 16) * 9;
+      var tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/player_api";
+      var firstScriptTag = document.getElementsByTagName("script")[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // Replace the 'ytplayer' element with an <iframe> and
+      // YouTube player after the API code downloads.
+      let player;
+      function onYouTubePlayerAPIReady() {
+        player = new YT.Player("ytplayer", {
+          width: ytWidth,
+          height: ytHeight,
+          videoId: "m1Basm-TqGU",
+        });
+      }
+
+      const usageDialog = document.getElementById("usage-dialog");
+      const openDialog = () => {
+        usageDialog.showModal();
+      };
+      const closeDialog = () => {
+        if (player) player.pauseVideo();
+        usageDialog.close();
+      };
+    </script>
   </body>
 </html>
