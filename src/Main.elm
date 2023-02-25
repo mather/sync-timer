@@ -614,6 +614,7 @@ encodeAnalyticsEvent category action label setting =
             , ( "label", E.string label )
             , ( "setting_fgColor", E.string setting.fgColor )
             , ( "setting_bgColor", E.string <| encodeBgColor setting.bgColor )
+            , ( "setting_fgFont", E.string <| encodeFgFont setting.fgFont )
             , ( "setting_initial", E.int setting.initialTimeSeconds )
             , ( "setting_show_hours", E.bool setting.showHour )
             , ( "setting_show_progress", E.bool setting.showProgress )
