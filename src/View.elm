@@ -3,7 +3,7 @@ module View exposing (DisplayTime, millisToDisplayTime, selectBgColor, selectFgF
 import Html exposing (Attribute, Html, a, button, details, div, i, input, label, option, select, span, summary, text)
 import Html.Attributes as A exposing (attribute, checked, class, for, id, selected, step, style, type_, value)
 import Html.Events exposing (onClick, onInput)
-import Model exposing (BgColor(..), FgFont(..), Model, Setting, decodeBgColor, decodeFgFont, encodeFgFont)
+import Model exposing (BgColor(..), FgFont(..), Model, Setting, decodeBgColor, decodeFgFont, encodeBgColor, encodeFgFont)
 import Msg exposing (Msg(..))
 
 
@@ -69,13 +69,8 @@ viewTimerDigits millis setting =
 
 
 fontClass : FgFont -> Html.Attribute Msg
-fontClass font =
-    case font of
-        DDinBold ->
-            class "d-din-bold"
-
-        Lora ->
-            class "lora"
+fontClass =
+    encodeFgFont >> class
 
 
 progress : Int -> Int -> String
@@ -292,9 +287,9 @@ viewBgColorInput bgColor =
     div []
         [ label [ for "bgColor" ] [ text "背景色" ]
         , select [ id "bgColor", onInput selectBgColor ]
-            [ option [ value "gb", selected <| bgColor == GreenBack ] [ text "グリーンバック(GB, #00ff00)" ]
-            , option [ value "bb", selected <| bgColor == BlueBack ] [ text "ブルーバック(BB, #0000ff)" ]
-            , option [ value "tp", selected <| bgColor == Transparent ] [ text "なし (White)" ]
+            [ option [ value <| encodeBgColor GreenBack, selected <| bgColor == GreenBack ] [ text "グリーンバック(GB, #00ff00)" ]
+            , option [ value <| encodeBgColor BlueBack, selected <| bgColor == BlueBack ] [ text "ブルーバック(BB, #0000ff)" ]
+            , option [ value <| encodeBgColor Transparent, selected <| bgColor == Transparent ] [ text "なし (White)" ]
             ]
         ]
 
