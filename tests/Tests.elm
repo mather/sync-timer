@@ -1,8 +1,11 @@
 module Tests exposing (..)
 
 import Expect
-import Main exposing (..)
+import Main exposing (parseSettingFromQuery)
+import Model exposing (BgColor(..), FgFont(..), defaultSetting)
+import Msg exposing (Msg(..))
 import Test exposing (..)
+import View exposing (DisplayTime, millisToDisplayTime, selectBgColor, selectFgFont)
 
 
 
@@ -117,4 +120,15 @@ selectBgColorTest =
                 [ "gb", "bb", "tp", "hoge" ]
                     |> List.map selectBgColor
                     |> Expect.equal [ SetBgColor GreenBack, SetBgColor BlueBack, SetBgColor Transparent, NoOp ]
+        ]
+
+
+selectFgFontTest : Test
+selectFgFontTest =
+    describe "selectFgFont correctly map String to Msg"
+        [ test "check mapping" <|
+            \_ ->
+                [ "d-din-bold", "lora", "hoge" ]
+                    |> List.map selectFgFont
+                    |> Expect.equal [ SetFgFont DDinBold, SetFgFont Lora, NoOp ]
         ]
