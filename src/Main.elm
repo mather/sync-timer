@@ -7,6 +7,8 @@ import Time
 import View exposing (view)
 
 
+{-| flag: SettingFromQuery
+-}
 type alias SettingFromQuery =
     { fg : Maybe String
     , bg : Maybe String
@@ -43,17 +45,28 @@ parseSettingFromQuery setting =
     }
 
 
+calculateMillis : Maybe Time.Posix -> Int -> Time.Posix -> Int
+calculateMillis prevTime prevMillis currentTime =
+    case prevTime of
+        Just prev ->
+            prevMillis + (Time.posixToMillis currentTime - Time.posixToMillis prev)
+
+        Nothing ->
+            prevMillis
+
+
+tick : Model -> Time.Posix -> Msg
+tick model currentTime =
+    UpdateTime (calculateMillis model.current model.timeMillis currentTime) currentTime
+
+
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    let
-        tick now =
-            UpdateTime (Time.posixToMillis now - (Time.posixToMillis <| Maybe.withDefault now model.current) + model.timeMillis) now
-    in
     if model.paused then
         Sub.none
 
     else
-        Time.every 33 tick
+        Time.every 33 <| tick model
 
 
 main : Program SettingFromQuery Model Msg
