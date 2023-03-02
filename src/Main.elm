@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Browser
+import Browser.Events
 import Model exposing (Model, Setting, decodeBgColor, decodeBoolean, decodeFgFont, defaultSetting)
 import Msg exposing (Msg(..), update)
 import Time
@@ -66,7 +67,7 @@ subscriptions model =
         Sub.none
 
     else
-        Time.every 33 <| tick model
+        Browser.Events.onAnimationFrame <| tick model
 
 
 main : Program SettingFromQuery Model Msg
