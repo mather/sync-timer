@@ -4,7 +4,6 @@ import Browser
 import Browser.Events
 import Model exposing (Model, Setting, decodeBgColor, decodeBoolean, decodeFgFont, defaultSetting)
 import Msg exposing (Msg(..), update)
-import Time
 import View exposing (view)
 
 
@@ -46,28 +45,13 @@ parseSettingFromQuery setting =
     }
 
 
-calculateMillis : Maybe Time.Posix -> Int -> Time.Posix -> Int
-calculateMillis prevTime prevMillis currentTime =
-    case prevTime of
-        Just prev ->
-            prevMillis + (Time.posixToMillis currentTime - Time.posixToMillis prev)
-
-        Nothing ->
-            prevMillis
-
-
-tick : Model -> Time.Posix -> Msg
-tick model currentTime =
-    UpdateTime (calculateMillis model.current model.timeMillis currentTime) currentTime
-
-
 subscriptions : Model -> Sub Msg
 subscriptions model =
     if model.paused then
         Sub.none
 
     else
-        Browser.Events.onAnimationFrame <| tick model
+        Browser.Events.onAnimationFrame UpdateTime
 
 
 main : Program SettingFromQuery Model Msg

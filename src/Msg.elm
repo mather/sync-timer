@@ -14,7 +14,7 @@ type Msg
     = Start
     | Pause
     | Reset
-    | UpdateTime Int Time.Posix
+    | UpdateTime Time.Posix
     | UpdateResetTime Int
     | RewindSec Int
     | FastForwardSec Int
@@ -44,8 +44,13 @@ update msg ({ setting } as model) =
             , timerResetEvent model.timeMillis setting
             )
 
-        UpdateTime millis current ->
-            ( { model | timeMillis = millis, current = Just current }, Cmd.none )
+        UpdateTime current ->
+            ( { model
+                | timeMillis = calculateMillis model.current model.timeMillis current
+                , current = Just current
+              }
+            , Cmd.none
+            )
 
         UpdateResetTime seconds ->
             ( { model | setting = { setting | initialTimeSeconds = seconds } }
@@ -85,6 +90,16 @@ update msg ({ setting } as model) =
 
         NoOp ->
             ( model, Cmd.none )
+
+
+calculateMillis : Maybe Time.Posix -> Int -> Time.Posix -> Int
+calculateMillis prevTime prevMillis currentTime =
+    case prevTime of
+        Just prev ->
+            prevMillis + (Time.posixToMillis currentTime - Time.posixToMillis prev)
+
+        Nothing ->
+            prevMillis
 
 
 settingToDict : Setting -> Dict.Dict String String
