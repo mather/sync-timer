@@ -33,6 +33,18 @@ defaultSetting =
     }
 
 
+dictEnum_ : (a -> String) -> List a -> Dict.Dict String a
+dictEnum_ encoder elements =
+    elements
+        |> List.map (\e -> ( encoder e, e ))
+        |> Dict.fromList
+
+
+flip_ : (a -> b -> c) -> b -> a -> c
+flip_ f b a =
+    f a b
+
+
 type FgFont
     = DDinBold
     | Lora
@@ -56,12 +68,12 @@ type BgColor
 
 dictFgFont : Dict.Dict String FgFont
 dictFgFont =
-    List.foldl (\bg -> Dict.insert (encodeFgFont bg) bg) Dict.empty [ DDinBold, Lora ]
+    dictEnum_ encodeFgFont [ DDinBold, Lora ]
 
 
 decodeFgFont : String -> Maybe FgFont
 decodeFgFont =
-    flip Dict.get dictFgFont
+    flip_ Dict.get dictFgFont
 
 
 encodeBgColor : BgColor -> String
@@ -79,12 +91,12 @@ encodeBgColor bg =
 
 dictBgColor : Dict.Dict String BgColor
 dictBgColor =
-    List.foldl (\bg -> Dict.insert (encodeBgColor bg) bg) Dict.empty [ GreenBack, BlueBack, Transparent ]
+    dictEnum_ encodeBgColor [ GreenBack, BlueBack, Transparent ]
 
 
 decodeBgColor : String -> Maybe BgColor
 decodeBgColor =
-    flip Dict.get dictBgColor
+    flip_ Dict.get dictBgColor
 
 
 encodeBoolean : Bool -> String
@@ -98,14 +110,9 @@ encodeBoolean b =
 
 dictBoolean : Dict.Dict String Bool
 dictBoolean =
-    Dict.fromList [ ( "true", True ), ( "false", False ) ]
+    dictEnum_ encodeBoolean [ True, False ]
 
 
 decodeBoolean : String -> Maybe Bool
 decodeBoolean =
-    flip Dict.get dictBoolean
-
-
-flip : (a -> b -> c) -> b -> a -> c
-flip f b a =
-    f a b
+    flip_ Dict.get dictBoolean
