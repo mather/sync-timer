@@ -47,9 +47,9 @@ update msg ({ setting } as model) =
         UpdateTime millis current ->
             ( { model | timeMillis = millis, current = Just current }, Cmd.none )
 
-        UpdateResetTime millis ->
-            ( { model | setting = { setting | initialTimeSeconds = millis } }
-            , setQueryString <| urlFromSetting { setting | initialTimeSeconds = millis }
+        UpdateResetTime seconds ->
+            ( { model | setting = { setting | initialTimeSeconds = seconds } }
+            , setQueryString <| urlFromSetting { setting | initialTimeSeconds = seconds }
             )
 
         RewindSec sec ->
