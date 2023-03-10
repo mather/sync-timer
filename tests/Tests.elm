@@ -1,8 +1,10 @@
 module Tests exposing (..)
 
+import Dict
 import Expect
+import Fuzz
 import Main exposing (parseSettingFromQuery)
-import Model exposing (BgColor(..), FgFont(..), defaultSetting)
+import Model exposing (BgColor(..), FgFont(..), defaultSetting, dictBgColor, dictFgFont)
 import Msg exposing (Msg(..))
 import Test exposing (..)
 import View exposing (DisplayTime, millisToDisplayTime, selectBgColor, selectFgFont)
@@ -120,6 +122,10 @@ selectBgColorTest =
                 [ "gb", "bb", "tp", "hoge" ]
                     |> List.map selectBgColor
                     |> Expect.equal [ SetBgColor GreenBack, SetBgColor BlueBack, SetBgColor Transparent, NoOp ]
+        , fuzz (Fuzz.oneOfValues <| Dict.keys <| dictBgColor) "any key can be mapped as SetBgColor" <|
+            \k ->
+                selectBgColor k
+                    |> Expect.notEqual NoOp
         ]
 
 
@@ -131,4 +137,8 @@ selectFgFontTest =
                 [ "d-din-bold", "lora", "hoge" ]
                     |> List.map selectFgFont
                     |> Expect.equal [ SetFgFont DDinBold, SetFgFont Lora, NoOp ]
+        , fuzz (Fuzz.oneOfValues <| Dict.keys <| dictFgFont) "any key can be mapped as SetFgFont" <|
+            \k ->
+                selectFgFont k
+                    |> Expect.notEqual NoOp
         ]
