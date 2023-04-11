@@ -17,7 +17,7 @@ const parseParams = () => {
   const parseInit = (s) => {
     if (s) {
       const n = parseInt(s, 10);
-      if (n > 30 || n < -30) return null;
+      if (isNaN(n)) return null;
       return n;
     }
     return null;
