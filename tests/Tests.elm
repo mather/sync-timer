@@ -6,8 +6,10 @@ import Fuzz
 import Main exposing (parseSettingFromQuery)
 import Model exposing (BgColor(..), FgFont(..), defaultSetting, dictBgColor, dictFgFont)
 import Msg exposing (Msg(..))
+import Parser
 import Test exposing (..)
-import View exposing (DisplayTime, millisToDisplayTime, selectBgColor, selectFgFont)
+import Url.Parser exposing (Parser)
+import View exposing (DisplayTime, millisToDisplayTime, resetTimeValueParser, resetTimeValueToString, selectBgColor, selectFgFont)
 
 
 
@@ -141,4 +143,26 @@ selectFgFontTest =
             \k ->
                 selectFgFont k
                     |> Expect.notEqual NoOp
+        ]
+
+
+resetTimeValueTest : Test
+resetTimeValueTest =
+    describe "ResetTimeValue can be converted to String and parsed from String correctly"
+        [ test "convert to String" <|
+            \_ ->
+                { hours = 12, minutes = 34, seconds = 56 }
+                    |> resetTimeValueToString
+                    |> Expect.equal "12:34:56"
+        , test "parse from String" <|
+            \_ ->
+                Parser.run resetTimeValueParser "01:23:45"
+                    |> Expect.equal (Result.Ok { hours = 1, minutes = 23, seconds = 45 })
+        , fuzz (Fuzz.intAtLeast 0) "no difference after conversion and parsing" <|
+            \i ->
+                { hours = i // 3600, minutes = i // 60 |> modBy 60, seconds = modBy 60 i }
+                    |> resetTimeValueToString
+                    |> Parser.run resetTimeValueParser
+                    |> Result.map (\x -> x.hours * 3600 + x.minutes * 60 + x.seconds)
+                    |> Expect.equal (Result.Ok i)
         ]

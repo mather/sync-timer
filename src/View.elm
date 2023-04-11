@@ -1,4 +1,4 @@
-module View exposing (DisplayTime, millisToDisplayTime, selectBgColor, selectFgFont, view)
+module View exposing (DisplayTime, ResetTimeValue, millisToDisplayTime, resetTimeValueParser, resetTimeValueToString, selectBgColor, selectFgFont, view)
 
 import Html exposing (Attribute, Html, a, button, details, div, i, input, label, option, select, span, summary, text)
 import Html.Attributes exposing (attribute, checked, class, for, id, selected, size, step, style, type_, value)
@@ -214,7 +214,7 @@ fastForwardButton =
 
 type alias ResetTime =
     { isMinus : Bool
-    , timeValue : String
+    , timeValue : ResetTimeValue
     }
 
 
@@ -243,6 +243,15 @@ resetTimeValueParser =
         |= zeroPadIntParser
 
 
+resetTimeValueToString : ResetTimeValue -> String
+resetTimeValueToString value =
+    (String.padLeft 2 '0' <| String.fromInt value.hours)
+        ++ ":"
+        ++ (String.padLeft 2 '0' <| String.fromInt value.minutes)
+        ++ ":"
+        ++ (String.padLeft 2 '0' <| String.fromInt value.seconds)
+
+
 initialTimeToResetTime : Int -> ResetTime
 initialTimeToResetTime initialTimeSeconds =
     let
@@ -250,16 +259,20 @@ initialTimeToResetTime initialTimeSeconds =
             abs initialTimeSeconds
 
         hours =
-            absSeconds // 3600 |> String.fromInt |> String.padLeft 2 '0'
+            absSeconds // 3600
 
         minutes =
-            absSeconds // 60 |> modBy 60 |> String.fromInt |> String.padLeft 2 '0'
+            absSeconds // 60 |> modBy 60
 
         seconds =
-            absSeconds |> modBy 60 |> String.fromInt |> String.padLeft 2 '0'
+            absSeconds |> modBy 60
     in
     { isMinus = initialTimeSeconds < 0
-    , timeValue = hours ++ ":" ++ minutes ++ ":" ++ seconds
+    , timeValue =
+        { hours = hours
+        , minutes = minutes
+        , seconds = seconds
+        }
     }
 
 
@@ -300,7 +313,7 @@ resetForm initialTimeSeconds =
             [ input [ id "reset-is-minus", type_ "checkbox", checked resetTime.isMinus, onCheck <| updateResetTimeMinus initialTimeSeconds ] []
             , text "マイナス"
             ]
-        , input [ type_ "time", value resetTime.timeValue, step "1", size 8, class "reset-form-time", onInput <| updateResetTimeValue resetTime.isMinus ] []
+        , input [ type_ "time", value <| resetTimeValueToString resetTime.timeValue, step "1", size 8, class "reset-form-time", onInput <| updateResetTimeValue resetTime.isMinus ] []
         , button [ class "contrast", class "reset-form-button", onClick Reset ]
             [ i [ class "fas", class "fa-backward-fast", class "button-icon" ] [], text "リセット" ]
         ]
