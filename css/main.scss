@@ -144,3 +144,33 @@ button .button-icon {
 dialog article {
   max-width: 95%;
 }
+
+.ff-buttons {
+  display: flex;
+  justify-content: space-between;
+  button {
+    width: 49%;
+  }
+}
+
+.reset-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  label {
+    display: block;
+    margin: 0;
+  }
+}
+
+input.reset-form-time {
+  width: auto;
+  margin: 0 1ex;
+}
+
+button.reset-form-button {
+  width: auto;
+  margin: 0;
+  flex-grow: 1;
+}

@@ -1,10 +1,11 @@
 module View exposing (DisplayTime, millisToDisplayTime, selectBgColor, selectFgFont, view)
 
 import Html exposing (Attribute, Html, a, button, details, div, i, input, label, option, select, span, summary, text)
-import Html.Attributes as A exposing (attribute, checked, class, for, id, selected, step, style, type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Attributes exposing (attribute, checked, class, for, id, selected, size, step, style, type_, value)
+import Html.Events exposing (onCheck, onClick, onInput)
 import Model exposing (BgColor(..), FgFont(..), Model, Setting, decodeBgColor, decodeFgFont, encodeBgColor, encodeFgFont)
 import Msg exposing (Msg(..))
+import Parser exposing ((|.), (|=))
 
 
 type alias DisplayTime =
@@ -170,12 +171,11 @@ viewTimerControls : Model -> Html Msg
 viewTimerControls model =
     div [ class "controls" ]
         [ div [] [ startPauseButton model.paused ]
-        , div [ class "grid" ]
-            [ div [] [ rewindButton ]
-            , div [] [ fastForwardButton ]
+        , div [ class "ff-buttons" ]
+            [ rewindButton
+            , fastForwardButton
             ]
-        , div [] [ resetButton model.setting.initialTimeSeconds ]
-        , div [] [ initialTimeSlider model.setting.initialTimeSeconds ]
+        , div [] [ resetForm model.setting.initialTimeSeconds ]
         ]
 
 
@@ -212,11 +212,97 @@ fastForwardButton =
         ]
 
 
-resetButton : Int -> Html Msg
-resetButton initialTimeSeconds =
-    button [ class "contrast", onClick Reset ]
-        [ i [ class "fas", class "fa-backward-fast", class "button-icon" ] []
-        , text <| String.fromInt initialTimeSeconds ++ " 秒にリセット"
+type alias ResetTime =
+    { isMinus : Bool
+    , timeValue : String
+    }
+
+
+type alias ResetTimeValue =
+    { hours : Int
+    , minutes : Int
+    , seconds : Int
+    }
+
+
+zeroPadIntParser : Parser.Parser Int
+zeroPadIntParser =
+    Parser.oneOf
+        [ Parser.succeed identity |. Parser.chompIf ((==) '0') |= Parser.int
+        , Parser.int
+        ]
+
+
+resetTimeValueParser : Parser.Parser ResetTimeValue
+resetTimeValueParser =
+    Parser.succeed ResetTimeValue
+        |= zeroPadIntParser
+        |. Parser.symbol ":"
+        |= zeroPadIntParser
+        |. Parser.symbol ":"
+        |= zeroPadIntParser
+
+
+initialTimeToResetTime : Int -> ResetTime
+initialTimeToResetTime initialTimeSeconds =
+    let
+        absSeconds =
+            abs initialTimeSeconds
+
+        hours =
+            absSeconds // 3600 |> String.fromInt |> String.padLeft 2 '0'
+
+        minutes =
+            absSeconds // 60 |> modBy 60 |> String.fromInt |> String.padLeft 2 '0'
+
+        seconds =
+            absSeconds |> modBy 60 |> String.fromInt |> String.padLeft 2 '0'
+    in
+    { isMinus = initialTimeSeconds < 0
+    , timeValue = hours ++ ":" ++ minutes ++ ":" ++ seconds
+    }
+
+
+negateIf : Bool -> Int -> Int
+negateIf isMinus value =
+    if isMinus then
+        negate value
+
+    else
+        value
+
+
+updateResetTimeMinus : Int -> Bool -> Msg
+updateResetTimeMinus initialTimeSeconds isMinus =
+    abs initialTimeSeconds
+        |> negateIf isMinus
+        |> UpdateResetTime
+
+
+updateResetTimeValue : Bool -> String -> Msg
+updateResetTimeValue isMinus timeValue =
+    Parser.run resetTimeValueParser timeValue
+        |> Result.toMaybe
+        |> Maybe.map (\t -> t.hours * 3600 + t.minutes * 60 + t.seconds)
+        |> Maybe.map (negateIf isMinus)
+        |> Maybe.map UpdateResetTime
+        |> Maybe.withDefault NoOp
+
+
+resetForm : Int -> Html Msg
+resetForm initialTimeSeconds =
+    let
+        resetTime =
+            initialTimeToResetTime initialTimeSeconds
+    in
+    div [ class "reset-form" ]
+        [ label [ for "reset-is-minus", class "reset-form-minus" ]
+            [ input [ id "reset-is-minus", type_ "checkbox", checked resetTime.isMinus, onCheck <| updateResetTimeMinus initialTimeSeconds ] []
+            , text "マイナス"
+            ]
+        , input [ type_ "time", value resetTime.timeValue, step "1", size 8, class "reset-form-time", onInput <| updateResetTimeValue resetTime.isMinus ] []
+        , button [ class "contrast", class "reset-form-button", onClick Reset ]
+            [ i [ class "fas", class "fa-backward-fast", class "button-icon" ] [], text "リセット" ]
         ]
 
 
@@ -297,24 +383,3 @@ viewBgColorInput bgColor =
 selectBgColor : String -> Msg
 selectBgColor =
     decodeBgColor >> Maybe.map SetBgColor >> Maybe.withDefault NoOp
-
-
-initialTimeSlider : Int -> Html Msg
-initialTimeSlider initialTimeSeconds =
-    div [ class "delay-slider" ]
-        [ input
-            [ type_ "range"
-            , A.min "-30"
-            , A.max "30"
-            , step "1"
-            , onInput (String.toInt >> Maybe.withDefault 0 >> UpdateResetTime)
-            , value <| String.fromInt initialTimeSeconds
-            , tooltip <| "タイマーの開始時間: " ++ String.fromInt initialTimeSeconds ++ "秒"
-            ]
-            []
-        ]
-
-
-tooltip : String -> Attribute Msg
-tooltip =
-    attribute "data-tooltip"
