@@ -118,7 +118,7 @@
               >実際の利用状況を参考にしたいので、配信やチャンネルを教えてください</small
             >
           </div>
-          <form id="customer_url" data-netlify="true">
+          <form id="customer-url" name="customer-url" data-netlify="true">
             <div class="grid">
               <input
                 type="text"
@@ -258,14 +258,14 @@ https://sync-timer.netlify.app/</textarea
           body: new URLSearchParams(formData).toString(),
         })
           .then(() => {
-            document.querySelector("#customer_url").remove();
+            document.querySelector("#customer-url").remove();
             document.querySelector(".thanks").removeAttribute("style");
           })
           .catch((error) => alert(error));
       };
 
       document
-        .querySelector("#customer_url")
+        .querySelector("#customer-url")
         .addEventListener("submit", handleSubmit);
     </script>
   </body>
