@@ -174,3 +174,14 @@ button.reset-form-button {
   margin: 0;
   flex-grow: 1;
 }
+
+#request-from-developer {
+  border: 1px solid darkgrey;
+  border-radius: 1em;
+  padding: 1rem;
+  margin-bottom: 1rem;
+
+  input {
+    background-color: white;
+  }
+}
