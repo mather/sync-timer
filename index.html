@@ -110,18 +110,48 @@
             >こちらのフォームからどうぞ</a
           >
         </p>
-        <div>
-          <small>気に入っていただけたらタイマーの紹介をお願いします</small>
-        </div>
-        <textarea
-          name="introduce-request"
-          id="introduce-request"
-          rows="2"
-          readonly
-        >
+
+        <div id="request-from-developer">
+          <h4>開発者からのお願い</h4>
+          <div>
+            <small
+              >実際の利用状況を参考にしたいので、配信やチャンネルを教えてください</small
+            >
+          </div>
+          <form id="customer_url" data-netlify="true">
+            <div class="grid">
+              <input
+                type="text"
+                name="user_url"
+                placeholder="配信やチャンネルのURL"
+              />
+              <button>送信</button>
+            </div>
+          </form>
+          <p class="thanks" style="display: none">ありがとうございます！</p>
+          <div>
+            <small
+              >気に入っていただけたら配信の概要欄やTwitterでタイマーの紹介をお願いします</small
+            >
+          </div>
+          <textarea
+            name="introduce-request"
+            id="introduce-request"
+            rows="2"
+            readonly
+          >
 同時視聴用タイマー SyncTimer を利用しています
 https://sync-timer.netlify.app/</textarea
-        >
+          >
+          <a
+            href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fsync-timer.netlify.app%2F&hashtags=sync_timer"
+            role="button"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><i class="fab fa-twitter button-icon"></i>Twitterで紹介する</a
+          >
+        </div>
+
         <div class="grid">
           <div class="footer-left">
             <h4>開発者のひとこと</h4>
@@ -214,6 +244,29 @@ https://sync-timer.netlify.app/</textarea
         if (player) player.pauseVideo();
         usageDialog.close();
       };
+    </script>
+    <script>
+      const handleSubmit = (event) => {
+        event.preventDefault();
+
+        const myForm = event.target;
+        const formData = new FormData(myForm);
+
+        fetch("/", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams(formData).toString(),
+        })
+          .then(() => {
+            document.querySelector("#customer_url").remove();
+            document.querySelector(".thanks").removeAttribute("style");
+          })
+          .catch((error) => alert(error));
+      };
+
+      document
+        .querySelector("#customer_url")
+        .addEventListener("submit", handleSubmit);
     </script>
   </body>
 </html>
