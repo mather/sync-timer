@@ -3,6 +3,7 @@ module View exposing (DisplayTime, ResetTimeValue, millisToDisplayTime, resetTim
 import Html exposing (Attribute, Html, a, button, details, div, i, input, label, option, select, span, summary, text)
 import Html.Attributes exposing (attribute, checked, class, for, id, selected, size, step, style, type_, value)
 import Html.Events exposing (onCheck, onClick, onInput)
+import I18n
 import Model exposing (BgColor(..), FgFont(..), Model, Setting, decodeBgColor, decodeFgFont, encodeBgColor, encodeFgFont)
 import Msg exposing (Msg(..))
 import Parser exposing ((|.), (|=))
@@ -29,19 +30,19 @@ millisToDisplayTime t =
     }
 
 
-view : Model -> Html Msg
-view model =
+view : I18n.Label -> Model -> Html Msg
+view label model =
     div [ class "container" ]
-        [ viewTimer model
-        , viewTimerSettings model.setting
+        [ viewTimer label model
+        , viewTimerSettings label model.setting
         ]
 
 
-viewTimer : Model -> Html Msg
-viewTimer model =
+viewTimer : I18n.Label -> Model -> Html Msg
+viewTimer label model =
     div [ class "grid" ]
         [ viewTimerDigits model.timeMillis model.setting
-        , viewTimerControls model
+        , viewTimerControls label model
         ]
 
 
@@ -167,47 +168,47 @@ renderBig2Digits digits =
         |> List.map (\d -> span styleTimerDigit [ text d ])
 
 
-viewTimerControls : Model -> Html Msg
-viewTimerControls model =
+viewTimerControls : I18n.Label -> Model -> Html Msg
+viewTimerControls label model =
     div [ class "controls" ]
-        [ div [] [ startPauseButton model.paused ]
+        [ div [] [ startPauseButton label model.paused ]
         , div [ class "ff-buttons" ]
-            [ rewindButton
-            , fastForwardButton
+            [ rewindButton label
+            , fastForwardButton label
             ]
-        , div [] [ resetForm model.setting.initialTimeSeconds ]
+        , div [] [ resetForm label model.setting.initialTimeSeconds ]
         ]
 
 
-startPauseButton : Bool -> Html Msg
-startPauseButton paused =
+startPauseButton : I18n.Label -> Bool -> Html Msg
+startPauseButton label paused =
     if paused then
         button
             [ onClick Start ]
             [ i [ class "fas", class "fa-play", class "button-icon" ] []
-            , text "開始"
+            , text label.start
             ]
 
     else
         button
             [ onClick Pause, class "secondary" ]
             [ i [ class "fas", class "fa-pause", class "button-icon" ] []
-            , text "一時停止"
+            , text label.pause
             ]
 
 
-rewindButton : Html Msg
-rewindButton =
+rewindButton : I18n.Label -> Html Msg
+rewindButton label =
     button [ class "outline", onClick <| RewindSec 1 ]
         [ i [ class "fas", class "fa-backward", class "button-icon" ] []
-        , text "1秒戻す"
+        , text label.backward
         ]
 
 
-fastForwardButton : Html Msg
-fastForwardButton =
+fastForwardButton : I18n.Label -> Html Msg
+fastForwardButton label =
     button [ class "outline", onClick <| FastForwardSec 1 ]
-        [ text "1秒進める"
+        [ text label.forward
         , i [ class "fas", class "fa-forward", class "button-icon" ] []
         ]
 
@@ -302,8 +303,8 @@ updateResetTimeValue isMinus timeValue =
         |> Maybe.withDefault NoOp
 
 
-resetForm : Int -> Html Msg
-resetForm initialTimeSeconds =
+resetForm : I18n.Label -> Int -> Html Msg
+resetForm i18n initialTimeSeconds =
     let
         resetTime =
             initialTimeToResetTime initialTimeSeconds
@@ -311,11 +312,11 @@ resetForm initialTimeSeconds =
     div [ class "reset-form" ]
         [ label [ for "reset-is-minus", class "reset-form-minus" ]
             [ input [ id "reset-is-minus", type_ "checkbox", checked resetTime.isMinus, onCheck <| updateResetTimeMinus initialTimeSeconds ] []
-            , text "マイナス"
+            , text i18n.minusSign
             ]
         , input [ type_ "time", value <| resetTimeValueToString resetTime.timeValue, step "1", size 8, class "reset-form-time", onInput <| updateResetTimeValue resetTime.isMinus ] []
         , button [ class "contrast", class "reset-form-button", onClick Reset ]
-            [ i [ class "fas", class "fa-backward-fast", class "button-icon" ] [], text "リセット" ]
+            [ i [ class "fas", class "fa-backward-fast", class "button-icon" ] [], text i18n.reset ]
         ]
 
 
@@ -324,54 +325,54 @@ role s =
     attribute "role" s
 
 
-viewTimerSettings : Setting -> Html Msg
-viewTimerSettings setting =
+viewTimerSettings : I18n.Label -> Setting -> Html Msg
+viewTimerSettings i18n setting =
     details [ class "settings", attribute "open" "true" ]
-        [ summary [] [ text "表示設定" ]
+        [ summary [] [ text i18n.displaySetting ]
         , div [ class "grid" ]
-            [ viewFgColorInput setting.fgColor
-            , viewFgFontInput setting.fgFont
+            [ viewFgColorInput i18n setting.fgColor
+            , viewFgFontInput i18n setting.fgFont
             ]
-        , viewBgColorInput setting.bgColor
+        , viewBgColorInput i18n setting.bgColor
         , div
             [ class "grid" ]
             [ label [ for "showHour" ]
                 [ input [ type_ "checkbox", id "showHour", role "switch", checked setting.showHour, onClick ToggleShowHour ] []
-                , text "1時間以上の動画を見る"
+                , text i18n.showHour
                 ]
             , label [ for "showProgress" ]
                 [ input [ type_ "checkbox", id "showProgress", role "switch", checked setting.showProgress, onClick ToggleShowProgress ] []
-                , text "カウントダウンを視覚的に表現する"
+                , text i18n.showProgress
                 ]
             ]
         ]
 
 
-viewFgColorInput : String -> Html Msg
-viewFgColorInput fgColor =
+viewFgColorInput : I18n.Label -> String -> Html Msg
+viewFgColorInput i18n fgColor =
     div [ class "grid" ]
         [ div []
             [ label [ for "fgColorPicker" ]
-                [ text "文字色"
+                [ text i18n.fgColor
                 , input [ type_ "color", id "fgColorPicker", value fgColor, onInput SetFgColor ] []
                 ]
             ]
         , div []
             [ label [ for "fgColorText" ]
-                [ text "文字色(RGB)"
+                [ text i18n.fgColorRgb
                 , input [ type_ "text", id "fgColorText", value fgColor, onInput SetFgColor ] []
                 ]
             ]
         ]
 
 
-viewFgFontInput : FgFont -> Html Msg
-viewFgFontInput font =
+viewFgFontInput : I18n.Label -> FgFont -> Html Msg
+viewFgFontInput i18n font =
     div []
-        [ label [ for "fgFont" ] [ text "フォント" ]
+        [ label [ for "fgFont" ] [ text i18n.fgFont ]
         , select [ id "fgFont", onInput selectFgFont ]
-            [ option [ value <| encodeFgFont DDinBold, selected <| font == DDinBold ] [ text "D-DIN bold (Sans Serif)" ]
-            , option [ value <| encodeFgFont Lora, selected <| font == Lora ] [ text "Lora (Serif)" ]
+            [ option [ value <| encodeFgFont DDinBold, selected <| font == DDinBold ] [ text i18n.fgFontDDinBold ]
+            , option [ value <| encodeFgFont Lora, selected <| font == Lora ] [ text i18n.fgFontLora ]
             ]
         ]
 
@@ -381,14 +382,14 @@ selectFgFont =
     decodeFgFont >> Maybe.map SetFgFont >> Maybe.withDefault NoOp
 
 
-viewBgColorInput : BgColor -> Html Msg
-viewBgColorInput bgColor =
+viewBgColorInput : I18n.Label -> BgColor -> Html Msg
+viewBgColorInput i18n bgColor =
     div []
-        [ label [ for "bgColor" ] [ text "背景色" ]
+        [ label [ for "bgColor" ] [ text i18n.bgColor ]
         , select [ id "bgColor", onInput selectBgColor ]
-            [ option [ value <| encodeBgColor GreenBack, selected <| bgColor == GreenBack ] [ text "グリーンバック(GB, #00ff00)" ]
-            , option [ value <| encodeBgColor BlueBack, selected <| bgColor == BlueBack ] [ text "ブルーバック(BB, #0000ff)" ]
-            , option [ value <| encodeBgColor Transparent, selected <| bgColor == Transparent ] [ text "なし (White)" ]
+            [ option [ value <| encodeBgColor GreenBack, selected <| bgColor == GreenBack ] [ text i18n.bgColorGB ]
+            , option [ value <| encodeBgColor BlueBack, selected <| bgColor == BlueBack ] [ text i18n.bgColorBB ]
+            , option [ value <| encodeBgColor Transparent, selected <| bgColor == Transparent ] [ text i18n.bgColorTP ]
             ]
         ]
 
