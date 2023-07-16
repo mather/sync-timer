@@ -44,3 +44,26 @@ labelJa =
     , bgColorBB = "ブルーバック(BB, #0000ff)"
     , bgColorTP = "なし (White)"
     }
+
+
+labelEn : Label
+labelEn =
+    { start = "Start"
+    , pause = "Pause"
+    , reset = "Reset"
+    , backward = "Backward 1sec"
+    , forward = "Forward 1sec"
+    , minusSign = "minus"
+    , displaySetting = "Display Settings"
+    , showHour = "Show hour digits"
+    , showProgress = "Show underline as countdown progress"
+    , fgColor = "Text Color (picker)"
+    , fgColorRgb = "Text Color (in RGB)"
+    , fgFont = "Timer Font"
+    , fgFontDDinBold = "D-DIN Bold (Sans Serif)"
+    , fgFontLora = "Lora (Serif)"
+    , bgColor = "Background Color"
+    , bgColorGB = "Greenback (GB, #00ff00)"
+    , bgColorBB = "Blueback (BB, #0000ff)"
+    , bgColorTP = "White (#ffffff)"
+    }

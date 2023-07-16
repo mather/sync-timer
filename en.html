@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" prefix="og: https://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="keywords"
+      content="stopwatch,minus,countdown,countdownable,watchparty,watchalong"
+    />
+    <meta
+      name="description"
+      content="Countdownable simple timer (stopwatch) for watchparty (or watchalong) streaming."
+    />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-LN7KW2PYR4"
+      type="module"
+    ></script>
+    <script async>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-LN7KW2PYR4");
+    </script>
+    <script>
+      const startTime = new Date();
+      window.addEventListener("unload", () => {
+        gtag("event", "page_unload", {
+          event_label: "unload",
+          value: Math.floor((new Date() - startTime) / 1000),
+        });
+      });
+    </script>
+    <!--
+      manifest.json provides metadata used when your web app is added to the
+      homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+    -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/favicon.ico" />
+    <title>Sync Timer - Countdownable Timer for watchparty streaming</title>
+    <meta
+      property="og:title"
+      content="Sync Timer - Countdownable Timer for watchparty streaming"
+    />
+    <meta
+      property="og:description"
+      content="Countdownable simple timer (stopwatch) for watchparty (or watchalong) streaming."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://sync-timer.netlify.app/" />
+    <meta
+      property="og:image"
+      content="https://sync-timer.netlify.app/images/SyncTimer.png"
+    />
+  </head>
+  <body>
+    <noscript> You need to enable JavaScript to run this app. </noscript>
+    <header>
+      <nav class="container">
+        <ul>
+          <li><strong style="font-size: xx-large">SyncTimer</strong></li>
+          <li>
+            <a
+              href="/about/?utm_source=top"
+              class="secondary"
+              data-tooltip="About SyncTimer"
+              ><i class="fas fa-circle-question"></i
+            ></a>
+          </li>
+        </ul>
+        <ul>
+          <li style="text-align: center">
+            <div>
+              <a href="https://twitter.com/hashtag/sync_timer?f=live"
+                ><i class="fab fa-twitter button-icon"></i>#sync_timer
+              </a>
+            </div>
+            <div>
+              <span class="hashtag-helper">I'm waiting your report!</span>
+            </div>
+          </li>
+
+          <li>
+            <a
+              href="#"
+              onClick="openDialog()"
+              class="secondary"
+              role="button"
+              data-tooltip="How to Use Video"
+            >
+              <i class="fab fa-youtube button-icon"></i>How to use
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <div id="root"></div>
+    </main>
+    <footer>
+      <div class="container">
+        <p>
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSdXBzZMIH8gab1jisI2lw0ZHtg4kX2tDDKzmJ5vyp9QpE_LYw/viewform?usp=sf_link"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Inquiry form</a
+          >
+        </p>
+
+        <div id="request-from-developer">
+          <h4>Request from Developer</h4>
+          <div>
+            <small
+              >Please let me know your streaming or channel so I can refer to
+              the actual usage.</small
+            >
+          </div>
+          <form id="customer-url" name="customer-url" data-netlify="true">
+            <div class="grid">
+              <input
+                type="text"
+                name="user_url"
+                placeholder="URL of streaming or channel page"
+              />
+              <button>Send</button>
+            </div>
+          </form>
+          <p class="thanks" style="display: none">Thank you so much!</p>
+          <div>
+            <small
+              >If you like SyncTimer, please introduce in the summary section of
+              your streaming or on Twitter!</small
+            >
+          </div>
+          <textarea
+            name="introduce-request"
+            id="introduce-request"
+            rows="2"
+            readonly
+          >
+Sync Timer - Countdownable Timer for watchparty streaming
+https://sync-timer.netlify.app/en.html</textarea
+          >
+          <a
+            href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fsync-timer.netlify.app%2F&hashtags=sync_timer"
+            role="button"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><i class="fab fa-twitter button-icon"></i>Share on Twitter</a
+          >
+        </div>
+
+        <div class="grid">
+          <div class="footer-left">
+            <h4>Changelogs</h4>
+            <p>
+              Changelogs are available on
+              <a href="https://mather.github.io/tags/synctimer" target="_blank"
+                >my parsonal blog (Japanese only)</a
+              >.
+            </p>
+          </div>
+          <div class="footer-right">
+            <div>
+              <a
+                href="https://youtube.com/playlist?list=PLzz5NMXBDKoZ8UoGCgQI9mdcfmyjugbwz"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-tooltip="Collecting usecases on YouTube"
+                ><i class="fab fa-youtube button-icon"></i>Usecases on
+                YouTube</a
+              >
+            </div>
+            <div>
+              <a
+                href="https://twitter.com/intent/user?user_id=62148177"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-tooltip="Developer's Twitter"
+                ><i class="fab fa-twitter button-icon"></i>@mather314
+                (Developer)</a
+              >
+            </div>
+            <div>
+              <a
+                href="https://github.com/mather/sync-timer"
+                class="secondary"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-tooltip="Source code"
+                ><i class="fab fa-github button-icon"></i>mather/sync-timer</a
+              >
+            </div>
+            <div>© Eisuke Kuwahata</div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <dialog id="usage-dialog">
+      <article>
+        <header>
+          <a
+            href="#"
+            aria-label="Close"
+            class="close"
+            onclick="closeDialog()"
+          ></a
+          >How to Use
+        </header>
+        <div id="ytplayer"></div>
+      </article>
+    </dialog>
+    <script async src="./js/en.js" type="module"></script>
+    <script>
+      // Load the IFrame Player API code asynchronously.
+      const ytWidth = Math.min(window.innerWidth * 0.8, 1024);
+      const ytHeight = (ytWidth / 16) * 9;
+      var tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/player_api";
+      var firstScriptTag = document.getElementsByTagName("script")[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // Replace the 'ytplayer' element with an <iframe> and
+      // YouTube player after the API code downloads.
+      let player;
+      function onYouTubePlayerAPIReady() {
+        player = new YT.Player("ytplayer", {
+          width: ytWidth,
+          height: ytHeight,
+          videoId: "m1Basm-TqGU",
+          playerVars: {
+            cc_load_policy: 1,
+          },
+        });
+      }
+
+      const usageDialog = document.getElementById("usage-dialog");
+      const openDialog = () => {
+        usageDialog.showModal();
+      };
+      const closeDialog = () => {
+        if (player) player.pauseVideo();
+        usageDialog.close();
+      };
+    </script>
+    <script>
+      const handleSubmit = (event) => {
+        event.preventDefault();
+
+        const myForm = event.target;
+        const formData = new FormData(myForm);
+
+        fetch("/", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams(formData).toString(),
+        })
+          .then(() => {
+            document.querySelector("#customer-url").remove();
+            document.querySelector(".thanks").removeAttribute("style");
+          })
+          .catch((error) => alert(error));
+      };
+
+      document
+        .querySelector("#customer-url")
+        .addEventListener("submit", handleSubmit);
+    </script>
+  </body>
+</html>
