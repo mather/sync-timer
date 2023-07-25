@@ -1,2 +1,4 @@
 https://sync-timer.netlify.app/
 https://sync-timer.netlify.app/about/
+https://sync-timer.netlify.app/en.html
+https://sync-timer.netlify.app/about/en.html

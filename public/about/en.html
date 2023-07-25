@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>About SyncTimer</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css"
+      integrity="sha512-HqxHUkJM0SYcbvxUw5P60SzdOTy/QVwA1JJrvaXJv4q7lmbDZCmZaqz01UPOaQveoxfYRv1tHozWGPMcuTBuvQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/fontawesome.min.css"
+      integrity="sha512-cHxvm20nkjOUySu7jdwiUxgGy11vuVPE9YeK89geLMLMMEOcKFyS2i+8wo0FOwyQO/bL8Bvq1KMsqK4bbOsPnA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/brands.min.css"
+      integrity="sha512-L+sMmtHht2t5phORf0xXFdTC0rSlML1XcraLTrABli/0MMMylsJi3XA23ReVQkZ7jLkOEIMicWGItyK4CAt2Xw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-LN7KW2PYR4"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-LN7KW2PYR4");
+    </script>
+    <script>
+      function activateTab(to) {
+        const tabs = document.querySelectorAll(".tabs li");
+        const tabContents = document.getElementsByClassName("tab-content");
+        for (const tab of tabs) {
+          tab.className = "";
+          if (tab.id == to + "-tab") tab.className = "is-active";
+        }
+        for (const content of tabContents) {
+          content.style.display = "none";
+          if (content.id == to + "-content") content.style.display = "block";
+        }
+        gtag("event", "activate_tab", { event_label: to });
+      }
+    </script>
+  </head>
+
+  <body class="has-text-centered">
+    <header class="hero is-info">
+      <div class="hero-body">
+        <h1 class="title">Sync Timer</h1>
+        <p class="subtitle">
+          Countdownable simple timer (stopwatch) for watchparty streaming.
+        </p>
+        <div>
+          <a href="https://sync-timer.netlify.app/?utm_source=about-ja"
+            ><button class="button is-large">Open App</button></a
+          >
+        </div>
+      </div>
+      <div class="hero-foot">
+        <div class="container tabs is-centered is-large is-boxed">
+          <ul>
+            <li id="about-tab" class="is-active">
+              <a onclick="activateTab('about')">Overview</a>
+            </li>
+            <li id="caution-tab">
+              <a onclick="activateTab('caution')">Disclaimer</a>
+            </li>
+            <li id="inquiry-tab">
+              <a onclick="activateTab('inquiry')">Inquiry</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </header>
+    <main class="container">
+      <div class="tab-content" id="about-content">
+        <section class="section">
+          <h2 class="title">What is SyncTimer?</h2>
+          <p>
+            This timer can be used for simultaneous viewing and distribution of
+            movies with fans on YouTube and other sites.
+          </p>
+          <p>
+            It works only with a browser, and anyone can use it for free, with
+            no login required.
+          </p>
+        </section>
+        <section class="section">
+          <h2 class="title">Features</h2>
+          <div class="columns is-desktop">
+            <div class="column">
+              <figure class="image is-16by9">
+                <img src="images/SyncTimer1.webp" alt="SyncTimer1" />
+              </figure>
+              <p class="is-size-4">
+                <strong>Can start from the negative</strong>
+              </p>
+              <ul>
+                <li>Countdown makes it easy to match timing with viewers.</li>
+                <li>
+                  Allows time for video start operations during the countdown.
+                </li>
+              </ul>
+            </div>
+            <div class="column">
+              <figure class="image is-16by9">
+                <img src="images/SyncTimer2.webp" alt="SyncTimer2" />
+              </figure>
+              <p class="is-size-4">
+                <strong>Chroma key support, monospace display</strong>
+              </p>
+              <ul>
+                <li>Transparent background display for OBS, etc.</li>
+                <li>
+                  Fixed character width so that the layout does not collapse.
+                </li>
+              </ul>
+            </div>
+            <div class="column">
+              <figure class="image is-16by9">
+                <img src="images/SyncTimer3.webp" alt="SyncTimer3" />
+              </figure>
+              <p class="is-size-4"><strong>Settings can be saved</strong></p>
+              <ul>
+                <li>
+                  Timer settings are automatically reflected in the browser URL
+                  as a query
+                </li>
+                <li>
+                  Simply enter the URL with the query and the same settings will
+                  be applied
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+        <section class="section">
+          <h2 class="title">Usage</h2>
+          <div id="yt-player"></div>
+        </section>
+      </div>
+      <div id="caution-content" class="tab-content" style="display: none">
+        <section class="section">
+          <h2 class="title">Disclaimer</h2>
+          <div class="has-text-centered">
+            <ul>
+              <li>
+                The developer assumes no responsibility for any damages incurred
+                by users as a result of using this service.
+              </li>
+              <li>This service may be changed or suspended without notice.</li>
+            </ul>
+          </div>
+        </section>
+      </div>
+      <div class="tab-content" id="inquiry-content" style="display: none">
+        <section class="section">
+          <h2 class="title">Inquiry</h2>
+          <p>
+            Contact me through
+            <a href="https://twitter.com/mather314"
+              >the developer's Twitter account</a
+            >
+            or by filling out the form below.
+          </p>
+          <p>
+            <a
+              href="https://twitter.com/intent/tweet?hashtags=sync_timer&text=@mather314"
+            >
+              <button class="button is-info">
+                <i class="fa-brands fa-twitter"></i> Tweet to the developer
+              </button>
+            </a>
+          </p>
+          <iframe
+            src="https://docs.google.com/forms/d/e/1FAIpQLSdXBzZMIH8gab1jisI2lw0ZHtg4kX2tDDKzmJ5vyp9QpE_LYw/viewform?embedded=true"
+            width="800"
+            height="1800"
+            frameborder="0"
+            marginheight="0"
+            marginwidth="0"
+            >Loading...</iframe
+          >
+        </section>
+      </div>
+    </main>
+    <footer class="footer">
+      <div class="content">
+        <p>
+          <strong>Sync Timer</strong> by &copy;
+          <a href="https://github.com/mather">Eisuke Kuwahata</a>.
+        </p>
+      </div>
+    </footer>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+      const elem = document.getElementById("yt-player");
+      const ytWidth = Math.min(elem.parentNode.clientWidth, 1024);
+      const ytHeight = (ytWidth / 16) * 9;
+
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName("script")[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      let player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player("yt-player", {
+          width: ytWidth.toString(),
+          height: ytHeight.toString(),
+          videoId: "m1Basm-TqGU",
+          playerVars: {
+            rel: 0,
+          },
+          events: {
+            onReady: onPlayerReady,
+          },
+        });
+      }
+
+      function onPlayerReady(event) {
+        event.target.setVolume(10);
+      }
+    </script>
+  </body>
+</html>

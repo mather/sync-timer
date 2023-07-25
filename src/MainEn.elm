@@ -1,4 +1,4 @@
-module Main exposing (..)
+module MainEn exposing (..)
 
 import Browser
 import Flag exposing (SettingFromQuery)
@@ -13,7 +13,7 @@ main : Program SettingFromQuery Model Msg
 main =
     Browser.element
         { init = Flag.initialModel
-        , view = view I18n.labelJa
+        , view = view I18n.labelEn
         , update = update
         , subscriptions = subscriptions
         }

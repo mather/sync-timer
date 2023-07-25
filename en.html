@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja" data-theme="light" prefix="og: https://ogp.me/ns#">
+<html lang="en" data-theme="light" prefix="og: https://ogp.me/ns#">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
@@ -8,10 +8,13 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="theme-color" content="#000000" />
-    <meta name="keywords" content="ストップウォッチ,stopwatch,マイナス,minus" />
+    <meta
+      name="keywords"
+      content="stopwatch,minus,countdown,countdownable,watchparty,watchalong"
+    />
     <meta
       name="description"
-      content="マイナスの秒数から開始できるストップウォッチです。同時視聴配信のタイミング合わせなどにどうぞ。 Countdownable simple timer (stopwatch) for watchparty (or watchalong) streaming."
+      content="Countdownable simple timer (stopwatch) for watchparty (or watchalong) streaming."
     />
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script
@@ -43,11 +46,14 @@
     -->
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" href="/favicon.ico" />
-    <title>Sync Timer - 同時視聴用タイマー</title>
-    <meta property="og:title" content="Sync Timer - 同時視聴用タイマー" />
+    <title>Sync Timer - Countdownable Timer for watchparty streaming</title>
+    <meta
+      property="og:title"
+      content="Sync Timer - Countdownable Timer for watchparty streaming"
+    />
     <meta
       property="og:description"
-      content="マイナスの秒数から開始できるストップウォッチです。同時視聴配信のタイミング合わせなどにどうぞ。"
+      content="Countdownable simple timer (stopwatch) for watchparty (or watchalong) streaming."
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://sync-timer.netlify.app/" />
@@ -64,9 +70,9 @@
           <li><strong style="font-size: xx-large">SyncTimer</strong></li>
           <li>
             <a
-              href="/about/?utm_source=top"
+              href="/about/en.html?utm_source=top"
               class="secondary"
-              data-tooltip="SyncTimerはどんなアプリ？"
+              data-tooltip="About SyncTimer"
               ><i class="fas fa-circle-question"></i
             ></a>
           </li>
@@ -79,12 +85,12 @@
               </a>
             </div>
             <div>
-              <span class="hashtag-helper">利用報告待ってます！</span>
+              <span class="hashtag-helper">I'm waiting your report!</span>
             </div>
           </li>
           <li>
-            <a href="/en.html" role="button" class="outline secondary"
-              ><i class="fas fa-language button-icon"></i>English</a
+            <a href="/" role="button" class="outline secondary"
+              ><i class="fas fa-language button-icon"></i>日本語</a
             >
           </li>
           <li>
@@ -93,9 +99,9 @@
               onClick="openDialog()"
               class="secondary"
               role="button"
-              data-tooltip="使い方を動画で見る"
+              data-tooltip="How to Use Video"
             >
-              <i class="fab fa-youtube button-icon"></i>使い方
+              <i class="fab fa-youtube button-icon"></i>How to use
             </a>
           </li>
         </ul>
@@ -107,19 +113,20 @@
     <footer>
       <div class="container">
         <p>
-          機能要望や質問・感想などは<a
-            href="https://docs.google.com/forms/d/e/1FAIpQLSfgmFqq-t-vv6gC1YpgoH3nCK1b7gI0ROC25K1NX9r5jGtndg/viewform?usp=sf_link"
+          <a
+            href="https://docs.google.com/forms/d/e/1FAIpQLSdXBzZMIH8gab1jisI2lw0ZHtg4kX2tDDKzmJ5vyp9QpE_LYw/viewform?usp=sf_link"
             target="_blank"
             rel="noopener noreferrer"
-            >こちらのフォームからどうぞ</a
+            >Inquiry form</a
           >
         </p>
 
         <div id="request-from-developer">
-          <h4>開発者からのお願い</h4>
+          <h4>Request from Developer</h4>
           <div>
             <small
-              >実際の利用状況を参考にしたいので、配信やチャンネルを教えてください</small
+              >Please let me know your streaming or channel so I can refer to
+              the actual usage.</small
             >
           </div>
           <form id="customer-url" name="customer-url" data-netlify="true">
@@ -127,15 +134,16 @@
               <input
                 type="text"
                 name="user_url"
-                placeholder="配信やチャンネルのURL"
+                placeholder="URL of streaming or channel page"
               />
-              <button>送信</button>
+              <button>Send</button>
             </div>
           </form>
-          <p class="thanks" style="display: none">ありがとうございます！</p>
+          <p class="thanks" style="display: none">Thank you so much!</p>
           <div>
             <small
-              >気に入っていただけたら配信の概要欄やTwitterでタイマーの紹介をお願いします</small
+              >If you like SyncTimer, please introduce in the summary section of
+              your streaming or on Twitter!</small
             >
           </div>
           <textarea
@@ -144,30 +152,26 @@
             rows="2"
             readonly
           >
-同時視聴用タイマー SyncTimer を利用しています
-https://sync-timer.netlify.app/</textarea
+Sync Timer - Countdownable Timer for watchparty streaming
+https://sync-timer.netlify.app/en.html</textarea
           >
           <a
             href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fsync-timer.netlify.app%2F&hashtags=sync_timer"
             role="button"
             target="_blank"
             rel="noopener noreferrer"
-            ><i class="fab fa-twitter button-icon"></i>Twitterで紹介する</a
+            ><i class="fab fa-twitter button-icon"></i>Share on Twitter</a
           >
         </div>
 
         <div class="grid">
           <div class="footer-left">
-            <h4>開発者のひとこと</h4>
+            <h4>Changelogs</h4>
             <p>
-              Loraというセリフ体のフォント（明朝体っぽいの）を追加してみました。おすすめのフォントがあれば教えてください。
-            </p>
-            <p>
-              開発の履歴は<a
-                href="https://mather.github.io/tags/synctimer"
-                target="_blank"
-                >個人ブログ</a
-              >に記載してます。気になる方はどうぞ。
+              Changelogs are available on
+              <a href="https://mather.github.io/tags/synctimer" target="_blank"
+                >my parsonal blog (Japanese only)</a
+              >.
             </p>
           </div>
           <div class="footer-right">
@@ -176,8 +180,9 @@ https://sync-timer.netlify.app/</textarea
                 href="https://youtube.com/playlist?list=PLzz5NMXBDKoZ8UoGCgQI9mdcfmyjugbwz"
                 target="_blank"
                 rel="noopener noreferrer"
-                data-tooltip="YouTubeでの利用例を集めてみました"
-                ><i class="fab fa-youtube button-icon"></i>YouTubeでの利用例</a
+                data-tooltip="Collecting usecases on YouTube"
+                ><i class="fab fa-youtube button-icon"></i>Usecases on
+                YouTube</a
               >
             </div>
             <div>
@@ -185,9 +190,9 @@ https://sync-timer.netlify.app/</textarea
                 href="https://twitter.com/intent/user?user_id=62148177"
                 target="_blank"
                 rel="noopener noreferrer"
-                data-tooltip="開発者のTwitterアカウント"
+                data-tooltip="Developer's Twitter"
                 ><i class="fab fa-twitter button-icon"></i>@mather314
-                (開発者)</a
+                (Developer)</a
               >
             </div>
             <div>
@@ -196,7 +201,7 @@ https://sync-timer.netlify.app/</textarea
                 class="secondary"
                 target="_blank"
                 rel="noopener noreferrer"
-                data-tooltip="ソースコードを見る"
+                data-tooltip="Source code"
                 ><i class="fab fa-github button-icon"></i>mather/sync-timer</a
               >
             </div>
@@ -214,12 +219,12 @@ https://sync-timer.netlify.app/</textarea
             class="close"
             onclick="closeDialog()"
           ></a
-          >使い方を動画で見る
+          >How to Use
         </header>
         <div id="ytplayer"></div>
       </article>
     </dialog>
-    <script async src="./js/index.js" type="module"></script>
+    <script async src="./js/en.js" type="module"></script>
     <script>
       // Load the IFrame Player API code asynchronously.
       const ytWidth = Math.min(window.innerWidth * 0.8, 1024);
@@ -237,6 +242,9 @@ https://sync-timer.netlify.app/</textarea
           width: ytWidth,
           height: ytHeight,
           videoId: "m1Basm-TqGU",
+          playerVars: {
+            cc_load_policy: 1,
+          },
         });
       }
 

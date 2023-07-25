@@ -2,8 +2,8 @@ module Tests exposing (..)
 
 import Dict
 import Expect
+import Flag exposing (parseSettingFromQuery)
 import Fuzz
-import Main exposing (parseSettingFromQuery)
 import Model exposing (BgColor(..), FgFont(..), defaultSetting, dictBgColor, dictFgFont)
 import Msg exposing (Msg(..))
 import Parser
