@@ -1028,6 +1028,11 @@ vite-plugin-elm@^2.8.0:
     find-up "^5.0.0"
     node-elm-compiler "5.0.6"
 
+vite-plugin-sitemap@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/vite-plugin-sitemap/-/vite-plugin-sitemap-0.4.2.tgz#2c68db82fa69abb70f1cdcf4cab599455512d93e"
+  integrity sha512-xNTYPcNW+XthOJqI459DYyCZ6nPDKpnFFnvMHVlshtDn+UUp1y37HgmvmWEsCdLp0LZILnzHfrjVrH44V2krAg==
+
 vite@^4.4.4:
   version "4.4.4"
   resolved "https://registry.yarnpkg.com/vite/-/vite-4.4.4.tgz#b76e6049c0e080cb54e735ad2d18287753752118"
