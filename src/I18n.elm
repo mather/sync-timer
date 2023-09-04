@@ -16,6 +16,7 @@ type alias Label =
     , fgFont : String
     , fgFontDDinBold : String
     , fgFontLora : String
+    , fgFontDSEG7ClassicBold: String
     , bgColor : String
     , bgColorGB : String
     , bgColorBB : String
@@ -39,6 +40,7 @@ labelJa =
     , fgFont = "フォント"
     , fgFontDDinBold = "D-DIN Bold (サンセリフ体)"
     , fgFontLora = "Lora (セリフ体)"
+    , fgFontDSEG7ClassicBold = "DSEG7 (デジタル時計)"
     , bgColor = "背景色"
     , bgColorGB = "グリーンバック(GB, #00ff00)"
     , bgColorBB = "ブルーバック(BB, #0000ff)"
@@ -62,6 +64,7 @@ labelEn =
     , fgFont = "Timer Font"
     , fgFontDDinBold = "D-DIN Bold (Sans Serif)"
     , fgFontLora = "Lora (Serif)"
+    , fgFontDSEG7ClassicBold = "DSEG7 (Classic digital watch)"
     , bgColor = "Background Color"
     , bgColorGB = "Greenback (GB, #00ff00)"
     , bgColorBB = "Blueback (BB, #0000ff)"

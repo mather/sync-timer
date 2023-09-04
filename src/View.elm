@@ -373,6 +373,7 @@ viewFgFontInput i18n font =
         , select [ id "fgFont", onInput selectFgFont ]
             [ option [ value <| encodeFgFont DDinBold, selected <| font == DDinBold ] [ text i18n.fgFontDDinBold ]
             , option [ value <| encodeFgFont Lora, selected <| font == Lora ] [ text i18n.fgFontLora ]
+            , option [ value <| encodeFgFont DSEG7ClassicBold, selected <| font == DSEG7ClassicBold ] [ text i18n.fgFontDSEG7ClassicBold ]
             ]
         ]
 

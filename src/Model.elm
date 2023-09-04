@@ -48,6 +48,7 @@ flip_ f b a =
 type FgFont
     = DDinBold
     | Lora
+    | DSEG7ClassicBold
 
 
 encodeFgFont : FgFont -> String
@@ -59,6 +60,10 @@ encodeFgFont fgFont =
         Lora ->
             "lora"
 
+        DSEG7ClassicBold ->
+            "dseg7-classic-bold"
+
+
 
 type BgColor
     = Transparent
@@ -68,7 +73,7 @@ type BgColor
 
 dictFgFont : Dict.Dict String FgFont
 dictFgFont =
-    dictEnum_ encodeFgFont [ DDinBold, Lora ]
+    dictEnum_ encodeFgFont [ DDinBold, Lora, DSEG7ClassicBold ]
 
 
 decodeFgFont : String -> Maybe FgFont
