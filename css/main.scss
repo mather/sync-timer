@@ -28,6 +28,16 @@ body > main {
   font-display: swap;
 }
 
+/*
+ * Font "DSEG" by けしかん
+ */
+@font-face {
+  font-family: "DSEG7-Classic-Bold";
+  src: url("DSEG7Classic-Bold.woff2") format("woff2");
+  font-display: swap;
+}
+
+
 .timer {
   font-size: 5rem;
   text-align: center;
@@ -75,6 +85,17 @@ body > main {
     margin: 0 -0.1ex;
   }
 }
+
+
+.timer.dseg7-classic-bold {
+  font-family: "DSEG7-Classic-Bold";
+
+  .digit, .sep {
+    font-size: smaller;
+    line-height: 1.05;
+  }
+}
+
 
 #fgColorText {
   font-family: monospace;
