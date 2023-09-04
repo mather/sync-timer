@@ -64,7 +64,6 @@ encodeFgFont fgFont =
             "dseg7-classic-bold"
 
 
-
 type BgColor
     = Transparent
     | GreenBack
