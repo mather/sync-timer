@@ -11,7 +11,7 @@
     "@fortawesome/fontawesome-free": "^6.4.0",
     "@picocss/pico": "^1.5.10",
     "@types/node": "^20.4.4",
-    "elm": "^0.19.1-5",
+    "elm": "^0.19.1-6",
     "elm-format": "^0.8.7",
     "elm-hot": "^1.1.6",
     "elm-test": "^0.19.1-revision10",
