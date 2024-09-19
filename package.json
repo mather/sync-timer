@@ -17,7 +17,7 @@
     "elm-test": "^0.19.1-revision10",
     "node-elm-compiler": "^5.0.6",
     "sass": "^1.63.6",
-    "vite": "^4.5.3",
+    "vite": "^4.5.5",
     "vite-plugin-elm": "^2.8.0",
     "vite-plugin-sitemap": "^0.4.2"
   },
