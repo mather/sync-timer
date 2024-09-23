@@ -14,7 +14,7 @@ type alias Label =
     , fgColor : String
     , fgColorRgb : String
     , fgFont : String
-    , fgFontRequest: String
+    , fgFontRequest : String
     , fgFontDDinBold : String
     , fgFontLora : String
     , fgFontDSEG7ClassicBold : String
