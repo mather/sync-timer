@@ -14,6 +14,7 @@ type alias Label =
     , fgColor : String
     , fgColorRgb : String
     , fgFont : String
+    , fgFontRequest : String
     , fgFontDDinBold : String
     , fgFontLora : String
     , fgFontDSEG7ClassicBold : String
@@ -38,6 +39,7 @@ labelJa =
     , fgColor = "文字色"
     , fgColorRgb = "文字色(RGB)"
     , fgFont = "フォント"
+    , fgFontRequest = "他のフォントをリクエストする"
     , fgFontDDinBold = "D-DIN Bold (サンセリフ体)"
     , fgFontLora = "Lora (セリフ体)"
     , fgFontDSEG7ClassicBold = "DSEG7 (デジタル時計)"
@@ -62,6 +64,7 @@ labelEn =
     , fgColor = "Text Color (picker)"
     , fgColorRgb = "Text Color (in RGB)"
     , fgFont = "Timer Font"
+    , fgFontRequest = "Request another font"
     , fgFontDDinBold = "D-DIN Bold (Sans Serif)"
     , fgFontLora = "Lora (Serif)"
     , fgFontDSEG7ClassicBold = "DSEG7 (Classic digital watch)"

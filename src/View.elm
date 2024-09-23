@@ -1,7 +1,7 @@
 module View exposing (DisplayTime, ResetTimeValue, millisToDisplayTime, resetTimeValueParser, resetTimeValueToString, selectBgColor, selectFgFont, view)
 
-import Html exposing (Attribute, Html, a, button, details, div, i, input, label, option, select, span, summary, text)
-import Html.Attributes exposing (attribute, checked, class, for, id, selected, size, step, style, type_, value)
+import Html exposing (Attribute, Html, a, button, details, div, i, input, label, option, select, small, span, summary, text)
+import Html.Attributes exposing (attribute, checked, class, for, href, id, selected, size, step, style, type_, value)
 import Html.Events exposing (onCheck, onClick, onInput)
 import I18n
 import Model exposing (BgColor(..), FgFont(..), Model, Setting, decodeBgColor, decodeFgFont, encodeBgColor, encodeFgFont)
@@ -369,7 +369,16 @@ viewFgColorInput i18n fgColor =
 viewFgFontInput : I18n.Label -> FgFont -> Html Msg
 viewFgFontInput i18n font =
     div []
-        [ label [ for "fgFont" ] [ text i18n.fgFont ]
+        [ label [ for "fgFont" ]
+            [ text i18n.fgFont
+            , small []
+                [ a
+                    [ href "https://docs.google.com/forms/d/e/1FAIpQLScMezFWGTb_kdzS8jPiP-bu3KpwwGGOv7HkSbRdQdEiIodUtA/viewform?usp=sf_link", class "secondary" ]
+                    [ i [ class "fas", class "fa-up-right-from-square", role "button-icon" ] []
+                    , text i18n.fgFontRequest
+                    ]
+                ]
+            ]
         , select [ id "fgFont", onInput selectFgFont ]
             [ option [ value <| encodeFgFont DDinBold, selected <| font == DDinBold ] [ text i18n.fgFontDDinBold ]
             , option [ value <| encodeFgFont Lora, selected <| font == Lora ] [ text i18n.fgFontLora ]
