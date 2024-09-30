@@ -1,8 +1,8 @@
 module Subscriptions exposing (..)
 
-import Browser.Events
 import Model exposing (Model)
 import Msg exposing (Msg(..))
+import Time
 
 
 subscriptions : Model -> Sub Msg
@@ -11,4 +11,4 @@ subscriptions model =
         Sub.none
 
     else
-        Browser.Events.onAnimationFrame UpdateTime
+        Time.every (1000 / 60) UpdateTime
