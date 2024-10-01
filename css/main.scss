@@ -134,6 +134,11 @@ button .button-icon {
 
 .controls {
   margin: auto 0;
+
+  button {
+    width: 100%;
+    margin-bottom: 20px;
+  }
 }
 
 .settings {
@@ -200,7 +205,7 @@ button.reset-form-button {
   padding: 1rem;
   margin-bottom: 1rem;
 
-  input {
+  input[type="text"] {
     background-color: white;
   }
 }
