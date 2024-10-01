@@ -8,7 +8,6 @@ import Model exposing (BgColor(..), FgFont(..), defaultSetting, dictBgColor, dic
 import Msg exposing (Msg(..))
 import Parser
 import Test exposing (..)
-import Url.Parser exposing (Parser)
 import View exposing (DisplayTime, millisToDisplayTime, resetTimeValueParser, resetTimeValueToString, selectBgColor, selectFgFont)
 
 
