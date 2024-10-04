@@ -1,3 +1,8 @@
+// Use pico v1 lg viewport as md.
+@use "@picocss/pico/scss/pico" with (
+  $breakpoints: ( md: (breakpoint: 970px, viewport: 960px ))
+);
+
 /*
   elm-hot creates an additional div wrapper around the app to make HMR possible.
   This could break styling in development mode if you are using Elm UI.
