@@ -184,14 +184,14 @@ startPauseButton : I18n.Label -> Bool -> Html Msg
 startPauseButton label paused =
     if paused then
         button
-            [ onClick Start ]
+            [ id "start-button", class "start-stop-button", onClick Start ]
             [ i [ class "fas", class "fa-play", class "button-icon" ] []
             , text label.start
             ]
 
     else
         button
-            [ onClick Pause, class "secondary" ]
+            [ id "pause-button", class "start-stop-button", class "secondary", onClick Pause ]
             [ i [ class "fas", class "fa-pause", class "button-icon" ] []
             , text label.pause
             ]
@@ -199,7 +199,7 @@ startPauseButton label paused =
 
 rewindButton : I18n.Label -> Html Msg
 rewindButton label =
-    button [ class "outline", onClick <| RewindSec 1 ]
+    button [ id "rewind-button", class "outline", onClick <| RewindSec 1 ]
         [ i [ class "fas", class "fa-backward", class "button-icon" ] []
         , text label.backward
         ]
@@ -207,7 +207,7 @@ rewindButton label =
 
 fastForwardButton : I18n.Label -> Html Msg
 fastForwardButton label =
-    button [ class "outline", onClick <| FastForwardSec 1 ]
+    button [ id "fastforward-button", class "outline", onClick <| FastForwardSec 1 ]
         [ text label.forward
         , i [ class "fas", class "fa-forward", class "button-icon" ] []
         ]
@@ -315,7 +315,7 @@ resetForm i18n initialTimeSeconds =
             , text i18n.minusSign
             ]
         , input [ type_ "time", value <| resetTimeValueToString resetTime.timeValue, step "1", size 8, class "reset-form-time", onInput <| updateResetTimeValue resetTime.isMinus ] []
-        , button [ class "contrast", class "reset-form-button", onClick Reset ]
+        , button [ id "reset-button", class "contrast", class "reset-form-button", onClick Reset ]
             [ i [ class "fas", class "fa-backward-fast", class "button-icon" ] [], text i18n.reset ]
         ]
 
