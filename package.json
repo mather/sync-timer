@@ -23,6 +23,7 @@
   "scripts": {
     "dev": "vite",
     "check-format": "elm-format --validate src/*.elm",
+    "format-all": "elm-format --yes src/*.elm",
     "test": "elm-test",
     "build": "vite build"
   },
