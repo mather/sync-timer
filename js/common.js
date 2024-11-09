@@ -53,7 +53,9 @@ export const startElmApp = (mainModule) => {
     }
 
     // Send timer settings to my analytics on timer start.
-    if (`${import.meta.env.VITE_SURVEY_URL}` !== "" && action === "sync_timer_start") {
+    const surveyUrl = import.meta.env.VITE_SURVEY_URL || "";
+    console.debug("surveyUrl", surveyUrl);
+    if (surveyUrl !== "" && action === "sync_timer_start") {
       const params = new URLSearchParams({
         host: document.location.host,
         fg: others.setting_fgColor || "",
@@ -64,7 +66,7 @@ export const startElmApp = (mainModule) => {
         p: others.setting_show_progress || "",
       });
 
-      fetch(`${import.meta.env.VITE_SURVEY_URL}?${params.toString()}`).then((res) => {
+      fetch(`${surveyUrl}?${params.toString()}`).then((res) => {
         if (res.ok) {
           console.debug("Survey request sent.");
         } else {
