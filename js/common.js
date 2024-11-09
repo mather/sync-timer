@@ -44,12 +44,37 @@ export const startElmApp = (mainModule) => {
   app.ports.sendAnalyticsEvent.subscribe((event) => {
     const { category, action, label, value, ...others } = JSON.parse(event);
     console.debug({ category, action, label, value, others });
-    if (gtag) {
+    if (gtag) { // Google Analytics
       const data = Object.assign({
         "event_category": category,
         "event_label": label
       }, value ? { value } : {});
       gtag("event", action, Object.assign({}, data, others));
     }
+
+    // Send timer settings to my analytics on timer start.
+    if (`${import.meta.env.VITE_SURVEY_URL}` !== "" && action === "sync_timer_start") {
+      const params = new URLSearchParams({
+        host: document.location.host,
+        fg: others.setting_fgColor || "",
+        bg: others.setting_bgColor || "",
+        ff: others.setting_fgFont || "",
+        init: others.setting_initial || "",
+        h: others.setting_show_hours || "",
+        p: others.setting_show_progress || "",
+      });
+
+      fetch(`${import.meta.env.VITE_SURVEY_URL}?${params.toString()}`).then((res) => {
+        if (res.ok) {
+          console.debug("Survey request sent.");
+        } else {
+          console.log("Survey request failed.");
+        }
+      }).catch((err) => {
+        console.log("Survey request failed.", err);
+      })
+    }
   });
+
+
 }
