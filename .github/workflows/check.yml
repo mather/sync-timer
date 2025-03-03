@@ -16,10 +16,10 @@ jobs:
       - uses: jorelali/setup-elm@v6
         with:
           elm-version: 0.19.1
-      - name: Install yarn
-        run: npm install -g yarn
+      - name: Enable corepack
+        run: corepack enable
       - name: Install npm packages
-        run: yarn install
+        run: yarn install --immutable
       - name: Check Format
         run: yarn check-format
       - name: Test
