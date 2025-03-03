@@ -30,8 +30,5 @@
   "targets": {
     "main": false
   },
-  "volta": {
-    "node": "16.14.0",
-    "yarn": "1.22.17"
-  }
+  "packageManager": "yarn@4.7.0"
 }
