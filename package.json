@@ -1,7 +1,7 @@
 {
-  "name": "simple-stopwatch",
+  "name": "sync-timer",
   "version": "1.0.0",
-  "description": "シンプルなストップウォッチです。",
+  "description": "マイナスからスタートできるシンプルなストップウォッチです。",
   "author": "Eisuke Kuwahata",
   "private": true,
   "directories": {
