@@ -1,3 +1,3 @@
 module.exports = {
-    homepage: "https://mather.github.io/simple-stopwatch"
+    homepage: "https://github.com/mather/sync-timer"
 }
