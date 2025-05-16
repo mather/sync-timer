@@ -53,11 +53,11 @@ viewTimerDigits millis setting =
             millisToDisplayTime millis
 
         displaySegments =
-            if setting.showHour || displayTime.hours > 0 then
+            if setting.showHour then
                 [ displayTime.hours, displayTime.minutes, displayTime.seconds ]
 
             else
-                [ displayTime.minutes, displayTime.seconds ]
+                [ displayTime.hours * 60 + displayTime.minutes, displayTime.seconds ]
     in
     div [ class "timer", fontClass setting.fgFont, timerBgColorClass setting.bgColor, style "color" setting.fgColor ]
         [ div [ class "digits" ] <|
