@@ -19,3 +19,7 @@ node_modules
 
 # dotenv
 .env
+
+# pnpm
+.pnpm-store/
+pnpm-lock.yaml
