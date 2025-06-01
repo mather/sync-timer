@@ -40,6 +40,16 @@ body > main {
   font-display: swap;
 }
 
+/*
+ * Font "適当ポエム" by Hagi42
+ * https://cktrc.com/tekitoupoem-font/
+ */
+@font-face {
+  font-family: "Tekitou-Poem-SemiBold";
+  src: url("Tekitou-Poem-SemiBold.woff2") format("woff2");
+  font-display: swap;
+}
+
 
 .timer {
   font-size: 5rem;
@@ -97,6 +107,11 @@ body > main {
     font-size: smaller;
     line-height: 1.05;
   }
+}
+
+
+.timer.tekitou-poem {
+  font-family: "Tekitou-Poem-SemiBold";
 }
 
 

@@ -49,6 +49,7 @@ type FgFont
     = DDinBold
     | Lora
     | DSEG7ClassicBold
+    | TekitouPoem
 
 
 encodeFgFont : FgFont -> String
@@ -63,6 +64,9 @@ encodeFgFont fgFont =
         DSEG7ClassicBold ->
             "dseg7-classic-bold"
 
+        TekitouPoem -> 
+            "tekitou-poem"
+
 
 type BgColor
     = Transparent
@@ -72,7 +76,7 @@ type BgColor
 
 dictFgFont : Dict.Dict String FgFont
 dictFgFont =
-    dictEnum_ encodeFgFont [ DDinBold, Lora, DSEG7ClassicBold ]
+    dictEnum_ encodeFgFont [ DDinBold, Lora, DSEG7ClassicBold, TekitouPoem ]
 
 
 decodeFgFont : String -> Maybe FgFont
