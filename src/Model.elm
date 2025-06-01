@@ -64,7 +64,7 @@ encodeFgFont fgFont =
         DSEG7ClassicBold ->
             "dseg7-classic-bold"
 
-        TekitouPoem -> 
+        TekitouPoem ->
             "tekitou-poem"
 
 
