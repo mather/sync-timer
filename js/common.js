@@ -65,8 +65,6 @@ export const startElmApp = (mainModule) => {
         h: others.setting_show_hours || "",
         p: others.setting_show_progress || "",
       });
-      console.debug("params", params.toString());
-      console.debug("others", others);
 
       fetch(`${surveyUrl}?${params.toString()}`).then((res) => {
         if (res.ok) {
