@@ -171,6 +171,10 @@ https://sync-timer.netlify.app/en.html</textarea
 
         <div class="grid">
           <div class="footer-left">
+            <h4>Creator's voice</h4>
+            <p>
+              Added a handwritten-style font. <a href="https://docs.google.com/forms/d/e/1FAIpQLScMezFWGTb_kdzS8jPiP-bu3KpwwGGOv7HkSbRdQdEiIodUtA/viewform?usp=header">If you have any recommended fonts, please let me know.</a>
+            </p>
             <h4>Changelogs</h4>
             <p>
               Changelogs are available on
@@ -268,6 +272,11 @@ https://sync-timer.netlify.app/en.html</textarea
 
         const myForm = event.target;
         const formData = new FormData(myForm);
+
+        // Stop submitting for empty string.
+        if (formData.get("user_url")?.toString().trim() === "") {
+          return;
+        }
 
         fetch("/", {
           method: "POST",

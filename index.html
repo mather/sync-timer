@@ -165,7 +165,7 @@ https://sync-timer.netlify.app/</textarea
           <div class="footer-left">
             <h4>開発者のひとこと</h4>
             <p>
-              Loraというセリフ体のフォント（明朝体っぽいの）を追加してみました。おすすめのフォントがあれば教えてください。
+              手書き文字風のフォントを追加しました。<a href="https://docs.google.com/forms/d/e/1FAIpQLScMezFWGTb_kdzS8jPiP-bu3KpwwGGOv7HkSbRdQdEiIodUtA/viewform?usp=header">おすすめのフォントがあれば教えてください。</a>
             </p>
             <p>
               開発の履歴は<a
@@ -260,6 +260,11 @@ https://sync-timer.netlify.app/</textarea
 
         const myForm = event.target;
         const formData = new FormData(myForm);
+
+        // 空文字の送信を止める
+        if (formData.get("user_url")?.toString().trim() === "") {
+          return;
+        }
 
         fetch("/", {
           method: "POST",
