@@ -130,9 +130,11 @@
           <form id="customer-url" name="customer-url" data-netlify="true">
             <div class="grid">
               <input
-                type="text"
+                type="url"
                 name="user_url"
                 placeholder="配信やチャンネルのURL"
+                required
+                inputmode="url"
               />
               <button type="submit">送信</button>
             </div>
@@ -261,10 +263,16 @@ https://sync-timer.netlify.app/</textarea
         const myForm = event.target;
         const formData = new FormData(myForm);
 
-        // 空文字の送信を止める
-        if (formData.get("user_url")?.toString().trim() === "") {
+        // 空文字の送信を止め、バリデーションメッセージを表示
+        const urlInput = myForm.elements["user_url"];
+        const trimmed = urlInput?.value?.trim() ?? "";
+        if (!trimmed) {
+          urlInput.setCustomValidity("URLを入力してください。");
+          myForm.reportValidity();
           return;
         }
+        urlInput.setCustomValidity("");
+        formData.set("user_url", trimmed);
 
         fetch("/", {
           method: "POST",

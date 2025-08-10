@@ -273,10 +273,16 @@ https://sync-timer.netlify.app/en.html</textarea
         const myForm = event.target;
         const formData = new FormData(myForm);
 
-        // Stop submitting for empty string.
-        if (formData.get("user_url")?.toString().trim() === "") {
+        // Stop submitting for empty string and show validation.
+        const urlInput = myForm.elements["user_url"];
+        const trimmed = urlInput?.value?.trim() ?? "";
+        if (!trimmed) {
+          urlInput.setCustomValidity("Please enter a URL.");
+          myForm.reportValidity();
           return;
         }
+        urlInput.setCustomValidity("");
+        formData.set("user_url", trimmed);
 
         fetch("/", {
           method: "POST",
